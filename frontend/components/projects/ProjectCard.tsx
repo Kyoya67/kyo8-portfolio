@@ -11,7 +11,7 @@ export default function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group block bg-bg transition-colors hover:bg-bg-inset"
+      className="group block border border-border-strong bg-bg transition-colors hover:bg-bg-inset"
     >
       <div className="relative">
         <span className="absolute top-0 left-0 z-10 border-r border-b border-border-strong bg-bg px-2 py-1 text-[10px] text-fg-dim">

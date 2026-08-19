@@ -21,7 +21,7 @@ export default function ProjectsPreview() {
           title={t.projects.pageTitle}
           action={{ href: "/projects", label: t.projects.allLink }}
         />
-        <div className="grid grid-cols-1 gap-px bg-border-strong sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
           {featured.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
