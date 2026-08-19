@@ -59,3 +59,19 @@ export interface Career {
   note: string;
   order: number;
 }
+
+export type ArticleSource = "internal" | "zenn" | "external";
+
+export interface Article {
+  id: string;
+  slug: string | null;
+  title: LocalizedText;
+  summary: LocalizedText;
+  body?: LocalizedText;
+  url: string;
+  source: ArticleSource;
+  sourceLabel: string;
+  publishedAt: string;
+  published: boolean;
+  order: number;
+}

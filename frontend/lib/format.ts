@@ -22,6 +22,12 @@ function formatMonth(value: string, locale: Locale) {
   return { year, month: MONTHS_EN[monthIndex] ?? month };
 }
 
+export function formatDate(value: string, locale: Locale) {
+  const [year, month, day] = value.split("-").map(Number);
+  if (locale === "ja") return `${year}年${month}月${day}日`;
+  return `${MONTHS_EN[month - 1]} ${day}, ${year}`;
+}
+
 export function formatCareerRange(startDate: string, endDate: string | null, locale: Locale, now: string) {
   const start = formatMonth(startDate, locale);
   const end = endDate ? formatMonth(endDate, locale) : null;

@@ -1,0 +1,102 @@
+import type { Article } from "@/types";
+
+export const articles: Article[] = [
+  {
+    id: "a01",
+    slug: "single-table-dynamodb-schema",
+    title: {
+      en: "Designing a single-table DynamoDB schema for a portfolio API",
+      ja: "ポートフォリオAPIのためのDynamoDBシングルテーブル設計",
+    },
+    summary: {
+      en: "Access patterns first: how I modeled projects, skills, and careers in one DynamoDB table.",
+      ja: "アクセスパターンから逆算して、Project・Skill・Careerを1つのDynamoDBテーブルに設計した話。",
+    },
+    body: {
+      en: "Before touching a single line of Terraform, I wrote down every access pattern this API actually needs: fetch a profile, list published projects, get one project by slug, list skills grouped by category, list careers in order. Nothing more.\n\nThat list is what decided the table design, not the other way around. A single table with a composite primary key covers every pattern above with a handful of Query calls, no scans, and no secondary tables to keep in sync.\n\nThe trade-off is that the schema reads like an implementation detail instead of a clean ER diagram — which is exactly the point. It's optimized for how the API is actually called, not for how it looks in a diagram.",
+      ja: "Terraformを1行も書く前に、このAPIに本当に必要なアクセスパターンをすべて書き出しました。プロフィール取得、公開中のProject一覧、slugでのProject取得、カテゴリ別のSkill一覧、順序付きのCareer一覧。それだけです。\n\nテーブル設計を決めたのはこのリストであって、その逆ではありません。複合プライマリキーを持つ単一テーブルであれば、上記のすべてのパターンをQuery呼び出し数回でカバーでき、スキャンも同期が必要な副テーブルも不要になります。\n\nトレードオフとして、スキーマはきれいなER図というより実装の詳細のように見えます。しかしそれこそが狙いで、図として美しいことより、実際のAPI呼び出され方に最適化することを優先しました。",
+    },
+    url: "/articles/single-table-dynamodb-schema",
+    source: "internal",
+    sourceLabel: "kyo8.dev",
+    publishedAt: "2026-06-14",
+    published: true,
+    order: 1,
+  },
+  {
+    id: "a02",
+    slug: "go-lambda-cold-starts",
+    title: {
+      en: "Go + Lambda cold starts: what actually moved the needle",
+      ja: "Go + Lambdaのコールドスタート、実際に効いた改善だけ",
+    },
+    summary: {
+      en: "Benchmarking binary size, init code, and provisioned concurrency on a real API.",
+      ja: "バイナリサイズ・init処理・Provisioned Concurrencyを実際のAPIで計測して比較した。",
+    },
+    body: {
+      en: "I measured cold starts on the actual Project API instead of a synthetic benchmark, changing one variable at a time: binary size, work done in init(), memory allocation, and finally provisioned concurrency.\n\nTrimming init() work and cutting the binary down with build flags shaved a consistent chunk off cold start latency for free. Provisioned concurrency removed cold starts entirely but only made sense once traffic was steady enough to justify the always-on cost — for a low-traffic portfolio API, it wasn't worth it.",
+      ja: "架空のベンチマークではなく、実際に動いているProject APIでコールドスタートを計測しました。バイナリサイズ、init()内の処理、メモリ割り当て、そしてProvisioned Concurrencyと、一度に1つずつ変数を変えています。\n\ninit()の処理を減らし、ビルドフラグでバイナリを削るだけで、コストをかけずにコールドスタートのレイテンシが一定量削減されました。Provisioned Concurrencyはコールドスタートを完全になくしますが、常時起動コストに見合うだけのトラフィックがあって初めて意味を持ちます。低トラフィックなポートフォリオAPIでは見合いませんでした。",
+    },
+    url: "/articles/go-lambda-cold-starts",
+    source: "internal",
+    sourceLabel: "kyo8.dev",
+    publishedAt: "2026-03-02",
+    published: true,
+    order: 2,
+  },
+  {
+    id: "a03",
+    slug: null,
+    title: {
+      en: "Notes on running stg / prd in separate AWS accounts",
+      ja: "stg / prdをAWSアカウント単位で分離して運用してみた所感",
+    },
+    summary: {
+      en: "AWS Organizations, OIDC federation, and the small annoyances nobody warns you about.",
+      ja: "AWS OrganizationsとOIDCフェデレーションの構成と、実際にハマった細かい落とし穴について。",
+    },
+    url: "https://zenn.dev/",
+    source: "zenn",
+    sourceLabel: "Zenn",
+    publishedAt: "2025-12-08",
+    published: true,
+    order: 3,
+  },
+  {
+    id: "a04",
+    slug: null,
+    title: {
+      en: "Talking Go and Ethereum tooling at a local meetup",
+      ja: "地域の勉強会でGoとEthereumツーリングについて話しました",
+    },
+    summary: {
+      en: "Slides and a short recap from a talk on building developer tooling around Go and Ethereum.",
+      ja: "GoとEthereum向け開発者ツール構築についての発表資料と簡単な振り返り。",
+    },
+    url: "https://zenn.dev/",
+    source: "zenn",
+    sourceLabel: "Zenn",
+    publishedAt: "2025-09-20",
+    published: true,
+    order: 4,
+  },
+  {
+    id: "a05",
+    slug: null,
+    title: {
+      en: "Interviewed on a podcast about backend careers in Japan",
+      ja: "バックエンドエンジニアのキャリアについてポッドキャストで話しました",
+    },
+    summary: {
+      en: "A guest appearance talking about the path from bootcamp to backend infrastructure work.",
+      ja: "未経験からバックエンド・インフラ領域に至るまでのキャリアについてゲストとして話した回。",
+    },
+    url: "https://example.com/",
+    source: "external",
+    sourceLabel: "Podcast",
+    publishedAt: "2025-07-11",
+    published: true,
+    order: 5,
+  },
+];

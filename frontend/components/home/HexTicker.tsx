@@ -1,4 +1,4 @@
-const ADDRESSES = Array.from({ length: 16 }, (_, i) => `0x${(i * 16).toString(16).toUpperCase().padStart(2, "0")}`);
+const ADDRESSES = Array.from({ length: 8 }, (_, i) => `0x${(i * 16).toString(16).toUpperCase().padStart(2, "0")}`);
 
 export default function HexTicker() {
   return (

@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import ThemeToggle from "./ThemeToggle";
 import LocaleToggle from "./LocaleToggle";
 
-const SECTION_IDS = ["about", "skills", "projects", "career"] as const;
+const SECTION_IDS = ["about", "skills", "projects", "articles", "career"] as const;
 type SectionId = (typeof SECTION_IDS)[number];
 
 const NAV_ITEMS: { id: SectionId; label: string }[] = [
   { id: "about", label: "About" },
-  { id: "projects", label: "Projects" },
   { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "articles", label: "Articles" },
   { id: "career", label: "Career" },
 ];
 
@@ -65,10 +66,10 @@ export default function Header() {
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link
           href="/"
-          className="text-sm font-bold tracking-[0.15em] text-fg"
+          className="text-sm font-bold text-fg"
           onClick={() => setOpen(false)}
         >
-          KYO8<span className="animate-blink text-fg-dim">_</span>
+          KYO8.dev
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

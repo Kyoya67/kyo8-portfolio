@@ -1,4 +1,4 @@
-import type { CareerType, SkillCategory } from "@/types";
+import type { ArticleSource, CareerType, SkillCategory } from "@/types";
 
 interface DictionaryShape {
   hero: {
@@ -8,11 +8,7 @@ interface DictionaryShape {
     basedIn: (location: string) => string;
   };
   about: {
-    eyebrow: string;
     title: string;
-    basedIn: (headline: string, location: string) => string;
-    moreLink: string;
-    resumeLink: string;
     infoLabel: string;
     nameLabel: string;
     roleLabel: string;
@@ -20,7 +16,6 @@ interface DictionaryShape {
     focusLabel: string;
     statusLabel: string;
     statusValue: string;
-    pageDescription: string;
   };
   skills: {
     eyebrow: string;
@@ -42,6 +37,17 @@ interface DictionaryShape {
     links: string;
     repository: string;
     website: string;
+  };
+  articles: {
+    eyebrow: string;
+    title: string;
+    readLink: string;
+    allLink: string;
+    pageDescription: string;
+    allFilter: string;
+    postsCount: (count: number) => string;
+    sourceLabels: Record<ArticleSource, string>;
+    backLink: string;
   };
   career: {
     eyebrow: string;
@@ -67,11 +73,7 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       basedIn: (location: string) => `based in ${location}.`,
     },
     about: {
-      eyebrow: "Profile",
       title: "About",
-      basedIn: (headline: string, location: string) => `${headline} based in ${location}.`,
-      moreLink: "More about me",
-      resumeLink: "Resume (PDF)",
       infoLabel: "INFO",
       nameLabel: "name",
       roleLabel: "role",
@@ -79,7 +81,6 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       focusLabel: "focus",
       statusLabel: "status",
       statusValue: "open to interesting problems",
-      pageDescription: "Backend / Infrastructure Engineer",
     },
     skills: {
       eyebrow: "Stack",
@@ -109,6 +110,21 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       repository: "Repository",
       website: "Website",
     },
+    articles: {
+      eyebrow: "Writing",
+      title: "Articles",
+      readLink: "Read",
+      allLink: "All articles",
+      pageDescription: "Posts from this site and external write-ups, in one place.",
+      allFilter: "All",
+      postsCount: (count) => `${count} post${count === 1 ? "" : "s"}`,
+      sourceLabels: {
+        internal: "Blog",
+        zenn: "Zenn",
+        external: "External",
+      },
+      backLink: "All articles",
+    },
     career: {
       eyebrow: "Journey",
       title: "Career",
@@ -135,11 +151,7 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       basedIn: (location: string) => `${location}在住。`,
     },
     about: {
-      eyebrow: "プロフィール",
       title: "About",
-      basedIn: (headline: string, location: string) => `${location}在住の${headline}。`,
-      moreLink: "詳しいプロフィール",
-      resumeLink: "レジュメ (PDF)",
       infoLabel: "INFO",
       nameLabel: "name",
       roleLabel: "role",
@@ -147,7 +159,6 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       focusLabel: "focus",
       statusLabel: "status",
       statusValue: "面白い課題を募集中",
-      pageDescription: "バックエンド / インフラエンジニア",
     },
     skills: {
       eyebrow: "Stack",
@@ -176,6 +187,21 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       links: "リンク",
       repository: "リポジトリ",
       website: "ウェブサイト",
+    },
+    articles: {
+      eyebrow: "Writing",
+      title: "Articles",
+      readLink: "読む",
+      allLink: "記事一覧",
+      pageDescription: "このサイトの記事と、外部に書いた記事をまとめています。",
+      allFilter: "すべて",
+      postsCount: (count) => `${count}件`,
+      sourceLabels: {
+        internal: "ブログ",
+        zenn: "Zenn",
+        external: "外部",
+      },
+      backLink: "記事一覧へ",
     },
     career: {
       eyebrow: "Journey",
