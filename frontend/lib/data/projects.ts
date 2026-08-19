@@ -1,0 +1,68 @@
+import type { Project } from "@/types";
+
+export const projects: Project[] = [
+  {
+    id: "p01",
+    slug: "analytics-platform",
+    title: "Analytics Platform",
+    summary: "Real-time analytics platform built with Go and AWS.",
+    description:
+      "A real-time analytics platform for tracking product metrics across distributed services. Ingests millions of events per day through a Go-based streaming pipeline, aggregates them into time-series rollups, and serves dashboards with sub-second query latency. Infrastructure is fully defined in Terraform and deployed on AWS with autoscaling Lambda consumers.",
+    graphic: "analytics",
+    repositoryUrl: "https://github.com/",
+    websiteUrl: "https://example.com/",
+    technologies: ["Go", "Next.js", "AWS", "Terraform"],
+    featured: true,
+    published: true,
+    order: 1,
+    year: "2025",
+  },
+  {
+    id: "p02",
+    slug: "onchain-nft-minter",
+    title: "On-chain NFT Minter",
+    summary: "NFT minting platform on Ethereum with on-chain metadata.",
+    description:
+      "An NFT minting platform built on Ethereum, storing metadata fully on-chain to avoid centralized dependency. Includes a Solidity contract suite with gas-optimized minting logic, an IPFS-backed asset pipeline, and a Next.js front end for wallet connection and mint flows.",
+    graphic: "network",
+    repositoryUrl: "https://github.com/",
+    websiteUrl: "https://example.com/",
+    technologies: ["Solidity", "Next.js", "IPFS", "AWS"],
+    featured: true,
+    published: true,
+    order: 2,
+    year: "2025",
+  },
+  {
+    id: "p03",
+    slug: "microservices-platform",
+    title: "Microservices Platform",
+    summary: "Scalable microservices architecture with Go, gRPC, and Docker.",
+    description:
+      "A backend platform composed of independently deployable Go microservices communicating over gRPC. Each service owns its data store, is containerized with Docker, and ships through a GitHub Actions pipeline into an orchestrated AWS environment with service discovery and centralized logging.",
+    graphic: "terminal",
+    repositoryUrl: "https://github.com/",
+    websiteUrl: null,
+    technologies: ["Go", "gRPC", "Docker", "AWS"],
+    featured: true,
+    published: true,
+    order: 3,
+    year: "2024",
+  },
+  {
+    id: "p04",
+    slug: "kyo8-portfolio",
+    title: "kyo8.dev Portfolio",
+    summary: "This site — a Next.js + Go + AWS portfolio with an admin CMS.",
+    description:
+      "The site you're looking at. A portfolio built as a full-stack reference project: a Next.js front end, a Go API running on Lambda, DynamoDB for storage, Cognito for admin authentication, and a Terraform-defined AWS environment split across staging and production accounts via AWS Organizations.",
+    graphic: "grid",
+    repositoryUrl: "https://github.com/",
+    websiteUrl: "https://kyo8.dev",
+    technologies: ["Next.js", "Go", "DynamoDB", "Terraform"],
+    featured: false,
+    published: true,
+    order: 4,
+    year: "2026",
+  },
+];

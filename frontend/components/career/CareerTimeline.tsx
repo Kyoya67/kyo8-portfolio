@@ -1,0 +1,53 @@
+import type { Career } from "@/types";
+import { formatCareerRange } from "@/lib/format";
+
+const TYPE_LABELS: Record<Career["type"], string> = {
+  work: "Work",
+  internship: "Internship",
+  education: "Education",
+};
+
+export default function CareerTimeline({ careers }: { careers: Career[] }) {
+  const sorted = [...careers].sort((a, b) => a.order - b.order);
+
+  return (
+    <div className="relative">
+      <div className="absolute top-2 bottom-2 left-[5px] w-px bg-border" />
+      <ol className="flex flex-col gap-14">
+        {sorted.map((career) => {
+          const { year, range } = formatCareerRange(career.startDate, career.endDate);
+          return (
+            <li key={career.id} className="relative pl-14">
+              <span className="absolute top-1.5 left-0 h-[11px] w-[11px] rounded-full border border-fg bg-bg" />
+
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                <div className="flex gap-8">
+                  <div className="w-20 shrink-0">
+                    <p className="text-lg font-bold tracking-tight">{year}</p>
+                    <p className="text-[11px] text-fg-dim">{range}</p>
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[10px] tracking-[0.2em] text-fg-dim uppercase">
+                      {TYPE_LABELS[career.type]}
+                    </p>
+                    <h3 className="text-base font-bold">{career.organization}</h3>
+                    <p className="mt-0.5 text-sm text-fg-muted">{career.position}</p>
+                    <p className="mt-2 max-w-md text-sm leading-relaxed text-fg-muted">
+                      {career.description}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="hidden shrink-0 text-xs text-fg-dim sm:block">
+                  {"/* "}
+                  {career.note}
+                  {" */"}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}

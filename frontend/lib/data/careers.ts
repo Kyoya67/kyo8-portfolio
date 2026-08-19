@@ -1,0 +1,48 @@
+import type { Career } from "@/types";
+
+export const careers: Career[] = [
+  {
+    id: "c01",
+    type: "work",
+    organization: "Mercoin (Mercari)",
+    position: "Backend Engineer Intern",
+    startDate: "2025-03",
+    endDate: null,
+    description: "NFTマーケットプレイスの開発に従事。",
+    note: "push value",
+    order: 1,
+  },
+  {
+    id: "c02",
+    type: "internship",
+    organization: "GMO Pepabo (SUZURI)",
+    position: "Backend Engineer Intern",
+    startDate: "2024-07",
+    endDate: "2024-08",
+    description: "オンラインサービスのAPI開発を担当。",
+    note: "call",
+    order: 2,
+  },
+  {
+    id: "c03",
+    type: "education",
+    organization: "IAMAS (Media Art)",
+    position: "M1 + M2 (withdrawal)",
+    startDate: "2024-04",
+    endDate: "2025-03",
+    description: "メディア表現とテクノロジーの研究。",
+    note: "continue",
+    order: 3,
+  },
+  {
+    id: "c04",
+    type: "education",
+    organization: "The University of Aizu",
+    position: "B.Sc. in Computer Engineering",
+    startDate: "2021-04",
+    endDate: "2025-03",
+    description: "分散システム・形式手法を中心に学習。",
+    note: "return",
+    order: 4,
+  },
+];
