@@ -4,8 +4,8 @@ export const profile: Profile = {
   name: "Kyoya",
   handle: "KYO8",
   headline: {
-    en: "Backend \nInfrastructure Engineer",
-    ja: "バックエンド \nインフラエンジニア",
+    en: "KYO8\nBackend \nInfrastructure Engineer",
+    ja: "KYO8\nバックエンド \nインフラエンジニア",
   },
   bio: {
     en: "Centering around Go, TypeScript, and AWS, I am deepening my understanding of underlying technologies that support systems, such as Linux, networking, and distributed systems.\n\nIn the long term, I aim to connect this knowledge with my experience in blockchain development to contribute to core protocol and infrastructure development for distributed systems, including Ethereum.",

@@ -11,8 +11,8 @@ type SectionId = (typeof SECTION_IDS)[number];
 
 const NAV_ITEMS: { id: SectionId; label: string }[] = [
   { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },
+  { id: "skills", label: "Skills" },
   { id: "career", label: "Career" },
 ];
 
@@ -61,13 +61,17 @@ export default function Header() {
   const effectiveActiveId = isHome ? activeId : null;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="text-sm font-bold tracking-[0.2em] text-fg" onClick={() => setOpen(false)}>
-          KYO8
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <Link
+          href="/"
+          className="text-sm font-bold tracking-[0.15em] text-fg"
+          onClick={() => setOpen(false)}
+        >
+          KYO8<span className="animate-blink text-fg-dim">_</span>
         </Link>
 
-        <nav className="hidden items-center gap-9 md:flex">
+        <nav className="hidden items-center gap-8 md:flex">
           {NAV_ITEMS.map((item) => {
             const active = effectiveActiveId === item.id;
             return (
@@ -75,18 +79,19 @@ export default function Header() {
                 key={item.id}
                 href={`/#${item.id}`}
                 onClick={(e) => handleNavClick(e, item.id)}
-                className={`text-xs tracking-[0.15em] uppercase transition-colors hover:text-fg ${
+                className={`inline-flex items-center gap-1 text-xs tracking-[0.1em] uppercase transition-colors hover:text-fg ${
                   active ? "text-fg" : "text-fg-muted"
                 }`}
               >
+                <span className="text-fg-dim">›</span>
                 {item.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex items-center gap-5">
-          <div className="hidden items-center gap-5 md:flex">
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-3 md:flex">
             <LocaleToggle />
             <ThemeToggle />
           </div>
@@ -94,10 +99,10 @@ export default function Header() {
             type="button"
             aria-label="Toggle menu"
             onClick={() => setOpen((v) => !v)}
-            className="flex h-8 w-8 flex-col items-center justify-center gap-[5px] md:hidden cursor-pointer"
+            className="flex h-9 w-9 flex-col items-center justify-center gap-[5px] border border-border-strong md:hidden cursor-pointer"
           >
-            <span className={`h-px w-5 bg-fg transition-transform ${open ? "translate-y-[3px] rotate-45" : ""}`} />
-            <span className={`h-px w-5 bg-fg transition-transform ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
+            <span className={`h-px w-4 bg-fg transition-transform ${open ? "translate-y-[3px] rotate-45" : ""}`} />
+            <span className={`h-px w-4 bg-fg transition-transform ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
           </button>
         </div>
       </div>
@@ -110,14 +115,15 @@ export default function Header() {
                 key={item.id}
                 href={`/#${item.id}`}
                 onClick={(e) => handleNavClick(e, item.id)}
-                className={`text-xs tracking-[0.15em] uppercase ${
+                className={`inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase ${
                   effectiveActiveId === item.id ? "text-fg" : "text-fg-muted"
                 }`}
               >
+                <span className="text-fg-dim">›</span>
                 {item.label}
               </Link>
             ))}
-            <div className="flex items-center gap-5 pt-2">
+            <div className="flex items-center gap-3 pt-2">
               <LocaleToggle />
               <ThemeToggle />
             </div>

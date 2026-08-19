@@ -2,6 +2,7 @@
 
 import { profile } from "@/lib/data/profile";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import PanelFrame from "./PanelFrame";
 
 export default function TerminalPanel({ showStatus = false }: { showStatus?: boolean }) {
   const { locale, t } = useLocale();
@@ -17,25 +18,22 @@ export default function TerminalPanel({ showStatus = false }: { showStatus?: boo
   }
 
   return (
-    <div className="border border-border bg-bg-inset/60 p-6 font-mono text-xs leading-7 sm:text-sm">
-      <div className="mb-3 flex items-center gap-1.5">
-        <span className="h-2.5 w-2.5 rounded-full border border-border-strong" />
-        <span className="h-2.5 w-2.5 rounded-full border border-border-strong" />
-        <span className="h-2.5 w-2.5 rounded-full border border-border-strong" />
-      </div>
-      <p className="text-fg-muted">
-        $ <span className="text-fg">{t.about.whoami}</span>
+    <PanelFrame className="h-full bg-bg-inset/40 p-6 font-mono text-xs leading-7 sm:text-sm">
+      <p className="mb-2 text-fg-dim">
+        {"// "}
+        {t.about.infoLabel}
       </p>
-      <div className="mt-1">
+      <div>
         {lines.map((line) => (
           <p key={line.key}>
             <span className="text-fg-dim">{line.key}:</span> <span className="text-fg">{line.value}</span>
           </p>
         ))}
       </div>
-      <p className="mt-1 text-fg-muted">
-        $ <span className="animate-blink text-fg">_</span>
+      <p className="mt-2 text-fg-muted">
+        <span className="text-fg-dim">{">"}</span>
+        <span className="animate-blink text-fg">_</span>
       </p>
-    </div>
+    </PanelFrame>
   );
 }

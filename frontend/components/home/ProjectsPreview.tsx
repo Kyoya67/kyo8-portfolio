@@ -2,7 +2,8 @@
 
 import { projects } from "@/lib/data/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import SectionHeading from "@/components/ui/SectionHeading";
+import PanelFrame from "@/components/ui/PanelFrame";
+import PanelHeading from "@/components/ui/PanelHeading";
 import ProjectCard from "@/components/projects/ProjectCard";
 
 export default function ProjectsPreview() {
@@ -13,19 +14,19 @@ export default function ProjectsPreview() {
     .slice(0, 3);
 
   return (
-    <section id="projects" className="scroll-anchor border-b border-border">
-      <div className="mx-auto max-w-6xl px-6 py-24">
-        <SectionHeading
-          eyebrow={t.projects.eyebrow}
-          title={t.projects.title}
+    <div id="projects" className="scroll-anchor mx-auto max-w-6xl px-4 pt-8 sm:px-6">
+      <PanelFrame>
+        <PanelHeading
+          number="03"
+          title={t.projects.pageTitle}
           action={{ href: "/projects", label: t.projects.allLink }}
         />
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-border-strong sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
-      </div>
-    </section>
+      </PanelFrame>
+    </div>
   );
 }

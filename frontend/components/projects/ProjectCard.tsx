@@ -11,14 +11,16 @@ export default function ProjectCard({ project }: { project: Project }) {
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className="group block border border-border transition-colors hover:border-border-strong"
+      className="group block bg-bg transition-colors hover:bg-bg-inset"
     >
-      <ProjectGraphic project={project} />
-      <div className="p-6">
-        <div className="mb-2 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-bold tracking-wide">{project.title}</h3>
-          <span className="text-[11px] text-fg-dim">{project.year}</span>
-        </div>
+      <div className="relative">
+        <span className="absolute top-0 left-0 z-10 border-r border-b border-border-strong bg-bg px-2 py-1 text-[10px] text-fg-dim">
+          {String(project.order).padStart(2, "0")}
+        </span>
+        <ProjectGraphic project={project} />
+      </div>
+      <div className="border-t border-border-strong p-6">
+        <h3 className="mb-2 text-sm font-bold tracking-wide">{project.title}</h3>
         <p className="mb-5 text-xs leading-relaxed text-fg-muted">{project.summary[locale]}</p>
         <div className="flex flex-wrap gap-2">
           {project.technologies.map((tech) => (

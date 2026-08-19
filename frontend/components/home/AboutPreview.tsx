@@ -1,39 +1,41 @@
 "use client";
 
-import Link from "next/link";
 import { profile } from "@/lib/data/profile";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import PanelFrame from "@/components/ui/PanelFrame";
+import PanelHeading from "@/components/ui/PanelHeading";
+import BracketButton from "@/components/ui/BracketButton";
+import PixelArt from "@/components/ui/PixelArt";
 import TerminalPanel from "@/components/ui/TerminalPanel";
+import { PIXEL_AVATAR } from "@/lib/pixel-art";
 
 export default function AboutPreview() {
   const { locale, t } = useLocale();
   const [firstParagraph] = profile.bio[locale].split("\n\n");
 
   return (
-    <section id="about" className="scroll-anchor border-b border-border">
-      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-14 px-6 py-24 md:grid-cols-2 md:gap-20">
-        <div>
-          <h2 className="mb-6 text-sm font-bold tracking-[0.2em] uppercase">
-            {t.about.title}
-            <span className="mt-2 block h-px w-8 bg-fg" />
-          </h2>
-          <p className="text-lg leading-relaxed text-fg sm:text-xl">
-            {t.about.basedIn(profile.headline[locale], profile.location[locale])}
-          </p>
-          <p className="mt-4 text-sm leading-relaxed text-fg-muted sm:text-base">{firstParagraph}</p>
+    <div id="about" className="scroll-anchor mx-auto max-w-6xl px-4 pt-8 sm:px-6">
+      <PanelFrame>
+        <PanelHeading number="01" title={t.about.title} />
 
-          <div className="mt-8 flex flex-col gap-3">
-            <Link
-              href="/about"
-              className="inline-flex w-fit items-center gap-2 text-sm text-fg-muted transition-colors hover:text-fg"
-            >
-              <span className="text-fg-dim">{">"}</span> {t.about.moreLink}
-            </Link>
+        <div className="grid grid-cols-1 gap-10 p-6 sm:p-10 md:grid-cols-[auto_1fr_1fr] md:items-start">
+          <div className="flex justify-center border border-border p-3 text-fg md:justify-self-start">
+            <PixelArt pattern={PIXEL_AVATAR} cell={4} />
           </div>
-        </div>
 
-        <TerminalPanel />
-      </div>
-    </section>
+          <div>
+            <p className="text-sm leading-relaxed text-fg-muted sm:text-base">{firstParagraph}</p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <BracketButton href="/about">{t.about.moreLink}</BracketButton>
+              <BracketButton href="/resume.pdf" external>
+                {t.about.resumeLink}
+              </BracketButton>
+            </div>
+          </div>
+
+          <TerminalPanel />
+        </div>
+      </PanelFrame>
+    </div>
   );
 }

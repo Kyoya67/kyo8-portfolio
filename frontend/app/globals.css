@@ -68,7 +68,7 @@ html {
 }
 
 .scroll-anchor {
-  scroll-margin-top: 5rem;
+  scroll-margin-top: 4rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -136,11 +136,14 @@ body {
   mix-blend-mode: overlay;
 }
 
-.theme-knob {
-  transform: translateX(22px);
+.theme-icon-moon {
+  display: none;
 }
-:root[data-theme="light"] .theme-knob {
-  transform: translateX(4px);
+:root[data-theme="light"] .theme-icon-sun {
+  display: none;
+}
+:root[data-theme="light"] .theme-icon-moon {
+  display: block;
 }
 
 @media (prefers-reduced-motion: reduce) {

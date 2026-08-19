@@ -1,59 +1,53 @@
 "use client";
 
-import Link from "next/link";
 import { profile } from "@/lib/data/profile";
-import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/icons";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
+import PanelFrame from "@/components/ui/PanelFrame";
+import BracketButton from "@/components/ui/BracketButton";
+import HexTicker from "./HexTicker";
 
 export default function Hero() {
-  const { locale } = useLocale();
-  const year = new Date().getFullYear();
+  const { locale, t } = useLocale();
 
   return (
-    <section className="relative overflow-hidden border-b border-border">
-      <div className="relative mx-auto max-w-4xl px-6 py-24 md:py-32">
-        <h1 className="text-glow animate-fade-up max-w-3xl text-4xl leading-[1.15] font-bold tracking-[0.04em] whitespace-pre-line uppercase sm:text-5xl md:text-6xl">
-          {profile.headline[locale]}
-        </h1>
-
-        <span className="mt-8 block text-2xl text-fg-dim">—</span>
-
-        <p className="mt-6 text-xs tracking-[0.2em] text-fg-muted uppercase">
-          {profile.location[locale]} <span className="text-fg-dim">·</span> {year}
-        </p>
-
-        <div className="mt-10 flex items-center gap-4">
-          <Link
-            href={profile.githubUrl}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="GitHub"
-            className="flex h-14 w-14 items-center justify-center rounded-md border border-border text-fg-muted transition-colors hover:border-fg hover:text-fg"
-          >
-            <GitHubIcon className="h-5 w-5" />
-          </Link>
-          {profile.linkedinUrl && (
-            <Link
-              href={profile.linkedinUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="LinkedIn"
-              className="flex h-14 w-14 items-center justify-center rounded-md border border-border text-fg-muted transition-colors hover:border-fg hover:text-fg"
-            >
-              <LinkedInIcon className="h-5 w-5" />
-            </Link>
-          )}
-          {profile.email && (
-            <Link
-              href={profile.email}
-              aria-label="Email"
-              className="flex h-14 w-14 items-center justify-center rounded-md border border-border text-fg-muted transition-colors hover:border-fg hover:text-fg"
-            >
-              <MailIcon className="h-5 w-5" />
-            </Link>
-          )}
-        </div>
+    <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-10">
+      <div className="mb-3 flex items-center gap-2 px-2 text-[11px] tracking-[0.15em] text-fg-muted uppercase">
+        <span className="h-1.5 w-1.5 animate-blink bg-fg" />
+        {t.hero.systemOnline}
       </div>
-    </section>
+
+      <PanelFrame>
+        <div className="bg-grid pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse_90%_70%_at_40%_30%,black,transparent)]" />
+
+        <div className="relative grid grid-cols-1 items-center gap-10 px-6 py-14 sm:px-10 sm:py-20 md:grid-cols-2">
+          <div className="animate-fade-up">
+            <h1 className="text-glow text-4xl leading-none font-bold tracking-tight sm:text-5xl">
+              {profile.handle}
+              <span className="animate-blink text-fg-dim">_</span>
+            </h1>
+
+            <p className="mt-5 text-xs tracking-[0.15em] text-fg-muted uppercase sm:text-sm">
+              {profile.headline[locale]}
+            </p>
+            <p className="mt-1 text-xs text-fg-dim sm:text-sm">{t.hero.basedIn(profile.location[locale])}</p>
+
+            <div className="mt-8">
+              <BracketButton href="/#projects" solid>
+                {t.hero.viewWork}
+                <span className="ml-1">→</span>
+              </BracketButton>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-4 md:justify-end">
+            <HexTicker />
+          </div>
+        </div>
+
+        <div className="relative flex items-center justify-between border-t border-border px-6 py-3 text-[10px] tracking-[0.15em] text-fg-dim uppercase sm:px-10">
+          <span>KERNEL v0.8.0</span>
+        </div>
+      </PanelFrame>
+    </div>
   );
 }

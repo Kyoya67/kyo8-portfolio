@@ -37,9 +37,8 @@ export default function CareerTimeline({ careers }: { careers: Career[] }) {
                 </div>
 
                 <p className="hidden shrink-0 text-xs text-fg-dim sm:block">
-                  {"/* "}
+                  {"// "}
                   {career.note}
-                  {" */"}
                 </p>
               </div>
             </li>

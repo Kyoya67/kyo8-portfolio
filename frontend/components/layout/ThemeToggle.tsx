@@ -1,5 +1,7 @@
 "use client";
 
+import { MoonIcon, SunIcon } from "@/components/icons";
+
 export default function ThemeToggle() {
   function toggle() {
     const root = document.documentElement;
@@ -13,9 +15,10 @@ export default function ThemeToggle() {
       type="button"
       aria-label="Toggle color theme"
       onClick={toggle}
-      className="group relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-border-strong bg-bg-inset transition-colors cursor-pointer"
+      className="group relative flex h-9 w-9 shrink-0 items-center justify-center border border-border-strong text-fg-muted transition-colors hover:border-fg hover:text-fg cursor-pointer"
     >
-      <span className="theme-knob inline-block h-4 w-4 rounded-full bg-fg transition-transform duration-200 ease-out" />
+      <SunIcon className="theme-icon-sun h-4 w-4" />
+      <MoonIcon className="theme-icon-moon absolute h-4 w-4" />
     </button>
   );
 }

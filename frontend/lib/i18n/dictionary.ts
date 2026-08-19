@@ -1,12 +1,19 @@
 import type { CareerType, SkillCategory } from "@/types";
 
 interface DictionaryShape {
+  hero: {
+    systemOnline: string;
+    viewWork: string;
+    scroll: string;
+    basedIn: (location: string) => string;
+  };
   about: {
     eyebrow: string;
     title: string;
     basedIn: (headline: string, location: string) => string;
     moreLink: string;
-    whoami: string;
+    resumeLink: string;
+    infoLabel: string;
     nameLabel: string;
     roleLabel: string;
     locationLabel: string;
@@ -44,16 +51,28 @@ interface DictionaryShape {
     types: Record<CareerType, string>;
     now: string;
   };
+  cta: {
+    title: [string, string, string];
+    prompt: string;
+    button: string;
+  };
 }
 
 export const dictionary: Record<"en" | "ja", DictionaryShape> = {
   en: {
+    hero: {
+      systemOnline: "System online",
+      viewWork: "View my work",
+      scroll: "Scroll",
+      basedIn: (location: string) => `based in ${location}.`,
+    },
     about: {
       eyebrow: "Profile",
       title: "About",
       basedIn: (headline: string, location: string) => `${headline} based in ${location}.`,
       moreLink: "More about me",
-      whoami: "whoami",
+      resumeLink: "Resume (PDF)",
+      infoLabel: "INFO",
       nameLabel: "name",
       roleLabel: "role",
       locationLabel: "location",
@@ -102,14 +121,26 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       },
       now: "Now",
     },
+    cta: {
+      title: ["Let's", "build something", "great."],
+      prompt: "Have a project in mind? Let's connect.",
+      button: "Get in touch",
+    },
   },
   ja: {
+    hero: {
+      systemOnline: "システム稼働中",
+      viewWork: "作品を見る",
+      scroll: "スクロール",
+      basedIn: (location: string) => `${location}在住。`,
+    },
     about: {
       eyebrow: "プロフィール",
       title: "About",
       basedIn: (headline: string, location: string) => `${location}在住の${headline}。`,
       moreLink: "詳しいプロフィール",
-      whoami: "whoami",
+      resumeLink: "レジュメ (PDF)",
+      infoLabel: "INFO",
       nameLabel: "name",
       roleLabel: "role",
       locationLabel: "location",
@@ -157,6 +188,11 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
         education: "Education",
       },
       now: "現在",
+    },
+    cta: {
+      title: ["一緒に", "何かすごいものを", "作りましょう。"],
+      prompt: "プロジェクトのご相談はお気軽にどうぞ。",
+      button: "連絡する",
     },
   },
 };
