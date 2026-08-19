@@ -1,4 +1,6 @@
-const MONTHS = [
+import type { Locale } from "@/types";
+
+const MONTHS_EN = [
   "Jan",
   "Feb",
   "Mar",
@@ -13,17 +15,18 @@ const MONTHS = [
   "Dec",
 ];
 
-export function formatYearMonth(value: string) {
+function formatMonth(value: string, locale: Locale) {
   const [year, month] = value.split("-");
   const monthIndex = Number(month) - 1;
-  return { year, month: MONTHS[monthIndex] ?? month };
+  if (locale === "ja") return { year, month: `${Number(month)}月` };
+  return { year, month: MONTHS_EN[monthIndex] ?? month };
 }
 
-export function formatCareerRange(startDate: string, endDate: string | null) {
-  const start = formatYearMonth(startDate);
-  const end = endDate ? formatYearMonth(endDate) : null;
+export function formatCareerRange(startDate: string, endDate: string | null, locale: Locale, now: string) {
+  const start = formatMonth(startDate, locale);
+  const end = endDate ? formatMonth(endDate, locale) : null;
   return {
     year: start.year,
-    range: `${start.month} - ${end ? end.month : "Now"}`,
+    range: `${start.month} - ${end ? end.month : now}`,
   };
 }

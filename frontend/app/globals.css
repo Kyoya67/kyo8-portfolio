@@ -64,6 +64,17 @@
 
 html {
   color-scheme: light dark;
+  scroll-behavior: smooth;
+}
+
+.scroll-anchor {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {

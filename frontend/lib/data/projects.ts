@@ -5,9 +5,14 @@ export const projects: Project[] = [
     id: "p01",
     slug: "analytics-platform",
     title: "Analytics Platform",
-    summary: "Real-time analytics platform built with Go and AWS.",
-    description:
-      "A real-time analytics platform for tracking product metrics across distributed services. Ingests millions of events per day through a Go-based streaming pipeline, aggregates them into time-series rollups, and serves dashboards with sub-second query latency. Infrastructure is fully defined in Terraform and deployed on AWS with autoscaling Lambda consumers.",
+    summary: {
+      en: "Real-time analytics platform built with Go and AWS.",
+      ja: "GoとAWSで構築したリアルタイム分析プラットフォーム。",
+    },
+    description: {
+      en: "A real-time analytics platform for tracking product metrics across distributed services. Ingests millions of events per day through a Go-based streaming pipeline, aggregates them into time-series rollups, and serves dashboards with sub-second query latency. Infrastructure is fully defined in Terraform and deployed on AWS with autoscaling Lambda consumers.",
+      ja: "分散サービス全体のプロダクト指標を追跡するリアルタイム分析プラットフォーム。Goで実装したストリーミングパイプラインが1日あたり数百万件のイベントを取り込み、時系列データに集約して1秒未満のクエリ遅延でダッシュボードに提供します。インフラはすべてTerraformで定義し、AWS上でオートスケールするLambdaコンシューマとして稼働しています。",
+    },
     graphic: "analytics",
     repositoryUrl: "https://github.com/",
     websiteUrl: "https://example.com/",
@@ -21,9 +26,14 @@ export const projects: Project[] = [
     id: "p02",
     slug: "onchain-nft-minter",
     title: "On-chain NFT Minter",
-    summary: "NFT minting platform on Ethereum with on-chain metadata.",
-    description:
-      "An NFT minting platform built on Ethereum, storing metadata fully on-chain to avoid centralized dependency. Includes a Solidity contract suite with gas-optimized minting logic, an IPFS-backed asset pipeline, and a Next.js front end for wallet connection and mint flows.",
+    summary: {
+      en: "NFT minting platform on Ethereum with on-chain metadata.",
+      ja: "オンチェーンメタデータを持つEthereum上のNFTミンティングプラットフォーム。",
+    },
+    description: {
+      en: "An NFT minting platform built on Ethereum, storing metadata fully on-chain to avoid centralized dependency. Includes a Solidity contract suite with gas-optimized minting logic, an IPFS-backed asset pipeline, and a Next.js front end for wallet connection and mint flows.",
+      ja: "中央集権的な依存を避けるため、メタデータを完全にオンチェーンで保持するEthereum上のNFTミンティングプラットフォーム。ガス最適化されたミンティングロジックを持つSolidityコントラクト群、IPFSを利用したアセットパイプライン、ウォレット接続とミントフローのためのNext.jsフロントエンドで構成されています。",
+    },
     graphic: "network",
     repositoryUrl: "https://github.com/",
     websiteUrl: "https://example.com/",
@@ -37,9 +47,14 @@ export const projects: Project[] = [
     id: "p03",
     slug: "microservices-platform",
     title: "Microservices Platform",
-    summary: "Scalable microservices architecture with Go, gRPC, and Docker.",
-    description:
-      "A backend platform composed of independently deployable Go microservices communicating over gRPC. Each service owns its data store, is containerized with Docker, and ships through a GitHub Actions pipeline into an orchestrated AWS environment with service discovery and centralized logging.",
+    summary: {
+      en: "Scalable microservices architecture with Go, gRPC, and Docker.",
+      ja: "Go・gRPC・Dockerによるスケーラブルなマイクロサービス基盤。",
+    },
+    description: {
+      en: "A backend platform composed of independently deployable Go microservices communicating over gRPC. Each service owns its data store, is containerized with Docker, and ships through a GitHub Actions pipeline into an orchestrated AWS environment with service discovery and centralized logging.",
+      ja: "gRPCで通信する、独立してデプロイ可能なGo製マイクロサービス群で構成されたバックエンド基盤。各サービスは自身のデータストアを保持し、Dockerでコンテナ化され、GitHub Actionsのパイプラインを通じてサービスディスカバリと一元的なロギングを備えたAWS環境へデプロイされます。",
+    },
     graphic: "terminal",
     repositoryUrl: "https://github.com/",
     websiteUrl: null,
@@ -53,9 +68,14 @@ export const projects: Project[] = [
     id: "p04",
     slug: "kyo8-portfolio",
     title: "kyo8.dev Portfolio",
-    summary: "This site — a Next.js + Go + AWS portfolio with an admin CMS.",
-    description:
-      "The site you're looking at. A portfolio built as a full-stack reference project: a Next.js front end, a Go API running on Lambda, DynamoDB for storage, Cognito for admin authentication, and a Terraform-defined AWS environment split across staging and production accounts via AWS Organizations.",
+    summary: {
+      en: "This site — a Next.js + Go + AWS portfolio with an admin CMS.",
+      ja: "このサイト自体 — Next.js + Go + AWSで構築した、管理画面付きポートフォリオ。",
+    },
+    description: {
+      en: "The site you're looking at. A portfolio built as a full-stack reference project: a Next.js front end, a Go API running on Lambda, DynamoDB for storage, Cognito for admin authentication, and a Terraform-defined AWS environment split across staging and production accounts via AWS Organizations.",
+      ja: "今ご覧いただいているこのサイトです。Next.jsのフロントエンド、Lambda上で動くGo API、ストレージにDynamoDB、管理者認証にCognitoを使い、AWS OrganizationsでstagingとproductionのAWSアカウントを分離した、Terraform定義のインフラを持つフルスタックのリファレンスプロジェクトとして構築しています。",
+    },
     graphic: "grid",
     repositoryUrl: "https://github.com/",
     websiteUrl: "https://kyo8.dev",

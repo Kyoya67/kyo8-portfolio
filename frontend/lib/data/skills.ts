@@ -31,12 +31,3 @@ export const skills: Skill[] = [
   { id: "s23", name: "Linux", category: "tools", order: 3 },
   { id: "s24", name: "Notion", category: "tools", order: 4 },
 ];
-
-export const skillCategoryLabels: Record<Skill["category"], string> = {
-  languages: "Languages",
-  backend: "Backend",
-  infrastructure: "Infrastructure",
-  database: "Database",
-  blockchain: "Blockchain",
-  tools: "Tools",
-};

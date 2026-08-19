@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { profile } from "@/lib/data/profile";
 import { GitHubIcon, LinkedInIcon, MailIcon } from "@/components/icons";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import CubeVisual from "./CubeVisual";
 
 export default function Hero() {
+  const { locale, t } = useLocale();
+
   return (
     <section className="relative overflow-hidden border-b border-border">
       <div className="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_60%_20%,black,transparent)]" />
@@ -12,17 +17,17 @@ export default function Hero() {
         <div className="animate-fade-up">
           <p className="mb-6 flex items-center gap-2 text-xs tracking-[0.3em] text-fg-muted uppercase">
             <span className="h-1.5 w-1.5 animate-blink rounded-full bg-fg" />
-            {profile.headline}
+            {profile.headline[locale]}
           </p>
 
           <h1 className="text-glow text-4xl leading-[1.12] font-bold tracking-tight uppercase sm:text-5xl lg:text-6xl">
-            Building systems.
+            {t.hero.heading1}
             <br />
-            Solving problems.
+            {t.hero.heading2}
             <span className="animate-blink text-fg-dim">_</span>
           </h1>
 
-          <p className="mt-8 max-w-md text-sm leading-relaxed text-fg-muted">{profile.bio}</p>
+          <p className="mt-8 max-w-md text-sm leading-relaxed text-fg-muted">{profile.bio[locale]}</p>
 
           <div className="mt-10 flex items-center gap-5">
             <Link

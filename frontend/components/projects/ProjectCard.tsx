@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import type { Project } from "@/types";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import ProjectGraphic from "./ProjectGraphic";
 
 export default function ProjectCard({ project }: { project: Project }) {
+  const { locale } = useLocale();
+
   return (
     <Link
       href={`/projects/${project.slug}`}
@@ -14,7 +19,7 @@ export default function ProjectCard({ project }: { project: Project }) {
           <h3 className="text-sm font-bold tracking-wide">{project.title}</h3>
           <span className="text-[11px] text-fg-dim">{project.year}</span>
         </div>
-        <p className="mb-5 text-xs leading-relaxed text-fg-muted">{project.summary}</p>
+        <p className="mb-5 text-xs leading-relaxed text-fg-muted">{project.summary[locale]}</p>
         <div className="flex flex-wrap gap-2">
           {project.technologies.map((tech) => (
             <span

@@ -1,12 +1,21 @@
+"use client";
+
 import { skills } from "@/lib/data/skills";
+import { useLocale } from "@/lib/i18n/LocaleProvider";
 import SectionHeading from "@/components/ui/SectionHeading";
 import SkillsGrid from "@/components/skills/SkillsGrid";
 
 export default function SkillsPreview() {
+  const { t } = useLocale();
+
   return (
-    <section className="border-b border-border">
+    <section id="skills" className="scroll-anchor border-b border-border">
       <div className="mx-auto max-w-6xl px-6 py-24">
-        <SectionHeading eyebrow="Stack" title="Skills" action={{ href: "/skills", label: "All skills" }} />
+        <SectionHeading
+          eyebrow={t.skills.eyebrow}
+          title={t.skills.title}
+          action={{ href: "/skills", label: t.skills.allLink }}
+        />
         <SkillsGrid skills={skills} />
       </div>
     </section>
