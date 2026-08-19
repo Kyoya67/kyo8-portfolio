@@ -1,23 +1,11 @@
 import type { CareerType, SkillCategory } from "@/types";
 
 interface DictionaryShape {
-  nav: {
-    about: string;
-    skills: string;
-    projects: string;
-    career: string;
-  };
-  hero: {
-    heading1: string;
-    heading2: string;
-  };
   about: {
     eyebrow: string;
     title: string;
     basedIn: (headline: string, location: string) => string;
-    lead: string;
     moreLink: string;
-    resumeLink: string;
     whoami: string;
     nameLabel: string;
     roleLabel: string;
@@ -26,11 +14,6 @@ interface DictionaryShape {
     statusLabel: string;
     statusValue: string;
     pageDescription: string;
-    paragraphs: [
-      (name: string, headline: string, location: string, bio: string) => string,
-      string,
-      string,
-    ];
   };
   skills: {
     eyebrow: string;
@@ -65,23 +48,11 @@ interface DictionaryShape {
 
 export const dictionary: Record<"en" | "ja", DictionaryShape> = {
   en: {
-    nav: {
-      about: "About",
-      skills: "Skills",
-      projects: "Projects",
-      career: "Career",
-    },
-    hero: {
-      heading1: "Building systems.",
-      heading2: "Solving problems.",
-    },
     about: {
       eyebrow: "Profile",
       title: "About",
       basedIn: (headline: string, location: string) => `${headline} based in ${location}.`,
-      lead: "I enjoy building systems that scale and solving complex problems with elegant design.",
       moreLink: "More about me",
-      resumeLink: "Resume (PDF)",
       whoami: "whoami",
       nameLabel: "name",
       roleLabel: "role",
@@ -90,12 +61,6 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       statusLabel: "status",
       statusValue: "open to interesting problems",
       pageDescription: "Backend / Infrastructure Engineer",
-      paragraphs: [
-        (name: string, headline: string, location: string, bio: string) =>
-          `I'm ${name}, a ${headline.toLowerCase()} based in ${location}. ${bio}`,
-        "I care about the layers most people don't see — request routing, data modeling, deployment pipelines, and the infrastructure that keeps a system honest under load. Good architecture is invisible when it works and obvious when it doesn't; I try to build the former.",
-        "Outside of backend work I spend time exploring blockchain infrastructure and media-driven technology, treating each project as a chance to understand a system from the protocol up.",
-      ],
     },
     skills: {
       eyebrow: "Stack",
@@ -139,23 +104,11 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
     },
   },
   ja: {
-    nav: {
-      about: "プロフィール",
-      skills: "スキル",
-      projects: "プロジェクト",
-      career: "経歴",
-    },
-    hero: {
-      heading1: "システムを構築する。",
-      heading2: "課題を解決する。",
-    },
     about: {
       eyebrow: "プロフィール",
       title: "About",
-      basedIn: (headline: string, location: string) => `${location}を拠点に活動する${headline}。`,
-      lead: "スケールするシステムを作ること、そして複雑な問題をエレガントな設計で解決することにやりがいを感じています。",
+      basedIn: (headline: string, location: string) => `${location}在住の${headline}。`,
       moreLink: "詳しいプロフィール",
-      resumeLink: "レジュメ (PDF)",
       whoami: "whoami",
       nameLabel: "name",
       roleLabel: "role",
@@ -164,12 +117,6 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       statusLabel: "status",
       statusValue: "面白い課題を募集中",
       pageDescription: "バックエンド / インフラエンジニア",
-      paragraphs: [
-        (name: string, headline: string, location: string, bio: string) =>
-          `${location}を拠点に活動する${headline}、${name}です。${bio}`,
-        "リクエストのルーティング、データモデリング、デプロイパイプライン、そして負荷がかかっても嘘をつかないインフラなど、多くの人が目にしない部分にこだわっています。優れたアーキテクチャは、うまく機能しているときは見えず、機能していないときにだけ目に見える。私はいつも前者を目指しています。",
-        "バックエンド以外では、ブロックチェーンインフラやメディアテクノロジーの探求に時間を使っています。どのプロジェクトも、プロトコルレベルからシステムを理解するための機会だと捉えています。",
-      ],
     },
     skills: {
       eyebrow: "Stack",

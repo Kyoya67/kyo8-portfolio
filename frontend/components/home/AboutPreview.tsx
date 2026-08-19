@@ -7,6 +7,7 @@ import TerminalPanel from "@/components/ui/TerminalPanel";
 
 export default function AboutPreview() {
   const { locale, t } = useLocale();
+  const [firstParagraph] = profile.bio[locale].split("\n\n");
 
   return (
     <section id="about" className="scroll-anchor border-b border-border">
@@ -18,9 +19,8 @@ export default function AboutPreview() {
           </h2>
           <p className="text-lg leading-relaxed text-fg sm:text-xl">
             {t.about.basedIn(profile.headline[locale], profile.location[locale])}
-            <br />
-            <span className="text-fg-muted">{t.about.lead}</span>
           </p>
+          <p className="mt-4 text-sm leading-relaxed text-fg-muted sm:text-base">{firstParagraph}</p>
 
           <div className="mt-8 flex flex-col gap-3">
             <Link
@@ -29,12 +29,6 @@ export default function AboutPreview() {
             >
               <span className="text-fg-dim">{">"}</span> {t.about.moreLink}
             </Link>
-            <a
-              href="/resume.pdf"
-              className="inline-flex w-fit items-center gap-2 text-sm text-fg-muted transition-colors hover:text-fg"
-            >
-              <span className="text-fg-dim">{">"}</span> {t.about.resumeLink}
-            </a>
           </div>
         </div>
 

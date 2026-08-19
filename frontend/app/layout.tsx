@@ -28,7 +28,12 @@ const THEME_INIT = `
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" data-theme="dark" className={`${geistMono.variable} h-full`}>
+    <html
+      lang="en"
+      data-theme="dark"
+      className={`${geistMono.variable} h-full`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>

@@ -7,7 +7,7 @@ import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export default function AboutContent() {
   const { locale, t } = useLocale();
-  const [p1, p2, p3] = t.about.paragraphs;
+  const bioParagraphs = profile.bio[locale].split("\n\n");
 
   return (
     <>
@@ -16,9 +16,12 @@ export default function AboutContent() {
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid grid-cols-1 gap-16 md:grid-cols-[1.3fr_1fr]">
           <div className="flex flex-col gap-6 text-sm leading-relaxed text-fg-muted sm:text-base">
-            <p>{p1(profile.name, profile.headline[locale], profile.location[locale], profile.bio[locale])}</p>
-            <p>{p2}</p>
-            <p>{p3}</p>
+            <p className="text-base text-fg sm:text-lg">
+              {t.about.basedIn(profile.headline[locale], profile.location[locale])}
+            </p>
+            {bioParagraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
 
             <div className="mt-4 flex flex-wrap gap-3">
               {profile.focus.map((item) => (

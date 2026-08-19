@@ -1,8 +1,30 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useSyncExternalStore } from "react";
 import type { Locale } from "@/types";
 import { dictionary } from "./dictionary";
+
+const STORAGE_KEY = "locale";
+const listeners = new Set<() => void>();
+
+function readLocale(): Locale {
+  return window.localStorage.getItem(STORAGE_KEY) === "ja" ? "ja" : "en";
+}
+
+function getServerSnapshot(): Locale {
+  return "en";
+}
+
+function subscribe(callback: () => void) {
+  listeners.add(callback);
+  return () => listeners.delete(callback);
+}
+
+function writeLocale(next: Locale) {
+  window.localStorage.setItem(STORAGE_KEY, next);
+  document.documentElement.lang = next;
+  for (const listener of listeners) listener();
+}
 
 interface LocaleContextValue {
   locale: Locale;
@@ -13,29 +35,11 @@ interface LocaleContextValue {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-function readStoredLocale(): Locale {
-  if (typeof window === "undefined") return "en";
-  const stored = window.localStorage.getItem("locale");
-  return stored === "ja" ? "ja" : "en";
-}
-
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>(readStoredLocale);
+  const locale = useSyncExternalStore(subscribe, readLocale, getServerSnapshot);
 
-  const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
-    window.localStorage.setItem("locale", next);
-    document.documentElement.lang = next;
-  }, []);
-
-  const toggleLocale = useCallback(() => {
-    setLocaleState((current) => {
-      const next: Locale = current === "en" ? "ja" : "en";
-      window.localStorage.setItem("locale", next);
-      document.documentElement.lang = next;
-      return next;
-    });
-  }, []);
+  const setLocale = useCallback((next: Locale) => writeLocale(next), []);
+  const toggleLocale = useCallback(() => writeLocale(readLocale() === "en" ? "ja" : "en"), []);
 
   const value = useMemo<LocaleContextValue>(
     () => ({ locale, setLocale, toggleLocale, t: dictionary[locale] }),

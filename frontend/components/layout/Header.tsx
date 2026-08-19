@@ -5,15 +5,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ThemeToggle from "./ThemeToggle";
 import LocaleToggle from "./LocaleToggle";
-import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 const SECTION_IDS = ["about", "skills", "projects", "career"] as const;
 type SectionId = (typeof SECTION_IDS)[number];
 
+const NAV_ITEMS: { id: SectionId; label: string }[] = [
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "career", label: "Career" },
+];
+
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<SectionId | null>(null);
 
@@ -52,13 +57,6 @@ export default function Header() {
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     router.replace(`/#${id}`, { scroll: false });
   }
-
-  const NAV_ITEMS: { id: SectionId; label: string }[] = [
-    { id: "about", label: t.nav.about },
-    { id: "skills", label: t.nav.skills },
-    { id: "projects", label: t.nav.projects },
-    { id: "career", label: t.nav.career },
-  ];
 
   const effectiveActiveId = isHome ? activeId : null;
 

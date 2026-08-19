@@ -4,16 +4,16 @@ export const profile: Profile = {
   name: "Kyoya",
   handle: "KYO8",
   headline: {
-    en: "Backend / Infrastructure Engineer",
-    ja: "バックエンド / インフラエンジニア",
+    en: "Backend \nInfrastructure Engineer",
+    ja: "バックエンド \nインフラエンジニア",
   },
   bio: {
-    en: "I design and build scalable backend systems, infrastructure, and developer tooling. Focused on low-level insights and long-term value.",
-    ja: "スケールするバックエンドシステム、インフラ、開発者向けツールを設計・構築しています。低レイヤーの理解と長期的な価値を大切にしています。",
+    en: "Centering around Go, TypeScript, and AWS, I am deepening my understanding of underlying technologies that support systems, such as Linux, networking, and distributed systems.\n\nIn the long term, I aim to connect this knowledge with my experience in blockchain development to contribute to core protocol and infrastructure development for distributed systems, including Ethereum.",
+    ja: "Go / TypeScript、AWSを軸に、Linuxやネットワーク、分散システムなど、システムを支える基盤技術への理解を深めています。\n\n長期的には、これらの知識とブロックチェーン開発の経験をつなげ、Ethereumをはじめとする分散システムの基盤開発に携わることを目指しています。",
   },
   location: {
-    en: "Tokyo, Japan",
-    ja: "東京, 日本",
+    en: "Tokyo",
+    ja: "東京",
   },
   focus: ["Go", "AWS", "Blockchain", "Low-level Systems"],
   githubUrl: "https://github.com/",
