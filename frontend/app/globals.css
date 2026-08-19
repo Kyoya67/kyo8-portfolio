@@ -68,7 +68,7 @@ html {
 }
 
 .scroll-anchor {
-  scroll-margin-top: 5.5rem;
+  scroll-margin-top: 5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
