@@ -53,25 +53,27 @@
 
 ## Production
 
-| 用途          | URL                      |
-| ----------- | ------------------------ |
-| 公開Frontend  | `https://kyo8.dev`       |
-| Backend API | `https://api.kyo8.dev`   |
-| 管理画面        | `https://kyo8.dev/admin` |
+| 用途          | URL                       |
+| ----------- | ------------------------- |
+| 公開Frontend  | `https://kyo8.dev`        |
+| Backend API | `https://api.kyo8.dev`    |
+| 管理画面        | `https://admin.kyo8.dev`  |
 
-管理画面は公開Frontendと同一Next.jsアプリケーション内に実装する。
+管理画面(`apps/admin`)は公開Frontend(`apps/web`)とは別のNext.jsアプリケーションとして実装し、別サブドメインにデプロイする。
 
-公開ページから `/admin` へのリンク・ボタンは設置しない。
+公開Frontend側には管理画面へのリンク・ボタンは設置しない。
 
 URLそのものを秘匿することはセキュリティ対策とはみなさず、管理機能へのアクセス制御はCognitoおよびBackend API側で行う。
 
 ## Staging
 
-| 用途          | URL                          |
-| ----------- | ---------------------------- |
-| Frontend    | `https://stg.kyo8.dev`       |
-| Backend API | `https://api.stg.kyo8.dev`   |
-| 管理画面        | `https://stg.kyo8.dev/admin` |
+| 用途          | URL                           |
+| ----------- | ------------------------------ |
+| Frontend    | `https://stg.kyo8.dev`         |
+| Backend API | `https://api.stg.kyo8.dev`     |
+| 管理画面        | `https://admin.stg.kyo8.dev`   |
+
+`develop`ブランチ → `stg.kyo8.dev`（AWS Amplify Hosting、モノレポappRoot: `apps/web`）にデプロイ済み。
 
 ---
 
@@ -101,18 +103,25 @@ Management Accountには原則としてアプリケーションワークロー�
 
 # 5. リポジトリ構成
 
-Frontend / Backend / Infrastructureは一つのGitHub Repositoryで管理する。
+Frontend（公開 / 管理）/ Backend / Infrastructureは一つのGitHub Repositoryで管理する。
+
+公開Frontendと管理Frontendは別々のNext.jsアプリケーションとし、`apps/`配下でnpm workspacesにより管理する。
 
 ```text
-portfolio/
+kyo8-portfolio/
 │
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   ├── types/
-│   ├── public/
-│   └── package.json
+├── apps/
+│   ├── web/            # 公開Frontend（kyo8.dev）
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── lib/
+│   │   ├── types/
+│   │   ├── public/
+│   │   └── package.json
+│   │
+│   └── admin/           # 管理Frontend（admin.kyo8.dev）
+│       ├── app/
+│       └── package.json
 │
 ├── backend/
 │   ├── cmd/
@@ -131,6 +140,8 @@ portfolio/
 ├── .github/
 │   └── workflows/
 │
+├── package.json         # npm workspaces ルート（apps/web, apps/admin）
+├── package-lock.json
 ├── REQUIREMENTS.md
 └── README.md
 ```
