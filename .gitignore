@@ -13,6 +13,11 @@ out/
 # production
 build/
 
+# Go build artifacts
+apps/api/bin/
+apps/api/cmd/cmd
+*.test
+
 # misc
 *.pem
 
