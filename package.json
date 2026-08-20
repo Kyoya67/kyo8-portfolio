@@ -1,0 +1,8 @@
+{
+  "name": "kyo8-portfolio",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "apps/admin"
+  ]
+}

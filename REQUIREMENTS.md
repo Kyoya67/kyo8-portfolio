@@ -53,25 +53,27 @@
 
 ## Production
 
-| 用途          | URL                      |
-| ----------- | ------------------------ |
-| 公開Frontend  | `https://kyo8.dev`       |
-| Backend API | `https://api.kyo8.dev`   |
-| 管理画面        | `https://kyo8.dev/admin` |
+| 用途          | URL                       |
+| ----------- | ------------------------- |
+| 公開Frontend  | `https://kyo8.dev`        |
+| Backend API | `https://api.kyo8.dev`    |
+| 管理画面        | `https://admin.kyo8.dev`  |
 
-管理画面は公開Frontendと同一Next.jsアプリケーション内に実装する。
+管理画面(`apps/admin`)は公開Frontend(`apps/web`)とは別のNext.jsアプリケーションとして実装し、別サブドメインにデプロイする。
 
-公開ページから `/admin` へのリンク・ボタンは設置しない。
+公開Frontend側には管理画面へのリンク・ボタンは設置しない。
 
 URLそのものを秘匿することはセキュリティ対策とはみなさず、管理機能へのアクセス制御はCognitoおよびBackend API側で行う。
 
 ## Staging
 
-| 用途          | URL                          |
-| ----------- | ---------------------------- |
-| Frontend    | `https://stg.kyo8.dev`       |
-| Backend API | `https://api.stg.kyo8.dev`   |
-| 管理画面        | `https://stg.kyo8.dev/admin` |
+| 用途          | URL                           |
+| ----------- | ------------------------------ |
+| Frontend    | `https://stg.kyo8.dev`         |
+| Backend API | `https://api.stg.kyo8.dev`     |
+| 管理画面        | `https://admin.stg.kyo8.dev`   |
+
+`develop`ブランチ → `stg.kyo8.dev`（AWS Amplify Hosting、モノレポappRoot: `apps/web`）にデプロイ済み。
 
 ---
 
@@ -101,24 +103,41 @@ Management Accountには原則としてアプリケーションワークロー�
 
 # 5. リポジトリ構成
 
-Frontend / Backend / Infrastructureは一つのGitHub Repositoryで管理する。
+公開Frontend / 管理Frontend / Backend API / Infrastructure は、
+一つのGitHub Repositoryで管理するモノレポ構成とする。
+
+デプロイ可能なアプリケーションは `apps/` 配下に配置する。
+
+- `apps/web`：公開Frontend（Next.js）
+- `apps/admin`：管理Frontend（Next.js）
+- `apps/api`：Backend API（Go）
+
+Frontendの2アプリケーションはnpm workspacesで管理する。
+Go Backendは独立したGo moduleとして管理し、npm workspacesには含めない。
+
+Infrastructureはアプリケーションではないため、ルートの `infra/` 配下でTerraformにより管理する。
 
 ```text
-portfolio/
+kyo8-portfolio/
 │
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   ├── types/
-│   ├── public/
-│   └── package.json
-│
-├── backend/
-│   ├── cmd/
-│   ├── internal/
-│   ├── go.mod
-│   └── go.sum
+├── apps/
+│   ├── web/
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── lib/
+│   │   ├── types/
+│   │   ├── public/
+│   │   └── package.json
+│   │
+│   ├── admin/
+│   │   ├── app/
+│   │   └── package.json
+│   │
+│   └── api/
+│       ├── cmd/
+│       ├── internal/
+│       ├── go.mod
+│       └── go.sum
 │
 ├── infra/
 │   ├── modules/
@@ -131,6 +150,9 @@ portfolio/
 ├── .github/
 │   └── workflows/
 │
+├── package.json
+├── package-lock.json
+├── amplify.yml
 ├── REQUIREMENTS.md
 └── README.md
 ```
@@ -149,7 +171,8 @@ flowchart TB
     Admin[Administrator]
 
     CF[CloudFront]
-    FE[Next.js Frontend]
+    FE[Next.js Frontend - apps/web]
+    AdminFE[Next.js Frontend - apps/admin]
 
     WAF[AWS WAF]
     APIGW[API Gateway]
@@ -162,12 +185,14 @@ flowchart TB
     Admin --> CF
 
     CF --> FE
+    CF --> AdminFE
     CF --> S3
 
     FE --> APIGW
+    AdminFE --> APIGW
 
     Admin --> Auth
-    Auth --> FE
+    Auth --> AdminFE
 
     APIGW --> WAF
     APIGW --> Lambda
@@ -190,6 +215,8 @@ flowchart TB
 * React
 * Next.js
 * App Router
+
+公開Frontend（`apps/web`）と管理Frontend（`apps/admin`）は別々のNext.jsアプリケーションとし、同一の技術スタックを用いる。ルートの`package.json`でnpm workspacesとして管理し、依存関係はルートの`node_modules`に集約する。
 
 FrontendからBackendへHTTP APIでアクセスする。
 
@@ -292,25 +319,28 @@ NEXT_PUBLIC_API_BASE_URL=https://api.kyo8.dev
 
 # 9. 管理画面
 
-管理画面は公開Frontendと同じNext.js Application内に実装する。
+管理画面は公開Frontendとは別のNext.jsアプリケーション（`apps/admin`）として実装し、`admin.kyo8.dev`にデプロイする。
 
 ```text
-/admin
-/admin/projects
-/admin/projects/new
-/admin/projects/[id]
-/admin/profile
-/admin/skills
-/admin/careers
+/
+/projects
+/projects/new
+/projects/[id]
+/profile
+/skills
+/careers
+/articles
+/articles/new
+/articles/[id]
 ```
 
-公開ページ上には管理画面への導線を表示しない。
+公開Frontend側には管理画面への導線を表示しない。
 
 ---
 
 # 10. 管理画面認証
 
-`/admin` へのアクセス時に認証状態を確認する。
+`admin.kyo8.dev` へのアクセス時に認証状態を確認する。
 
 未認証の場合はCognitoへリダイレクトする。
 
@@ -321,18 +351,18 @@ NEXT_PUBLIC_API_BASE_URL=https://api.kyo8.dev
 ```mermaid
 sequenceDiagram
     participant Browser
-    participant Frontend
+    participant AdminFE as Admin Frontend (apps/admin)
     participant Cognito
     participant API
     participant Lambda
 
-    Browser->>Frontend: GET /admin
-    Frontend->>Cognito: Login Redirect
+    Browser->>AdminFE: GET https://admin.kyo8.dev/
+    AdminFE->>Cognito: Login Redirect
     Cognito->>Browser: Login UI
     Browser->>Cognito: Login
-    Cognito->>Frontend: Authorization Code
-    Frontend->>Cognito: Code Exchange
-    Cognito-->>Frontend: Tokens
+    Cognito->>AdminFE: Authorization Code
+    AdminFE->>Cognito: Code Exchange
+    Cognito-->>AdminFE: Tokens
 
     Browser->>API: Admin API Request
     API->>API: JWT Verification
@@ -341,7 +371,7 @@ sequenceDiagram
 
 管理画面を表示できることと、管理APIを利用できることは別のセキュリティ境界として扱う。
 
-Frontendの認証判定だけには依存しない。
+Admin Frontendの認証判定だけには依存しない。
 
 ---
 
@@ -429,6 +459,19 @@ GET /v1/careers
 
 ---
 
+## Articles
+
+```http
+GET /v1/articles
+GET /v1/articles/{slug}
+```
+
+`published = true` のArticleのみPublic APIから取得可能とする。
+
+`source = internal`（自サイト内記事）のArticleのみ`slug`を持ち、`GET /v1/articles/{slug}`で取得できる。`zenn` / `external`のArticleはURLが外部を指すため、詳細取得エンドポイントの対象外とする。
+
+---
+
 # 14. Admin API
 
 ## Projects
@@ -471,6 +514,20 @@ POST   /v1/admin/careers
 PUT    /v1/admin/careers/{id}
 DELETE /v1/admin/careers/{id}
 ```
+
+---
+
+## Articles
+
+```http
+GET    /v1/admin/articles
+POST   /v1/admin/articles
+GET    /v1/admin/articles/{id}
+PUT    /v1/admin/articles/{id}
+DELETE /v1/admin/articles/{id}
+```
+
+`source = zenn` / `external`のArticleは`url` / `sourceLabel` / `publishedAt`などのメタデータ管理のみを行い、本文（`body`）の編集対象外とする。
 
 ---
 
@@ -565,7 +622,39 @@ education
 
 ---
 
-# 19. DynamoDB要件
+# 19. Articleデータモデル
+
+```json
+{
+  "id": "01J...",
+  "slug": "single-table-dynamodb-schema",
+  "title": "Designing a single-table DynamoDB schema for a portfolio API",
+  "summary": "Access patterns first: how I modeled projects, skills, and careers in one DynamoDB table.",
+  "body": "...",
+  "url": "/articles/single-table-dynamodb-schema",
+  "source": "internal",
+  "sourceLabel": "kyo8.dev",
+  "publishedAt": "2026-06-14",
+  "published": true,
+  "order": 1
+}
+```
+
+Source：
+
+```text
+internal
+zenn
+external
+```
+
+`source = internal`（自サイト内記事）のArticleのみ`slug`と`body`を持ち、`apps/web`内の詳細ページ（`/articles/{slug}`）で本文を表示する。
+
+`zenn` / `external`のArticleは`url`が外部サイトを指すメタデータのみを保持し、`body`は持たない。`sourceLabel`は一覧表示時のソース名（例：`Zenn`、`Podcast`）に用いる。
+
+---
+
+# 20. DynamoDB要件
 
 DBにはAmazon DynamoDBを利用する。
 
@@ -579,6 +668,8 @@ DBにはAmazon DynamoDBを利用する。
 * Project slug取得
 * Skill一覧取得
 * Career一覧取得
+* Article一覧取得
+* Article slug取得（`source = internal`のみ）
 * 各データのCRUD
 
 テーブル設計についてはBackend実装時にアクセスパターンから決定する。
@@ -589,7 +680,7 @@ DBにはAmazon DynamoDBを利用する。
 
 ---
 
-# 20. 画像アップロード
+# 21. 画像アップロード
 
 画像ファイルはLambda経由でアップロードしない。
 
@@ -640,7 +731,7 @@ Response：
 
 ---
 
-# 21. Backendアーキテクチャ
+# 22. Backendアーキテクチャ
 
 GoコードはHTTP / Application Logic / Persistenceを明確に分離する。
 
@@ -663,7 +754,7 @@ backend/
 
 ---
 
-# 22. Error Response
+# 23. Error Response
 
 APIのエラー形式を統一する。
 
@@ -678,7 +769,7 @@ APIのエラー形式を統一する。
 
 ---
 
-# 23. HTTP Status Code
+# 24. HTTP Status Code
 
 | Status | 用途                    |
 | ------ | --------------------- |
@@ -695,7 +786,7 @@ APIのエラー形式を統一する。
 
 ---
 
-# 24. Infrastructure要件
+# 25. Infrastructure要件
 
 InfrastructureはTerraformで管理する。
 
@@ -717,7 +808,7 @@ InfrastructureはTerraformで管理する。
 
 ---
 
-# 25. Terraform構成
+# 26. Terraform構成
 
 ```text
 infra/
@@ -751,7 +842,7 @@ Terraform Moduleはstg / prdで共通利用する。
 
 ---
 
-# 26. Terraform State
+# 27. Terraform State
 
 Terraform StateをGit Repositoryには保存しない。
 
@@ -767,7 +858,7 @@ stg / prdでStateを分離する。
 
 ---
 
-# 27. AWS IAM
+# 28. AWS IAM
 
 Least Privilegeを基本方針とする。
 
@@ -795,7 +886,7 @@ GitHub ActionsからAWSへアクセスする場合、長期Access Keyを保存�
 
 ---
 
-# 28. Cognito要件
+# 29. Cognito要件
 
 Amazon Cognito User Poolを利用する。
 
@@ -818,7 +909,7 @@ Admin APIではJWTを検証する。
 
 ---
 
-# 29. Security要件
+# 30. Security要件
 
 最低限以下を実施する。
 
@@ -849,7 +940,7 @@ FrontendおよびAPIに必要に応じて適用する。
 
 ---
 
-# 30. 管理画面IP制限
+# 31. 管理画面IP制限
 
 Cognito認証を主たるアクセス制御とする。
 
@@ -868,7 +959,7 @@ IP Allowlistは必須要件としない。
 
 ---
 
-# 31. CORS
+# 32. CORS
 
 FrontendとAPIのOriginが異なるためCORSを設定する。
 
@@ -888,7 +979,7 @@ https://stg.kyo8.dev
 
 ---
 
-# 32. Logging
+# 33. Logging
 
 最低限以下をCloudWatch Logsへ記録する。
 
@@ -911,7 +1002,7 @@ https://stg.kyo8.dev
 
 ---
 
-# 33. Monitoring
+# 34. Monitoring
 
 最低限監視対象とする。
 
@@ -927,7 +1018,7 @@ https://stg.kyo8.dev
 
 ---
 
-# 34. CI要件
+# 35. CI要件
 
 GitHub Actionsを利用する。
 
@@ -961,7 +1052,7 @@ terraform plan
 
 ---
 
-# 35. CD要件
+# 36. CD要件
 
 基本方針：
 
@@ -987,7 +1078,7 @@ Production Terraform Applyについては誤操作リスクを考慮し、初期
 
 ---
 
-# 36. GitHub Actions認証
+# 37. GitHub Actions認証
 
 AWS Access Key / Secret Access KeyをGitHub Secretsへ保存する方式は使用しない。
 
@@ -1009,7 +1100,7 @@ stg / prdごとに異なるIAM Roleを利用する。
 
 ---
 
-# 37. 環境分離
+# 38. 環境分離
 
 ProductionとStagingを以下の単位で分離する。
 
@@ -1026,7 +1117,7 @@ ProductionとStagingを以下の単位で分離する。
 
 ---
 
-# 38. Environment Variables
+# 39. Environment Variables
 
 環境固有情報はコードへ直接埋め込まない。
 
@@ -1050,7 +1141,7 @@ SecretはGitへcommitしない。
 
 ---
 
-# 39. 非機能要件
+# 40. 非機能要件
 
 ## Performance
 
@@ -1091,7 +1182,7 @@ Lambda / DynamoDB等のServerless Serviceによって、アクセス増加時に
 
 ---
 
-# 40. 初期MVPでは実装しないもの
+# 41. 初期MVPでは実装しないもの
 
 以下は初期リリース対象外とする。
 
@@ -1118,7 +1209,7 @@ Lambda / DynamoDB等のServerless Serviceによって、アクセス増加時に
 
 ---
 
-# 41. MVP完成条件
+# 42. MVP完成条件
 
 ## Frontend
 
@@ -1128,17 +1219,19 @@ Lambda / DynamoDB等のServerless Serviceによって、アクセス増加時に
 * Project詳細を表示できる
 * Skillsを表示できる
 * Careerを表示できる
+* Articlesを表示できる（自サイト内記事は詳細ページも表示できる）
 * Responsive対応されている
 
 ## Admin
 
-* `/admin` へアクセスできる
+* `admin.kyo8.dev` へアクセスできる
 * Cognitoでログインできる
 * 未認証ユーザーを拒否できる
 * Project CRUDができる
 * Profile更新ができる
 * Skills CRUDができる
 * Career CRUDができる
+* Article CRUDができる
 * S3へ画像アップロードできる
 
 ## Backend
@@ -1168,125 +1261,3 @@ Lambda / DynamoDB等のServerless Serviceによって、アクセス増加時に
 * stgへデプロイできる
 * prdへ安全にデプロイできる
 
----
-
-# 42. 実装順序
-
-初期実装は以下の順序を基本とする。
-
-```text
-1. Frontend UI
-       ↓
-2. TypeScript Data Model
-       ↓
-3. Mock Data
-       ↓
-4. Frontend API Client
-       ↓
-5. Go API
-       ↓
-6. DynamoDB
-       ↓
-7. Cognito
-       ↓
-8. Admin UI
-       ↓
-9. S3 Upload
-       ↓
-10. AWS Infrastructure
-       ↓
-11. Terraform化
-       ↓
-12. CI/CD
-       ↓
-13. WAF / Monitoring
-```
-
-ただしTerraform導入時に既存AWS Resourceを手動構築している場合は、Resourceの再作成ではなくImportまたは構成の見直しを行う。
-
----
-
-# 43. 設計原則
-
-本プロジェクトでは以下を重視する。
-
-### Simple First
-
-技術を使うこと自体を目的にしない。
-
-必要な問題に対して必要な技術だけを導入する。
-
-### Explicit Boundaries
-
-Frontend / Backend / Infrastructure / Authenticationの責務を明確にする。
-
-### Security on Backend
-
-Frontendの表示制御をセキュリティ境界として信用しない。
-
-重要なAuthorizationはBackend側で必ず実施する。
-
-### Infrastructure as Code
-
-最終的なAWS InfrastructureはTerraformから再現可能にする。
-
-### Environment Isolation
-
-stgとprdをAWS Account単位で分離する。
-
-### Cost Awareness
-
-個人サービスであることを考慮し、不要な常時稼働Resourceを持たない。
-
-### Avoid Resume-Driven Development
-
-「ポートフォリオで見栄えがするから」という理由だけで技術を追加しない。
-
-利用技術について、
-
-「なぜこの技術が必要なのか」
-
-を説明できる状態を維持する。
-
----
-
-# 44. 最終構成
-
-```text
-GitHub
-└── portfolio
-    ├── frontend
-    ├── backend
-    └── infra
-          │
-          │ GitHub Actions + OIDC
-          ↓
-
-AWS Organizations
-└── Workloads
-    └── portfolio
-        │
-        ├── portfolio-stg
-        │   ├── stg.kyo8.dev
-        │   ├── api.stg.kyo8.dev
-        │   ├── CloudFront
-        │   ├── S3
-        │   ├── WAF
-        │   ├── Cognito
-        │   ├── API Gateway
-        │   ├── Lambda / Go
-        │   └── DynamoDB
-        │
-        └── portfolio-prd
-            ├── kyo8.dev
-            ├── api.kyo8.dev
-            ├── CloudFront
-            ├── S3
-            ├── WAF
-            ├── Cognito
-            ├── API Gateway
-            ├── Lambda / Go
-            └── DynamoDB
-```
-
-この構成を初期アーキテクチャとして実装を開始する。
