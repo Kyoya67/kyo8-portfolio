@@ -1,0 +1,34 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.DS_Store
+
+# dependencies (npm workspaces hoist to the root, but ignore per-app too)
+node_modules/
+/.pnp
+.pnp.*
+
+# next.js
+.next/
+out/
+
+# production
+build/
+
+# misc
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel / amplify
+.vercel
+.amplify-hosting/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
