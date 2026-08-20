@@ -15,10 +15,6 @@ build/
 
 # Go build artifacts
 apps/api/bin/
-apps/api/api
-apps/api/local
-apps/api/cmd/cmd
-apps/api/server
 *.test
 
 # misc
