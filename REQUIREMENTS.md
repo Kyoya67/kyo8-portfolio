@@ -103,15 +103,25 @@ Management Accountには原則としてアプリケーションワークロー�
 
 # 5. リポジトリ構成
 
-Frontend（公開 / 管理）/ Backend / Infrastructureは一つのGitHub Repositoryで管理する。
+公開Frontend / 管理Frontend / Backend API / Infrastructure は、
+一つのGitHub Repositoryで管理するモノレポ構成とする。
 
-公開Frontendと管理Frontendは別々のNext.jsアプリケーションとし、`apps/`配下でnpm workspacesにより管理する。
+デプロイ可能なアプリケーションは `apps/` 配下に配置する。
+
+- `apps/web`：公開Frontend（Next.js）
+- `apps/admin`：管理Frontend（Next.js）
+- `apps/api`：Backend API（Go）
+
+Frontendの2アプリケーションはnpm workspacesで管理する。
+Go Backendは独立したGo moduleとして管理し、npm workspacesには含めない。
+
+Infrastructureはアプリケーションではないため、ルートの `infra/` 配下でTerraformにより管理する。
 
 ```text
 kyo8-portfolio/
 │
 ├── apps/
-│   ├── web/            # 公開Frontend（kyo8.dev）
+│   ├── web/
 │   │   ├── app/
 │   │   ├── components/
 │   │   ├── lib/
@@ -119,15 +129,15 @@ kyo8-portfolio/
 │   │   ├── public/
 │   │   └── package.json
 │   │
-│   └── admin/           # 管理Frontend（admin.kyo8.dev）
-│       ├── app/
-│       └── package.json
-│
-├── backend/
-│   ├── cmd/
-│   ├── internal/
-│   ├── go.mod
-│   └── go.sum
+│   ├── admin/
+│   │   ├── app/
+│   │   └── package.json
+│   │
+│   └── api/
+│       ├── cmd/
+│       ├── internal/
+│       ├── go.mod
+│       └── go.sum
 │
 ├── infra/
 │   ├── modules/
@@ -140,8 +150,9 @@ kyo8-portfolio/
 ├── .github/
 │   └── workflows/
 │
-├── package.json         # npm workspaces ルート（apps/web, apps/admin）
+├── package.json
 ├── package-lock.json
+├── amplify.yml
 ├── REQUIREMENTS.md
 └── README.md
 ```
@@ -1250,128 +1261,3 @@ Lambda / DynamoDB等のServerless Serviceによって、アクセス増加時に
 * stgへデプロイできる
 * prdへ安全にデプロイできる
 
----
-
-# 43. 実装順序
-
-初期実装は以下の順序を基本とする。
-
-```text
-1. Frontend UI
-       ↓
-2. TypeScript Data Model
-       ↓
-3. Mock Data
-       ↓
-4. Frontend API Client
-       ↓
-5. Go API
-       ↓
-6. DynamoDB
-       ↓
-7. Cognito
-       ↓
-8. Admin UI
-       ↓
-9. S3 Upload
-       ↓
-10. AWS Infrastructure
-       ↓
-11. Terraform化
-       ↓
-12. CI/CD
-       ↓
-13. WAF / Monitoring
-```
-
-ただしTerraform導入時に既存AWS Resourceを手動構築している場合は、Resourceの再作成ではなくImportまたは構成の見直しを行う。
-
----
-
-# 44. 設計原則
-
-本プロジェクトでは以下を重視する。
-
-### Simple First
-
-技術を使うこと自体を目的にしない。
-
-必要な問題に対して必要な技術だけを導入する。
-
-### Explicit Boundaries
-
-Frontend / Backend / Infrastructure / Authenticationの責務を明確にする。
-
-### Security on Backend
-
-Frontendの表示制御をセキュリティ境界として信用しない。
-
-重要なAuthorizationはBackend側で必ず実施する。
-
-### Infrastructure as Code
-
-最終的なAWS InfrastructureはTerraformから再現可能にする。
-
-### Environment Isolation
-
-stgとprdをAWS Account単位で分離する。
-
-### Cost Awareness
-
-個人サービスであることを考慮し、不要な常時稼働Resourceを持たない。
-
-### Avoid Resume-Driven Development
-
-「ポートフォリオで見栄えがするから」という理由だけで技術を追加しない。
-
-利用技術について、
-
-「なぜこの技術が必要なのか」
-
-を説明できる状態を維持する。
-
----
-
-# 45. 最終構成
-
-```text
-GitHub
-└── kyo8-portfolio
-    ├── apps/web       (npm workspaces)
-    ├── apps/admin
-    ├── backend
-    └── infra
-          │
-          │ GitHub Actions + OIDC
-          ↓
-
-AWS Organizations
-└── Workloads
-    └── portfolio
-        │
-        ├── portfolio-stg
-        │   ├── stg.kyo8.dev          (apps/web)
-        │   ├── admin.stg.kyo8.dev    (apps/admin)
-        │   ├── api.stg.kyo8.dev
-        │   ├── CloudFront
-        │   ├── S3
-        │   ├── WAF
-        │   ├── Cognito
-        │   ├── API Gateway
-        │   ├── Lambda / Go
-        │   └── DynamoDB
-        │
-        └── portfolio-prd
-            ├── kyo8.dev               (apps/web)
-            ├── admin.kyo8.dev         (apps/admin)
-            ├── api.kyo8.dev
-            ├── CloudFront
-            ├── S3
-            ├── WAF
-            ├── Cognito
-            ├── API Gateway
-            ├── Lambda / Go
-            └── DynamoDB
-```
-
-この構成を初期アーキテクチャとして実装を開始する。
