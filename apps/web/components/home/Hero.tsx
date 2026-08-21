@@ -46,7 +46,7 @@ export default function Hero() {
             >
 
               <XIcon className="h-3.5 w-3.5" />
-              X (Twitter)
+              (Twitter)
             </a>
           )}
           {profile.linkedinUrl && (
