@@ -88,12 +88,11 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       allLink: "All skills",
       pageDescription: "Tools and technologies I reach for, grouped by where they sit in the stack.",
       categories: {
-        languages: "Languages",
+        frontend: "Frontend",
         backend: "Backend",
         infrastructure: "Infrastructure",
         database: "Database",
         blockchain: "Blockchain",
-        tools: "Tools",
       },
     },
     projects: {
@@ -166,12 +165,11 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       allLink: "すべてのスキルを見る",
       pageDescription: "スタックの中でそれぞれが担う役割ごとに整理した、普段使用している技術一覧です。",
       categories: {
-        languages: "言語",
+        frontend: "フロントエンド",
         backend: "バックエンド",
         infrastructure: "インフラ",
         database: "データベース",
         blockchain: "ブロックチェーン",
-        tools: "ツール",
       },
     },
     projects: {

@@ -3,12 +3,11 @@ export type Locale = "en" | "ja";
 export type LocalizedText = Record<Locale, string>;
 
 export type SkillCategory =
-  | "languages"
+  | "frontend"
   | "backend"
   | "infrastructure"
   | "database"
-  | "blockchain"
-  | "tools";
+  | "blockchain";
 
 export type CareerType = "work" | "internship" | "education";
 

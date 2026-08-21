@@ -2,24 +2,22 @@
 
 import type { Skill, SkillCategory } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import { CloudIcon, CodeIcon, DatabaseIcon, LinkIcon, ServerIcon, ToolIcon } from "@/components/icons";
+import { CloudIcon, CodeIcon, DatabaseIcon, LinkIcon, ServerIcon } from "@/components/icons";
 
 const CATEGORY_ORDER: SkillCategory[] = [
-  "languages",
+  "frontend",
   "backend",
   "infrastructure",
   "database",
   "blockchain",
-  "tools",
 ];
 
 const CATEGORY_ICONS: Record<SkillCategory, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  languages: CodeIcon,
+  frontend: CodeIcon,
   backend: ServerIcon,
   infrastructure: CloudIcon,
   database: DatabaseIcon,
   blockchain: LinkIcon,
-  tools: ToolIcon,
 };
 
 export default function SkillsGrid({ skills }: { skills: Skill[] }) {
@@ -31,7 +29,7 @@ export default function SkillsGrid({ skills }: { skills: Skill[] }) {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
       {grouped.map((group) => {
         const Icon = CATEGORY_ICONS[group.category];
         return (
