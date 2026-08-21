@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/router"
@@ -14,8 +15,8 @@ import (
 
 func handler(
 	ctx context.Context,
-	request events.APIGatewayV2HTTPRequest,
-) (events.APIGatewayV2HTTPResponse, error) {
+	request events.APIGatewayProxyRequest,
+) (events.APIGatewayProxyResponse, error) {
 	var requestBody io.ReadCloser = http.NoBody
 	if request.Body != "" {
 		requestBody = io.NopCloser(strings.NewReader(request.Body))
@@ -23,13 +24,19 @@ func handler(
 
 	httpRequest, err := http.NewRequestWithContext(
 		ctx,
-		request.RequestContext.HTTP.Method,
-		request.RequestContext.HTTP.Path,
+		request.HTTPMethod,
+		request.Path,
 		requestBody,
 	)
 	if err != nil {
-		return events.APIGatewayV2HTTPResponse{}, err
+		return events.APIGatewayProxyResponse{}, err
 	}
+
+	query := url.Values{}
+	for key, value := range request.QueryStringParameters {
+		query.Set(key, value)
+	}
+	httpRequest.URL.RawQuery = query.Encode()
 
 	for key, value := range request.Headers {
 		httpRequest.Header.Set(key, value)
@@ -45,7 +52,7 @@ func handler(
 		}
 	}
 
-	return events.APIGatewayV2HTTPResponse{
+	return events.APIGatewayProxyResponse{
 		StatusCode: recorder.Code,
 		Headers:    responseHeaders,
 		Body:       recorder.Body.String(),
