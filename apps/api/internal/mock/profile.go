@@ -1,21 +1,21 @@
 package mock
 
 type LocalizedText struct {
-	EN string `json:"en"`
-	JA string `json:"ja"`
+	EN string `json:"en" dynamodbav:"en"`
+	JA string `json:"ja" dynamodbav:"ja"`
 }
 
 type ProfileResponse struct {
-	Name        string        `json:"name"`
-	Handle      string        `json:"handle"`
-	Headline    LocalizedText `json:"headline"`
-	Bio         LocalizedText `json:"bio"`
-	Location    LocalizedText `json:"location"`
-	Focus       []string      `json:"focus"`
-	GitHubURL   string        `json:"githubUrl"`
-	LinkedInURL *string       `json:"linkedinUrl"`
-	XURL        *string       `json:"xUrl"`
-	Email       *string       `json:"email"`
+	Name        string        `json:"name" dynamodbav:"name"`
+	Handle      string        `json:"handle" dynamodbav:"handle"`
+	Headline    LocalizedText `json:"headline" dynamodbav:"headline"`
+	Bio         LocalizedText `json:"bio" dynamodbav:"bio"`
+	Location    LocalizedText `json:"location" dynamodbav:"location"`
+	Focus       []string      `json:"focus" dynamodbav:"focus"`
+	GitHubURL   string        `json:"githubUrl" dynamodbav:"githubUrl"`
+	LinkedInURL *string       `json:"linkedinUrl" dynamodbav:"linkedinUrl"`
+	XURL        *string       `json:"xUrl" dynamodbav:"xUrl"`
+	Email       *string       `json:"email" dynamodbav:"email"`
 }
 
 func Profile() ProfileResponse {
