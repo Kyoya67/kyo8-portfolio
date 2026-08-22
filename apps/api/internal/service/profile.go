@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/mock"
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -31,7 +31,7 @@ func NewProfileService(config aws.Config) *ProfileService {
 	}
 }
 
-func (s *ProfileService) GetProfile(ctx context.Context) (mock.ProfileResponse, error) {
+func (s *ProfileService) GetProfile(ctx context.Context) (model.Profile, error) {
 	output, err := s.db.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: aws.String(s.tableName),
 		Key: map[string]types.AttributeValue{
@@ -39,16 +39,16 @@ func (s *ProfileService) GetProfile(ctx context.Context) (mock.ProfileResponse, 
 		},
 	})
 	if err != nil {
-		return mock.ProfileResponse{}, fmt.Errorf("get profile from DynamoDB: %w", err)
+		return model.Profile{}, fmt.Errorf("get profile from DynamoDB: %w", err)
 	}
 
 	if len(output.Item) == 0 {
-		return mock.ProfileResponse{}, fmt.Errorf("profile not found")
+		return model.Profile{}, fmt.Errorf("profile not found")
 	}
 
-	var profile mock.ProfileResponse
+	var profile model.Profile
 	if err := attributevalue.UnmarshalMap(output.Item, &profile); err != nil {
-		return mock.ProfileResponse{}, fmt.Errorf("unmarshal profile: %w", err)
+		return model.Profile{}, fmt.Errorf("unmarshal profile: %w", err)
 	}
 
 	return profile, nil
