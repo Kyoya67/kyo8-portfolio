@@ -18,12 +18,24 @@ export function getApiBaseUrl(): string {
   return baseUrl;
 }
 
-export async function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+export interface ApiFetchOptions {
+  /** Attach the stored access token as an Authorization header. Defaults to true. */
+  auth?: boolean;
+}
+
+export async function apiFetch(
+  path: string,
+  init?: RequestInit,
+  options?: ApiFetchOptions
+): Promise<Response> {
   const url = `${getApiBaseUrl()}${path}`;
-  const accessToken = getAccessToken();
+  const auth = options?.auth ?? true;
   const headers = new Headers(init?.headers);
-  if (accessToken) {
-    headers.set("Authorization", `Bearer ${accessToken}`);
+  if (auth) {
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      headers.set("Authorization", `Bearer ${accessToken}`);
+    }
   }
 
   let res: Response;
@@ -35,7 +47,7 @@ export async function apiFetch(path: string, init?: RequestInit): Promise<Respon
     );
   }
 
-  if (res.status === 401) {
+  if (auth && res.status === 401) {
     // The token was rejected or is missing; drop it so the next navigation re-triggers login.
     clearTokens();
     if (typeof window !== "undefined") {

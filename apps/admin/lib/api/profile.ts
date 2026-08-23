@@ -2,7 +2,8 @@ import type { Profile } from "@/types";
 import { apiFetch } from "./client";
 
 export async function getProfile(): Promise<Profile> {
-  const res = await apiFetch("/profile");
+  // Public endpoint — no Authorization header, so no CORS preflight is triggered.
+  const res = await apiFetch("/profile", undefined, { auth: false });
   return res.json();
 }
 
