@@ -1,4 +1,4 @@
-import { clearTokens, getAccessToken } from "@/lib/auth/storage";
+import { clearTokens, getIdToken } from "@/lib/auth/storage";
 
 export class ApiError extends Error {
   status?: number;
@@ -32,9 +32,9 @@ export async function apiFetch(
   const auth = options?.auth ?? true;
   const headers = new Headers(init?.headers);
   if (auth) {
-    const accessToken = getAccessToken();
-    if (accessToken) {
-      headers.set("Authorization", `Bearer ${accessToken}`);
+    const idToken = getIdToken();
+    if (idToken) {
+      headers.set("Authorization", `Bearer ${idToken}`);
     }
   }
 

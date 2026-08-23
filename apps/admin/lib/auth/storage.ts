@@ -40,10 +40,10 @@ export function clearTokens(): void {
 
 // Used by lib/api/client.ts outside the React tree; returns null once expired
 // rather than a stale token, so callers never send an access token past its lifetime.
-export function getAccessToken(): string | null {
+export function getIdToken(): string | null {
   const tokens = loadTokens();
   if (!tokens || Date.now() >= tokens.expiresAt) return null;
-  return tokens.accessToken;
+  return tokens.idToken;
 }
 
 export function savePkceState(pkce: PkceState): void {
