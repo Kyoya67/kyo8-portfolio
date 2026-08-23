@@ -53,3 +53,22 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (model.Profile, erro
 
 	return profile, nil
 }
+
+func (r *ProfileRepository) SaveProfile(ctx context.Context, profile model.Profile) error {
+	item, err := attributevalue.MarshalMap(profile)
+	if err != nil {
+		return fmt.Errorf("marshal profile: %w", err)
+	}
+
+	item["id"] = &types.AttributeValueMemberS{Value: "profile"}
+
+	_, err = r.db.PutItem(ctx, &dynamodb.PutItemInput{
+		TableName: aws.String(r.tableName),
+		Item:      item,
+	})
+	if err != nil {
+		return fmt.Errorf("save profile to DynamoDB: %w", err)
+	}
+
+	return nil
+}

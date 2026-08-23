@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 )
 
@@ -37,4 +38,22 @@ func (h *ProfileHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("profile request succeeded: method=%s status=%d", r.Method, http.StatusOK)
+}
+
+func (h *ProfileHandler) SaveProfile(w http.ResponseWriter, r *http.Request) {
+	var profile model.Profile
+	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
+		log.Printf("profile update failed: error=%v", err)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.service.SaveProfile(r.Context(), profile); err != nil {
+		log.Printf("profile update failed: error=%v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("profile update succeeded: status=%d", http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }

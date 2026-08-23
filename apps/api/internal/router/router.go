@@ -16,6 +16,7 @@ func New(db *dynamodb.Client) *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/health", handler.Health).Methods("GET")
 	r.HandleFunc("/profile", profileHandler.Profile).Methods("GET")
+	r.HandleFunc("/profile", profileHandler.SaveProfile).Methods("POST")
 
 	return r
 }

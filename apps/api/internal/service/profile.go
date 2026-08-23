@@ -8,6 +8,7 @@ import (
 
 type ProfileRepository interface {
 	GetProfile(ctx context.Context) (model.Profile, error)
+	SaveProfile(ctx context.Context, profile model.Profile) error
 }
 
 type ProfileService struct {
@@ -20,4 +21,8 @@ func NewProfileService(repository ProfileRepository) *ProfileService {
 
 func (s *ProfileService) GetProfile(ctx context.Context) (model.Profile, error) {
 	return s.repository.GetProfile(ctx)
+}
+
+func (s *ProfileService) SaveProfile(ctx context.Context, profile model.Profile) error {
+	return s.repository.SaveProfile(ctx, profile)
 }
