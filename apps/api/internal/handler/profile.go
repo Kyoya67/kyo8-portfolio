@@ -17,13 +17,7 @@ func NewProfileHandler(profileService *service.ProfileService) *ProfileHandler {
 	return &ProfileHandler{service: profileService}
 }
 
-func (h *ProfileHandler) Profile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		log.Printf("profile request failed: method=%s status=%d", r.Method, http.StatusMethodNotAllowed)
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
+func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	profileData, err := h.service.GetProfile(r.Context())
 	if err != nil {
 		log.Printf("profile request failed: method=%s error=%v", r.Method, err)
@@ -40,7 +34,7 @@ func (h *ProfileHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	log.Printf("profile request succeeded: method=%s status=%d", r.Method, http.StatusOK)
 }
 
-func (h *ProfileHandler) SaveProfile(w http.ResponseWriter, r *http.Request) {
+func (h *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	var profile model.Profile
 	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
 		log.Printf("profile update failed: error=%v", err)
@@ -48,7 +42,7 @@ func (h *ProfileHandler) SaveProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.service.SaveProfile(r.Context(), profile); err != nil {
+	if err := h.service.UpdateProfile(r.Context(), profile); err != nil {
 		log.Printf("profile update failed: error=%v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

@@ -54,7 +54,7 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (model.Profile, erro
 	return profile, nil
 }
 
-func (r *ProfileRepository) SaveProfile(ctx context.Context, profile model.Profile) error {
+func (r *ProfileRepository) UpdateProfile(ctx context.Context, profile model.Profile) error {
 	item, err := attributevalue.MarshalMap(profile)
 	if err != nil {
 		return fmt.Errorf("marshal profile: %w", err)
