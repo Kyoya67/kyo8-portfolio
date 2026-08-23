@@ -27,7 +27,7 @@ export interface Profile {
 export interface Project {
   id: string;
   slug: string;
-  title: string;
+  title: LocalizedText;
   summary: LocalizedText;
   description: LocalizedText;
   graphic: "analytics" | "network" | "terminal" | "chain" | "grid" | "stream";

@@ -20,7 +20,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         <ProjectGraphic project={project} />
       </div>
       <div className="border-t border-border-strong p-6">
-        <h3 className="mb-2 text-sm font-bold tracking-wide">{project.title}</h3>
+        <h3 className="mb-2 text-sm font-bold tracking-wide">{project.title[locale]}</h3>
         <p className="mb-5 text-xs leading-relaxed text-fg-muted">{project.summary[locale]}</p>
         <div className="flex flex-wrap gap-2">
           {project.technologies.map((tech) => (

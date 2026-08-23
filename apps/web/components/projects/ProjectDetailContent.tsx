@@ -25,7 +25,7 @@ export default function ProjectDetailContent({ project }: { project: Project }) 
             {project.year}
           </p>
           <h1 className="max-w-3xl text-4xl font-bold tracking-tight uppercase sm:text-5xl">
-            {project.title}
+            {project.title[locale]}
           </h1>
           <p className="mt-5 max-w-xl text-sm leading-relaxed text-fg-muted">{project.summary[locale]}</p>
         </div>
