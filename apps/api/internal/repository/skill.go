@@ -1,0 +1,71 @@
+package repository
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+)
+
+const defaultSkillTable = "skill-stg"
+
+type SkillRepository struct {
+	db        *dynamodb.Client
+	tableName string
+}
+
+type skillItem struct {
+	ID     string        `dynamodbav:"id"`
+	Skills []model.Skill `dynamodbav:"skills"`
+}
+
+func NewSkillRepository(db *dynamodb.Client) *SkillRepository {
+	tableName := os.Getenv("SKILL_TABLE_NAME")
+	if tableName == "" {
+		tableName = defaultSkillTable
+	}
+
+	return &SkillRepository{db: db, tableName: tableName}
+}
+
+func (r *SkillRepository) GetSkills(ctx context.Context) ([]model.Skill, error) {
+	output, err := r.db.GetItem(ctx, &dynamodb.GetItemInput{
+		TableName: aws.String(r.tableName),
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{Value: "skills"},
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf("get skills from DynamoDB: %w", err)
+	}
+	if len(output.Item) == 0 {
+		return nil, fmt.Errorf("skills not found")
+	}
+
+	var item skillItem
+	if err := attributevalue.UnmarshalMap(output.Item, &item); err != nil {
+		return nil, fmt.Errorf("unmarshal skills: %w", err)
+	}
+	return item.Skills, nil
+}
+
+func (r *SkillRepository) UpdateSkills(ctx context.Context, skills []model.Skill) error {
+	item, err := attributevalue.MarshalMap(skillItem{ID: "skills", Skills: skills})
+	if err != nil {
+		return fmt.Errorf("marshal skills: %w", err)
+	}
+
+	_, err = r.db.PutItem(ctx, &dynamodb.PutItemInput{
+		TableName: aws.String(r.tableName),
+		Item:      item,
+	})
+	if err != nil {
+		return fmt.Errorf("save skills to DynamoDB: %w", err)
+	}
+	return nil
+}
