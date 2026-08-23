@@ -40,12 +40,19 @@ export interface Project {
   year: string;
 }
 
+export interface SkillChild {
+  id: string;
+  name: string;
+  capabilities: string[];
+}
+
 export interface Skill {
   id: string;
   name: string;
   category: SkillCategory;
   order: number;
-  keywords: string[];
+  capabilities: string[];
+  children: SkillChild[];
 }
 
 export interface Career {
