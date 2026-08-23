@@ -1,12 +1,12 @@
 "use client";
 
-import { skills } from "@/lib/data/skills";
+import type { Skill } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { PanelFrame } from "@kyo8/ui";
 import { PanelHeading } from "@kyo8/ui";
 import SkillsGrid from "@/components/skills/SkillsGrid";
 
-export default function SkillsPreview() {
+export default function SkillsPreview({ skills }: { skills: Skill[] }) {
   const { t } = useLocale();
 
   return (
