@@ -5,23 +5,23 @@ import (
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
-	"github.com/aws/aws-sdk-go-v2/config"
 )
 
-func Profile(w http.ResponseWriter, r *http.Request) {
+type ProfileHandler struct {
+	service *service.ProfileService
+}
+
+func NewProfileHandler(profileService *service.ProfileService) *ProfileHandler {
+	return &ProfileHandler{service: profileService}
+}
+
+func (h *ProfileHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
-	awsConfig, err := config.LoadDefaultConfig(r.Context())
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	profileService := service.NewProfileService(awsConfig)
-	profileData, err := profileService.GetProfile(r.Context())
+	profileData, err := h.service.GetProfile(r.Context())
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
