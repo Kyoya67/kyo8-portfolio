@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import { getProfileOrFallback } from "@/lib/api/profile";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -27,7 +28,9 @@ const THEME_INIT = `
 })();
 `;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const profile = await getProfileOrFallback();
+
   return (
     <html
       lang="en"
@@ -43,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <LocaleProvider>
           <Header />
           <main className="flex-1">{children}</main>
-          <Footer />
+          <Footer profile={profile} />
         </LocaleProvider>
       </body>
     </html>

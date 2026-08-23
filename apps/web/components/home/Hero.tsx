@@ -1,12 +1,12 @@
 "use client";
 
-import { profile } from "@/lib/data/profile";
+import type { Profile } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import PanelFrame from "@/components/ui/PanelFrame";
-import { GitHubIcon, LinkedInIcon, MailIcon, XIcon } from "@/components/icons";
+import { GitHubIcon, LinkedInIcon, XIcon } from "@/components/icons";
 import HexTicker from "./HexTicker";
 
-export default function Hero() {
+export default function Hero({ profile }: { profile: Profile }) {
   const { locale, t } = useLocale();
 
   return (

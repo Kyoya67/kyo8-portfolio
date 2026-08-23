@@ -1,9 +1,9 @@
 "use client";
 
-import { profile } from "@/lib/data/profile";
+import type { Profile } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
-export default function Footer() {
+export default function Footer({ profile }: { profile: Profile }) {
   const { t } = useLocale();
   const year = new Date().getFullYear();
 
