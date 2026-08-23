@@ -1,12 +1,12 @@
 "use client";
 
-import { projects } from "@/lib/data/projects";
+import type { Project } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { PanelFrame } from "@kyo8/ui";
 import { PanelHeading } from "@kyo8/ui";
 import ProjectCard from "@/components/projects/ProjectCard";
 
-export default function ProjectsPreview() {
+export default function ProjectsPreview({ projects }: { projects: Project[] }) {
   const { t } = useLocale();
   const featured = projects
     .filter((project) => project.published && project.featured)

@@ -2,10 +2,10 @@
 
 import { PageHeader } from "@kyo8/ui";
 import ProjectCard from "@/components/projects/ProjectCard";
-import { projects } from "@/lib/data/projects";
+import type { Project } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
-export default function ProjectsContent() {
+export default function ProjectsContent({ projects }: { projects: Project[] }) {
   const { t } = useLocale();
   const published = projects.filter((project) => project.published).sort((a, b) => a.order - b.order);
 

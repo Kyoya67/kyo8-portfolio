@@ -18,6 +18,9 @@ func New(db *dynamodb.Client) http.Handler {
 	skillRepository := repository.NewSkillRepository(db)
 	skillService := service.NewSkillService(skillRepository)
 	skillHandler := handler.NewSkillHandler(skillService)
+	projectRepository := repository.NewProjectRepository(db)
+	projectService := service.NewProjectService(projectRepository)
+	projectHandler := handler.NewProjectHandler(projectService)
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
@@ -30,6 +33,12 @@ func New(db *dynamodb.Client) http.Handler {
 	r.HandleFunc("/admin/profile", profileHandler.UpdateProfile).Methods("POST")
 	r.HandleFunc("/skills", skillHandler.GetSkills).Methods("GET")
 	r.HandleFunc("/admin/skills", skillHandler.UpdateSkills).Methods("POST")
+	r.HandleFunc("/projects", projectHandler.ListPublicProjects).Methods("GET")
+	r.HandleFunc("/admin/projects", projectHandler.ListProjects).Methods("GET")
+	r.HandleFunc("/admin/projects", projectHandler.CreateProject).Methods("POST")
+	r.HandleFunc("/admin/projects/{id}", projectHandler.GetProject).Methods("GET")
+	r.HandleFunc("/admin/projects/{id}", projectHandler.UpdateProject).Methods("PUT")
+	r.HandleFunc("/admin/projects/{id}", projectHandler.DeleteProject).Methods("DELETE")
 
 	return r
 }
