@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { articles } from "@/lib/data/articles";
+import type { Article } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { formatDate } from "@/lib/format";
 import { PanelFrame } from "@kyo8/ui";
 import { PanelHeading } from "@kyo8/ui";
 import { ArrowUpRightIcon } from "@kyo8/ui";
 
-export default function ArticlesPreview() {
+export default function ArticlesPreview({ articles }: { articles: Article[] }) {
   const { locale, t } = useLocale();
   const sorted = [...articles]
     .filter((article) => article.published)

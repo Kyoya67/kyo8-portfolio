@@ -3,19 +3,18 @@
 import { useMemo, useState } from "react";
 import { PageHeader } from "@kyo8/ui";
 import ArticleCard from "@/components/articles/ArticleCard";
-import { articles } from "@/lib/data/articles";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import type { ArticleSource } from "@/types";
+import type { Article, ArticleSource } from "@/types";
 
 type Filter = "all" | ArticleSource;
 
-export default function ArticlesContent() {
+export default function ArticlesContent({ articles }: { articles: Article[] }) {
   const { t } = useLocale();
   const [filter, setFilter] = useState<Filter>("all");
 
   const published = useMemo(
     () => [...articles].filter((article) => article.published).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)),
-    []
+    [articles]
   );
 
   const sourcesPresent = useMemo(

@@ -7,12 +7,14 @@ import CareerPreview from "@/components/home/CareerPreview";
 import { getProfileOrFallback } from "@/lib/api/profile";
 import { getSkillsOrFallback } from "@/lib/api/skills";
 import { getProjectsOrFallback } from "@/lib/api/projects";
+import { getArticlesOrFallback } from "@/lib/api/articles";
 
 export default async function Home() {
-  const [profile, skills, projects] = await Promise.all([
+  const [profile, skills, projects, articles] = await Promise.all([
     getProfileOrFallback(),
     getSkillsOrFallback(),
     getProjectsOrFallback(),
+    getArticlesOrFallback(),
   ]);
 
   return (
@@ -21,7 +23,7 @@ export default async function Home() {
       <AboutPreview profile={profile} />
       <SkillsPreview skills={skills} />
       <ProjectsPreview projects={projects} />
-      <ArticlesPreview />
+      <ArticlesPreview articles={articles} />
       <CareerPreview />
     </>
   );
