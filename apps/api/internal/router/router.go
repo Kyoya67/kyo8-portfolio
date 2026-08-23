@@ -23,12 +23,22 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	projectService := service.NewProjectService(projectRepository)
 	imageUploadService := service.NewImageUploadService(config)
 	projectHandler := handler.NewProjectHandler(projectService, imageUploadService)
+	articleRepository := repository.NewArticleRepository(db)
+	articleService := service.NewArticleService(articleRepository)
+	articleHandler := handler.NewArticleHandler(articleService)
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
 	r.PathPrefix("/").Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	})
+	// mux's default NotFoundHandler/MethodNotAllowedHandler don't go through r.Use,
+	// so an unmatched route would otherwise come back with no CORS headers and the
+	// browser reports it as a CORS failure instead of a 404.
+	r.NotFoundHandler = middleware.CORS(http.HandlerFunc(http.NotFound))
+	r.MethodNotAllowedHandler = middleware.CORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}))
 
 	r.HandleFunc("/health", handler.Health).Methods("GET")
 	r.HandleFunc("/profile", profileHandler.GetProfile).Methods("GET")
@@ -42,6 +52,12 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	r.HandleFunc("/admin/projects/{id}", projectHandler.UpdateProject).Methods("PUT")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.DeleteProject).Methods("DELETE")
 	r.HandleFunc("/admin/projects/{id}/image-upload", projectHandler.CreateImageUploadURL).Methods("POST")
+	r.HandleFunc("/articles", articleHandler.ListPublicArticles).Methods("GET")
+	r.HandleFunc("/admin/articles", articleHandler.ListArticles).Methods("GET")
+	r.HandleFunc("/admin/articles", articleHandler.CreateArticle).Methods("POST")
+	r.HandleFunc("/admin/articles/{id}", articleHandler.GetArticle).Methods("GET")
+	r.HandleFunc("/admin/articles/{id}", articleHandler.UpdateArticle).Methods("PUT")
+	r.HandleFunc("/admin/articles/{id}", articleHandler.DeleteArticle).Methods("DELETE")
 
 	return r
 }
