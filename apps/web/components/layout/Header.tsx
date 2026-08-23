@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import ThemeToggle from "./ThemeToggle";
+import { ThemeToggle } from "@kyo8/ui";
 import LocaleToggle from "./LocaleToggle";
 
 const SECTION_IDS = ["about", "skills", "projects", "articles", "career"] as const;

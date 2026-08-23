@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ThemeToggle } from "@kyo8/ui";
 import { useAuth } from "@/lib/auth/AuthContext";
 
 export default function AdminHeader() {
@@ -12,16 +13,19 @@ export default function AdminHeader() {
         <Link href="/" className="text-sm font-bold text-fg">
           KYO8<span className="text-fg-dim">.</span>ADMIN
         </Link>
-        {status === "authenticated" && (
-          <button
-            type="button"
-            onClick={logout}
-            className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] text-fg-muted uppercase transition-colors hover:text-fg"
-          >
-            <span className="text-fg-dim">›</span>
-            Logout
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {status === "authenticated" && (
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex items-center gap-1.5 text-xs tracking-[0.1em] text-fg-muted uppercase transition-colors hover:text-fg"
+            >
+              <span className="text-fg-dim">›</span>
+              Logout
+            </button>
+          )}
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
