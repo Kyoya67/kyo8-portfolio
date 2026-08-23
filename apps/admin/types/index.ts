@@ -45,6 +45,7 @@ export interface Skill {
   name: string;
   category: SkillCategory;
   order: number;
+  keywords: string[];
 }
 
 export interface Career {
