@@ -20,7 +20,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:    ":8080",
-		Handler: router.New(db),
+		Handler: router.New(db, awsConfig),
 	}
 
 	log.Println("API server listening on :8080")

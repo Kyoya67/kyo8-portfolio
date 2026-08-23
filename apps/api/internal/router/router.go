@@ -7,11 +7,12 @@ import (
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/middleware"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/repository"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/gorilla/mux"
 )
 
-func New(db *dynamodb.Client) http.Handler {
+func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	profileRepository := repository.NewProfileRepository(db)
 	profileService := service.NewProfileService(profileRepository)
 	profileHandler := handler.NewProfileHandler(profileService)
@@ -20,7 +21,8 @@ func New(db *dynamodb.Client) http.Handler {
 	skillHandler := handler.NewSkillHandler(skillService)
 	projectRepository := repository.NewProjectRepository(db)
 	projectService := service.NewProjectService(projectRepository)
-	projectHandler := handler.NewProjectHandler(projectService)
+	imageUploadService := service.NewImageUploadService(config)
+	projectHandler := handler.NewProjectHandler(projectService, imageUploadService)
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
@@ -39,6 +41,7 @@ func New(db *dynamodb.Client) http.Handler {
 	r.HandleFunc("/admin/projects/{id}", projectHandler.GetProject).Methods("GET")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.UpdateProject).Methods("PUT")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.DeleteProject).Methods("DELETE")
+	r.HandleFunc("/admin/projects/{id}/image-upload", projectHandler.CreateImageUploadURL).Methods("POST")
 
 	return r
 }

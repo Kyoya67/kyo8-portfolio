@@ -11,11 +11,12 @@ import (
 )
 
 type ProjectHandler struct {
-	service *service.ProjectService
+	service      *service.ProjectService
+	imageService *service.ImageUploadService
 }
 
-func NewProjectHandler(projectService *service.ProjectService) *ProjectHandler {
-	return &ProjectHandler{service: projectService}
+func NewProjectHandler(projectService *service.ProjectService, imageService *service.ImageUploadService) *ProjectHandler {
+	return &ProjectHandler{service: projectService, imageService: imageService}
 }
 
 func (h *ProjectHandler) ListPublicProjects(w http.ResponseWriter, r *http.Request) {
@@ -85,6 +86,21 @@ func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ProjectHandler) CreateImageUploadURL(w http.ResponseWriter, r *http.Request) {
+	var input service.ImageUpload
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	result, err := h.imageService.CreateUploadURL(r.Context(), mux.Vars(r)["id"], input)
+	if err != nil {
+		log.Printf("project image upload URL failed: error=%v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, result)
 }
 
 func writeJSON(w http.ResponseWriter, value any) {

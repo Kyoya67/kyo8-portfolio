@@ -11,15 +11,16 @@ import (
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/router"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-func newHandler(db *dynamodb.Client) func(
+func newHandler(db *dynamodb.Client, awsConfig aws.Config) func(
 	ctx context.Context,
 	request events.APIGatewayProxyRequest,
 ) (events.APIGatewayProxyResponse, error) {
-	apiRouter := router.New(db)
+	apiRouter := router.New(db, awsConfig)
 
 	return func(
 		ctx context.Context,
@@ -76,5 +77,5 @@ func main() {
 
 	db := dynamodb.NewFromConfig(awsConfig)
 
-	lambda.Start(newHandler(db))
+	lambda.Start(newHandler(db, awsConfig))
 }

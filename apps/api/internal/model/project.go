@@ -9,6 +9,7 @@ type Project struct {
 	Graphic       string        `json:"graphic" dynamodbav:"graphic"`
 	RepositoryURL string        `json:"repositoryUrl" dynamodbav:"repositoryUrl"`
 	WebsiteURL    *string       `json:"websiteUrl" dynamodbav:"websiteUrl"`
+	ImageURL      *string       `json:"imageUrl" dynamodbav:"imageUrl"`
 	Technologies  []string      `json:"technologies" dynamodbav:"technologies"`
 	Featured      bool          `json:"featured" dynamodbav:"featured"`
 	Published     bool          `json:"published" dynamodbav:"published"`
