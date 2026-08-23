@@ -59,7 +59,11 @@ export async function apiFetch(
   }
 
   if (!res.ok) {
-    throw new ApiError(`Request to ${path} failed with status ${res.status}`, res.status);
+    const body = await res.text().catch(() => "");
+    throw new ApiError(
+      `Request to ${path} failed with status ${res.status}${body ? `: ${body}` : ""}`,
+      res.status
+    );
   }
 
   return res;

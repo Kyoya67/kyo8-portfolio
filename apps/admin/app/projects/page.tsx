@@ -2,7 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Project } from "@/types";
-import { createProject, deleteProject, listProjects, updateProject } from "@/lib/api/projects";
+import {
+  createProject,
+  createProjectImageUpload,
+  deleteProject,
+  listProjects,
+  updateProject,
+  uploadProjectImageFile,
+} from "@/lib/api/projects";
 import { PanelFrame, PanelHeading } from "@kyo8/ui";
 
 const GRAPHICS: Project["graphic"][] = ["analytics", "network", "terminal", "chain", "grid", "stream"];
@@ -21,6 +28,7 @@ function newProject(): Project {
     graphic: "grid",
     repositoryUrl: "",
     websiteUrl: null,
+    imageUrl: null,
     technologies: [],
     featured: false,
     published: false,
@@ -36,6 +44,15 @@ function parseList(value: string): string[] {
     .filter(Boolean);
 }
 
+function fileExtension(file: File): string {
+  const dot = file.name.lastIndexOf(".");
+  if (dot >= 0 && dot < file.name.length - 1) {
+    return file.name.slice(dot).toLowerCase();
+  }
+  const subtype = file.type.split("/")[1];
+  return subtype ? `.${subtype}` : "";
+}
+
 interface RowStatus {
   saving: boolean;
   error: string | null;
@@ -44,12 +61,20 @@ interface RowStatus {
 
 const IDLE_STATUS: RowStatus = { saving: false, error: null, saved: false };
 
+interface ImageUploadState {
+  uploading: boolean;
+  error: string | null;
+}
+
+const IDLE_IMAGE_STATUS: ImageUploadState = { uploading: false, error: null };
+
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[] | null>(null);
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [status, setStatus] = useState<Record<string, RowStatus>>({});
+  const [imageStatus, setImageStatus] = useState<Record<string, ImageUploadState>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -77,6 +102,32 @@ export default function ProjectsPage() {
 
   function setRowStatus(id: string, patch: Partial<RowStatus>) {
     setStatus((prev) => ({ ...prev, [id]: { ...IDLE_STATUS, ...prev[id], ...patch } }));
+  }
+
+  function getImageStatus(id: string): ImageUploadState {
+    return imageStatus[id] ?? IDLE_IMAGE_STATUS;
+  }
+
+  function setImageRowStatus(id: string, patch: Partial<ImageUploadState>) {
+    setImageStatus((prev) => ({ ...prev, [id]: { ...IDLE_IMAGE_STATUS, ...prev[id], ...patch } }));
+  }
+
+  async function handleImageFileSelect(project: Project, file: File) {
+    setImageRowStatus(project.id, { uploading: true, error: null });
+    try {
+      const { uploadUrl, imageUrl } = await createProjectImageUpload(project.id, {
+        contentType: file.type || "application/octet-stream",
+        extension: fileExtension(file),
+      });
+      await uploadProjectImageFile(uploadUrl, file);
+      updateProjectField(project.id, { imageUrl });
+      setImageRowStatus(project.id, { uploading: false, error: null });
+    } catch (err) {
+      setImageRowStatus(project.id, {
+        uploading: false,
+        error: err instanceof Error ? err.message : "Failed to upload image",
+      });
+    }
   }
 
   function updateProjectField(id: string, patch: Partial<Project>) {
@@ -266,6 +317,56 @@ export default function ProjectsPage() {
                     onChange={(v) => updateProjectField(project.id, { websiteUrl: v || null })}
                   />
                 </div>
+
+                <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field
+                    label="Image URL"
+                    value={project.imageUrl ?? ""}
+                    onChange={(v) => updateProjectField(project.id, { imageUrl: v || null })}
+                  />
+                  <label className="flex flex-col gap-1.5">
+                    <span className="text-[11px] tracking-[0.1em] text-fg-muted uppercase">
+                      Upload image
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={getImageStatus(project.id).uploading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        e.target.value = "";
+                        if (file) handleImageFileSelect(project, file);
+                      }}
+                      className="text-sm text-fg-muted file:mr-3 file:border file:border-border-strong file:bg-transparent file:px-3 file:py-1.5 file:text-[11px] file:tracking-[0.1em] file:text-fg-muted file:uppercase disabled:opacity-50"
+                    />
+                  </label>
+                </div>
+
+                {(getImageStatus(project.id).uploading || getImageStatus(project.id).error) && (
+                  <div className="mt-1.5 text-xs">
+                    {getImageStatus(project.id).uploading && (
+                      <span className="tracking-[0.1em] text-fg-muted uppercase">
+                        Uploading<span className="animate-blink">_</span>
+                      </span>
+                    )}
+                    {getImageStatus(project.id).error && (
+                      <span className="text-red-400">{getImageStatus(project.id).error}</span>
+                    )}
+                  </div>
+                )}
+
+                {project.imageUrl && (
+                  <div className="mt-3 flex flex-col gap-1.5">
+                    <span className="text-[11px] tracking-[0.1em] text-fg-muted uppercase">Preview</span>
+                    {/* Arbitrary external/S3 URLs, so next/image's domain allowlist doesn't apply. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={project.imageUrl}
+                      alt=""
+                      className="h-32 w-auto border border-border object-cover"
+                    />
+                  </div>
+                )}
 
                 <Field
                   label="Technologies (comma-separated)"
