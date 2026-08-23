@@ -22,6 +22,9 @@ export default function Home() {
             <BracketButton href="/articles" solid>
               Articles
             </BracketButton>
+            <BracketButton href="/careers" solid>
+              Career
+            </BracketButton>
           </div>
         </div>
       </PanelFrame>
