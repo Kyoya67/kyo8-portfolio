@@ -20,6 +20,19 @@ const CATEGORY_ICONS: Record<SkillCategory, React.ComponentType<React.SVGProps<S
   blockchain: LinkIcon,
 };
 
+function CapabilityTags({ capabilities }: { capabilities: string[] }) {
+  if (capabilities.length === 0) return null;
+  return (
+    <div className="mt-1.5 flex flex-wrap gap-1.5">
+      {capabilities.map((capability) => (
+        <span key={capability} className="border border-border px-1.5 py-0.5 text-[10px] text-fg-dim">
+          {capability}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function SkillsGrid({ skills }: { skills: Skill[] }) {
   const { t } = useLocale();
 
@@ -45,17 +58,16 @@ export default function SkillsGrid({ skills }: { skills: Skill[] }) {
                     <span className="text-fg-dim">•</span>
                     {skill.name}
                   </p>
-                  {skill.keywords.length > 0 && (
-                    <div className="mt-1.5 ml-3.5 flex flex-wrap gap-1.5">
-                      {skill.keywords.map((keyword) => (
-                        <span
-                          key={keyword}
-                          className="border border-border px-1.5 py-0.5 text-[10px] text-fg-dim"
-                        >
-                          {keyword}
-                        </span>
+                  <CapabilityTags capabilities={skill.capabilities} />
+                  {skill.children.length > 0 && (
+                    <ul className="mt-1.5 ml-3.5 flex flex-col gap-1.5 border-l border-border pl-3">
+                      {skill.children.map((child) => (
+                        <li key={child.id}>
+                          <p className="text-xs text-fg-dim">{child.name}</p>
+                          <CapabilityTags capabilities={child.capabilities} />
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   )}
                 </li>
               ))}
