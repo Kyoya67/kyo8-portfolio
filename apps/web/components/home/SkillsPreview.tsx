@@ -12,7 +12,7 @@ export default function SkillsPreview({ skills }: { skills: Skill[] }) {
   return (
     <div id="skills" className="scroll-anchor mx-auto max-w-6xl px-4 pt-8 sm:px-6">
       <PanelFrame>
-        <PanelHeading number="02" title={t.skills.title} action={{ href: "/skills", label: t.skills.allLink }} />
+        <PanelHeading number="02" title={t.skills.title} />
         <div className="p-6 sm:p-10">
           <SkillsGrid skills={skills} />
         </div>

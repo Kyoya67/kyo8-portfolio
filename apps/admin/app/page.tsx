@@ -9,9 +9,12 @@ export default function Home() {
           <p className="text-xs tracking-[0.1em] text-fg-muted uppercase">
             KYO8.dev content management
           </p>
-          <div>
+          <div className="flex gap-3">
             <BracketButton href="/profile" solid>
               Profile
+            </BracketButton>
+            <BracketButton href="/skills" solid>
+              Skills
             </BracketButton>
           </div>
         </div>
