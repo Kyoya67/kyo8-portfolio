@@ -7,7 +7,7 @@ export async function getProfile(): Promise<Profile> {
 }
 
 export async function updateProfile(profile: Profile): Promise<void> {
-  await apiFetch("/profile", {
+  await apiFetch("/admin/profile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(profile),

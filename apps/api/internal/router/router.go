@@ -46,7 +46,7 @@ func New(db *dynamodb.Client) http.Handler {
 	r := mux.NewRouter()
 	r.HandleFunc("/health", handler.Health).Methods("GET")
 	r.HandleFunc("/profile", profileHandler.GetProfile).Methods("GET")
-	r.HandleFunc("/profile", profileHandler.UpdateProfile).Methods("POST")
+	r.HandleFunc("/admin/profile", profileHandler.UpdateProfile).Methods("POST")
 
 	return withCORS(r)
 }
