@@ -44,7 +44,7 @@ func (r *SkillRepository) GetSkills(ctx context.Context) ([]model.Skill, error) 
 		return nil, fmt.Errorf("get skills from DynamoDB: %w", err)
 	}
 	if len(output.Item) == 0 {
-		return nil, fmt.Errorf("skills not found")
+		return []model.Skill{}, nil
 	}
 
 	var item skillItem
