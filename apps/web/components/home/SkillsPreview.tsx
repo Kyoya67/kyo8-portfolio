@@ -2,8 +2,8 @@
 
 import { skills } from "@/lib/data/skills";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "@/components/ui/PanelFrame";
-import PanelHeading from "@/components/ui/PanelHeading";
+import { PanelFrame } from "@kyo8/ui";
+import { PanelHeading } from "@kyo8/ui";
 import SkillsGrid from "@/components/skills/SkillsGrid";
 
 export default function SkillsPreview() {

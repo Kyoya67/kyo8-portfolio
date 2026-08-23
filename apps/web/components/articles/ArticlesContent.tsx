@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import PageHeader from "@/components/ui/PageHeader";
+import { PageHeader } from "@kyo8/ui";
 import ArticleCard from "@/components/articles/ArticleCard";
 import { articles } from "@/lib/data/articles";
 import { useLocale } from "@/lib/i18n/LocaleProvider";

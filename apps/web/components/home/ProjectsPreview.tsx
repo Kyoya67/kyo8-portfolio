@@ -2,8 +2,8 @@
 
 import { projects } from "@/lib/data/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "@/components/ui/PanelFrame";
-import PanelHeading from "@/components/ui/PanelHeading";
+import { PanelFrame } from "@kyo8/ui";
+import { PanelHeading } from "@kyo8/ui";
 import ProjectCard from "@/components/projects/ProjectCard";
 
 export default function ProjectsPreview() {

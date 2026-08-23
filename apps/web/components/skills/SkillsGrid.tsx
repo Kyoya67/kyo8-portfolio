@@ -2,7 +2,7 @@
 
 import type { Skill, SkillCategory } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import { CloudIcon, CodeIcon, DatabaseIcon, LinkIcon, ServerIcon } from "@/components/icons";
+import { CloudIcon, CodeIcon, DatabaseIcon, LinkIcon, ServerIcon } from "@kyo8/ui";
 
 const CATEGORY_ORDER: SkillCategory[] = [
   "frontend",

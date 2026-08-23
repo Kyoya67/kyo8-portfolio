@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Article } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { formatDate } from "@/lib/format";
-import { ArrowUpRightIcon } from "@/components/icons";
+import { ArrowUpRightIcon } from "@kyo8/ui";
 
 export default function ArticleCard({ article }: { article: Article }) {
   const { locale } = useLocale();

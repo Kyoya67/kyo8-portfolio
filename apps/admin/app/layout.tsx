@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import AuthGate from "@/components/AuthGate";
+import AdminHeader from "@/components/AdminHeader";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -21,13 +17,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+    <html lang="en" data-theme="dark" className={`${geistMono.variable} h-full`}>
+      <body className="min-h-full flex flex-col bg-bg text-fg antialiased selection:bg-fg selection:text-bg">
+        <div className="pointer-events-none fixed inset-0 z-50 noise-overlay" />
         <AuthProvider>
-          <AuthGate>{children}</AuthGate>
+          <AdminHeader />
+          <AuthGate>
+            <main className="flex-1">{children}</main>
+          </AuthGate>
         </AuthProvider>
       </body>
     </html>

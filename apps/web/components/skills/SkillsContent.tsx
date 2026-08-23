@@ -1,6 +1,6 @@
 "use client";
 
-import PageHeader from "@/components/ui/PageHeader";
+import { PageHeader } from "@kyo8/ui";
 import SkillsGrid from "@/components/skills/SkillsGrid";
 import { skills } from "@/lib/data/skills";
 import { useLocale } from "@/lib/i18n/LocaleProvider";

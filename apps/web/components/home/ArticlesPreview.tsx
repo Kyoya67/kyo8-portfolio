@@ -4,9 +4,9 @@ import Link from "next/link";
 import { articles } from "@/lib/data/articles";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { formatDate } from "@/lib/format";
-import PanelFrame from "@/components/ui/PanelFrame";
-import PanelHeading from "@/components/ui/PanelHeading";
-import { ArrowUpRightIcon } from "@/components/icons";
+import { PanelFrame } from "@kyo8/ui";
+import { PanelHeading } from "@kyo8/ui";
+import { ArrowUpRightIcon } from "@kyo8/ui";
 
 export default function ArticlesPreview() {
   const { locale, t } = useLocale();

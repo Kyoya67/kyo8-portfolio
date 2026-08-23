@@ -1,6 +1,6 @@
 "use client";
 
-import PageHeader from "@/components/ui/PageHeader";
+import { PageHeader } from "@kyo8/ui";
 import ProjectCard from "@/components/projects/ProjectCard";
 import { projects } from "@/lib/data/projects";
 import { useLocale } from "@/lib/i18n/LocaleProvider";

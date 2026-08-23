@@ -1,24 +1,21 @@
-"use client";
-
-import Link from "next/link";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { PanelFrame, PanelHeading, BracketButton } from "@kyo8/ui";
 
 export default function Home() {
-  const { logout } = useAuth();
-
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4">
-      <p className="text-sm text-zinc-500">KYO8 Admin</p>
-      <Link href="/profile" className="text-sm underline underline-offset-4">
-        Profile
-      </Link>
-      <button
-        type="button"
-        onClick={logout}
-        className="text-sm text-zinc-500 underline underline-offset-4"
-      >
-        Logout
-      </button>
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <PanelFrame className="animate-fade-up">
+        <PanelHeading number="01" title="Dashboard" />
+        <div className="flex flex-col gap-6 px-6 py-10">
+          <p className="text-xs tracking-[0.1em] text-fg-muted uppercase">
+            KYO8.dev content management
+          </p>
+          <div>
+            <BracketButton href="/profile" solid>
+              Profile
+            </BracketButton>
+          </div>
+        </div>
+      </PanelFrame>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { MoonIcon, SunIcon } from "@/components/icons";
+import { MoonIcon, SunIcon } from "@kyo8/ui";
 
 export default function ThemeToggle() {
   function toggle() {

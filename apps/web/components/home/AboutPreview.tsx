@@ -3,8 +3,8 @@
 import Image from "next/image";
 import type { Profile } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "@/components/ui/PanelFrame";
-import PanelHeading from "@/components/ui/PanelHeading";
+import { PanelFrame } from "@kyo8/ui";
+import { PanelHeading } from "@kyo8/ui";
 import TerminalPanel from "@/components/ui/TerminalPanel";
 
 export default function AboutPreview({ profile }: { profile: Profile }) {

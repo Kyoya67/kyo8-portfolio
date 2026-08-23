@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { Project } from "@/types";
 import ProjectGraphic from "@/components/projects/ProjectGraphic";
-import { ArrowUpRightIcon, GitHubIcon } from "@/components/icons";
+import { ArrowUpRightIcon, GitHubIcon } from "@kyo8/ui";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export default function ProjectDetailContent({ project }: { project: Project }) {

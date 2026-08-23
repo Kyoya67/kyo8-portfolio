@@ -2,8 +2,8 @@
 
 import type { Profile } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "@/components/ui/PanelFrame";
-import { GitHubIcon, LinkedInIcon, XIcon } from "@/components/icons";
+import { PanelFrame } from "@kyo8/ui";
+import { GitHubIcon, LinkedInIcon, XIcon } from "@kyo8/ui";
 import HexTicker from "./HexTicker";
 
 export default function Hero({ profile }: { profile: Profile }) {

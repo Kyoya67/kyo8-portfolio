@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Profile } from "@/types";
 import { getProfile, updateProfile } from "@/lib/api/profile";
+import { PanelFrame, PanelHeading } from "@kyo8/ui";
 
 interface FormState {
   name: string;
@@ -105,82 +106,104 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="text-sm text-zinc-500">Loading profile…</p>
-      </main>
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+        <PanelFrame className="animate-fade-up">
+          <PanelHeading number="02" title="Profile" />
+          <div className="px-6 py-14 text-center">
+            <p className="text-xs tracking-[0.15em] text-fg-dim uppercase">
+              Loading profile<span className="animate-blink">_</span>
+            </p>
+          </div>
+        </PanelFrame>
+      </div>
     );
   }
 
   if (loadError) {
     return (
-      <main className="mx-auto max-w-2xl px-6 py-16">
-        <p className="mb-4 text-sm text-red-600">{loadError}</p>
-        <button
-          type="button"
-          onClick={load}
-          className="rounded border border-zinc-300 px-4 py-2 text-sm hover:bg-zinc-50"
-        >
-          Retry
-        </button>
-      </main>
+      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+        <PanelFrame className="animate-fade-up">
+          <PanelHeading number="02" title="Profile" />
+          <div className="flex flex-col items-center gap-4 px-6 py-14 text-center">
+            <p className="text-xs text-red-400">{loadError}</p>
+            <button
+              type="button"
+              onClick={load}
+              className="group inline-flex items-center gap-2 border border-border-strong px-4 py-2.5 text-[11px] font-medium tracking-[0.12em] text-fg-muted uppercase transition-colors hover:border-fg hover:text-fg"
+            >
+              <span className="text-fg-dim group-hover:text-current">›</span>
+              Retry
+            </button>
+          </div>
+        </PanelFrame>
+      </div>
     );
   }
 
   if (!form) return null;
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-16">
-      <h1 className="mb-8 text-xl font-semibold">Profile</h1>
+    <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
+      <PanelFrame className="animate-fade-up">
+        <PanelHeading number="02" title="Profile" />
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <Field label="Name" value={form.name} onChange={(v) => updateField("name", v)} />
-        <Field label="Handle" value={form.handle} onChange={(v) => updateField("handle", v)} />
-        <Field
-          label="Headline (ja)"
-          value={form.headlineJa}
-          onChange={(v) => updateField("headlineJa", v)}
-        />
-        <TextareaField label="Bio (ja)" value={form.bioJa} onChange={(v) => updateField("bioJa", v)} />
-        <Field
-          label="Location (ja)"
-          value={form.locationJa}
-          onChange={(v) => updateField("locationJa", v)}
-        />
-        <Field
-          label="Focus (comma-separated)"
-          value={form.focus}
-          onChange={(v) => updateField("focus", v)}
-        />
-        <Field
-          label="GitHub URL"
-          value={form.githubUrl}
-          onChange={(v) => updateField("githubUrl", v)}
-        />
-        <Field
-          label="LinkedIn URL"
-          value={form.linkedinUrl}
-          onChange={(v) => updateField("linkedinUrl", v)}
-        />
-        <Field label="X URL" value={form.xUrl} onChange={(v) => updateField("xUrl", v)} />
-        <Field label="Email" value={form.email} onChange={(v) => updateField("email", v)} />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6 px-6 py-10">
+          <Field label="Name" value={form.name} onChange={(v) => updateField("name", v)} />
+          <Field label="Handle" value={form.handle} onChange={(v) => updateField("handle", v)} />
+          <Field
+            label="Headline (ja)"
+            value={form.headlineJa}
+            onChange={(v) => updateField("headlineJa", v)}
+          />
+          <TextareaField
+            label="Bio (ja)"
+            value={form.bioJa}
+            onChange={(v) => updateField("bioJa", v)}
+          />
+          <Field
+            label="Location (ja)"
+            value={form.locationJa}
+            onChange={(v) => updateField("locationJa", v)}
+          />
+          <Field
+            label="Focus (comma-separated)"
+            value={form.focus}
+            onChange={(v) => updateField("focus", v)}
+          />
+          <Field
+            label="GitHub URL"
+            value={form.githubUrl}
+            onChange={(v) => updateField("githubUrl", v)}
+          />
+          <Field
+            label="LinkedIn URL"
+            value={form.linkedinUrl}
+            onChange={(v) => updateField("linkedinUrl", v)}
+          />
+          <Field label="X URL" value={form.xUrl} onChange={(v) => updateField("xUrl", v)} />
+          <Field label="Email" value={form.email} onChange={(v) => updateField("email", v)} />
 
-        <p className="text-xs text-zinc-500">
-          英語表記（en）はフロントエンド側の固定値です。ここでは日本語（ja）のみ編集できます。
-        </p>
+          <p className="border-t border-border pt-6 text-[11px] tracking-[0.05em] text-fg-dim">
+            › 英語表記（en）はフロントエンド側の固定値です。ここでは日本語（ja）のみ編集できます。
+          </p>
 
-        <div className="flex items-center gap-4">
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-          >
-            {saving ? "Saving…" : "Save"}
-          </button>
-          {saved && <span className="text-sm text-green-600">Saved</span>}
-          {saveError && <span className="text-sm text-red-600">{saveError}</span>}
-        </div>
-      </form>
-    </main>
+          <div className="flex items-center gap-4">
+            <button
+              type="submit"
+              disabled={saving}
+              className="group inline-flex items-center gap-2 border border-fg bg-fg px-5 py-2.5 text-[11px] font-medium tracking-[0.12em] text-bg uppercase transition-colors hover:bg-transparent hover:text-fg disabled:opacity-50"
+            >
+              <span className="text-bg group-hover:text-fg-dim">›</span>
+              {saving ? "Saving…" : "Save"}
+            </button>
+            {saved && (
+              <span className="text-xs tracking-[0.1em] text-fg-muted uppercase">Saved</span>
+            )}
+            {saveError && <span className="text-xs text-red-400">{saveError}</span>}
+          </div>
+        </form>
+      </PanelFrame>
+    </div>
   );
 }
 
@@ -195,12 +218,12 @@ function Field({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-zinc-600">{label}</span>
+      <span className="text-[11px] tracking-[0.1em] text-fg-muted uppercase">{label}</span>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+        className="border border-border bg-bg-inset px-3 py-2 text-sm text-fg outline-none focus:border-fg"
       />
     </label>
   );
@@ -217,12 +240,12 @@ function TextareaField({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-xs font-medium text-zinc-600">{label}</span>
+      <span className="text-[11px] tracking-[0.1em] text-fg-muted uppercase">{label}</span>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={5}
-        className="rounded border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-500"
+        className="border border-border bg-bg-inset px-3 py-2 text-sm text-fg outline-none focus:border-fg"
       />
     </label>
   );

@@ -20,8 +20,10 @@ export default function AuthGate({ children }: { children: ReactNode }) {
 
   if (status === "loading") {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-zinc-500">Loading…</p>
+      <div className="flex flex-1 items-center justify-center px-6 py-24">
+        <p className="text-xs tracking-[0.15em] text-fg-dim uppercase">
+          Loading<span className="animate-blink">_</span>
+        </p>
       </div>
     );
   }

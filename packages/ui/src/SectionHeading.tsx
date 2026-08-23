@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRightIcon } from "@/components/icons";
+import { ArrowRightIcon } from "./icons";
 
 export default function SectionHeading({
   eyebrow,

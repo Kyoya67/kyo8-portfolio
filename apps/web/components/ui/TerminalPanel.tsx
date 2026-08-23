@@ -2,7 +2,7 @@
 
 import type { Profile } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "./PanelFrame";
+import { PanelFrame } from "@kyo8/ui";
 
 export default function TerminalPanel({ profile, showStatus = false }: { profile: Profile; showStatus?: boolean }) {
   const { locale, t } = useLocale();

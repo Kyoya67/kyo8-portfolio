@@ -3,6 +3,7 @@
   "private": true,
   "workspaces": [
     "apps/web",
-    "apps/admin"
+    "apps/admin",
+    "packages/ui"
   ]
 }
