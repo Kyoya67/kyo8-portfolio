@@ -26,6 +26,9 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	articleRepository := repository.NewArticleRepository(db)
 	articleService := service.NewArticleService(articleRepository)
 	articleHandler := handler.NewArticleHandler(articleService)
+	careerRepository := repository.NewCareerRepository(db)
+	careerService := service.NewCareerService(careerRepository)
+	careerHandler := handler.NewCareerHandler(careerService)
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
@@ -58,6 +61,11 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	r.HandleFunc("/admin/articles/{id}", articleHandler.GetArticle).Methods("GET")
 	r.HandleFunc("/admin/articles/{id}", articleHandler.UpdateArticle).Methods("PUT")
 	r.HandleFunc("/admin/articles/{id}", articleHandler.DeleteArticle).Methods("DELETE")
+	r.HandleFunc("/careers", careerHandler.ListCareers).Methods("GET")
+	r.HandleFunc("/admin/careers", careerHandler.ListCareers).Methods("GET")
+	r.HandleFunc("/admin/careers", careerHandler.CreateCareer).Methods("POST")
+	r.HandleFunc("/admin/careers/{id}", careerHandler.UpdateCareer).Methods("PUT")
+	r.HandleFunc("/admin/careers/{id}", careerHandler.DeleteCareer).Methods("DELETE")
 
 	return r
 }
