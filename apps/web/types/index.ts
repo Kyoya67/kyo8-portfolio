@@ -33,6 +33,7 @@ export interface Project {
   graphic: "analytics" | "network" | "terminal" | "chain" | "grid" | "stream";
   repositoryUrl: string;
   websiteUrl?: string | null;
+  imageUrl?: string | null;
   technologies: string[];
   featured: boolean;
   published: boolean;
