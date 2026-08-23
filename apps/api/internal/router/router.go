@@ -18,6 +18,9 @@ func New(db *dynamodb.Client) http.Handler {
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
+	r.PathPrefix("/").Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	})
 
 	r.HandleFunc("/health", handler.Health).Methods("GET")
 	r.HandleFunc("/profile", profileHandler.GetProfile).Methods("GET")
