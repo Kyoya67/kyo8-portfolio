@@ -72,6 +72,7 @@ jobs:
           aws lambda update-function-code \
             --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
             --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
+            --architectures arm64 \
             --region "${AWS_REGION}"
 
       - name: Wait for Lambda update
