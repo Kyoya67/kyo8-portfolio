@@ -28,7 +28,8 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 
 	articleRepository := repository.NewArticleRepository(db)
 	articleService := service.NewArticleService(articleRepository)
-	articleHandler := handler.NewArticleHandler(articleService)
+	zennService := service.NewZennService(articleRepository)
+	articleHandler := handler.NewArticleHandler(articleService, zennService)
 
 	careerRepository := repository.NewCareerRepository(db)
 	careerService := service.NewCareerService(careerRepository)
@@ -65,6 +66,7 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	r.HandleFunc("/articles", articleHandler.ListArticles).Methods("GET")
 	r.HandleFunc("/articles/{id}", articleHandler.GetArticle).Methods("GET")
 	r.HandleFunc("/admin/articles", articleHandler.CreateArticle).Methods("POST")
+	r.HandleFunc("/admin/articles/sync-zenn", articleHandler.SyncZennArticles).Methods("POST")
 	r.HandleFunc("/admin/articles/{id}", articleHandler.UpdateArticle).Methods("PUT")
 	r.HandleFunc("/admin/articles/{id}", articleHandler.DeleteArticle).Methods("DELETE")
 

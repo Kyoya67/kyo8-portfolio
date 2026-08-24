@@ -11,11 +11,12 @@ import (
 )
 
 type ArticleHandler struct {
-	service *service.ArticleService
+	service     *service.ArticleService
+	zennService *service.ZennService
 }
 
-func NewArticleHandler(articleService *service.ArticleService) *ArticleHandler {
-	return &ArticleHandler{service: articleService}
+func NewArticleHandler(articleService *service.ArticleService, zennService *service.ZennService) *ArticleHandler {
+	return &ArticleHandler{service: articleService, zennService: zennService}
 }
 
 func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
@@ -78,4 +79,14 @@ func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ArticleHandler) SyncZennArticles(w http.ResponseWriter, r *http.Request) {
+	count, err := h.zennService.SyncArticles(r.Context())
+	if err != nil {
+		log.Printf("Zenn article sync failed: error=%v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, map[string]int{"synced": count})
 }
