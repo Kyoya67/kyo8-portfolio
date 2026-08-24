@@ -13,7 +13,7 @@ export default function CareerTimeline({ careers }: { careers: Career[] }) {
       <div className="absolute top-2 bottom-2 left-[5px] w-px bg-border" />
       <ol className="flex flex-col gap-14">
         {sorted.map((career) => {
-          const { year, range } = formatCareerRange(career.startDate, career.endDate, locale, t.career.now);
+          const dateRange = formatCareerRange(career.startDate, career.endDate, t.career.now);
           return (
             <li key={career.id} className="relative pl-14">
               <span className="absolute top-1.5 left-0 h-[11px] w-[11px] rounded-full border border-fg bg-bg" />
@@ -21,8 +21,7 @@ export default function CareerTimeline({ careers }: { careers: Career[] }) {
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                 <div className="flex gap-8">
                   <div className="w-20 shrink-0">
-                    <p className="text-lg font-bold tracking-tight">{year}</p>
-                    <p className="text-[11px] text-fg-dim">{range}</p>
+                    <p className="text-lg font-bold tracking-tight">{dateRange}</p>
                   </div>
                   <div>
                     <p className="mb-1 text-[10px] tracking-[0.2em] text-fg-dim uppercase">
