@@ -27,7 +27,7 @@ export default function Hero({ profile }: { profile: Profile }) {
 
             <div className="mt-8">
               
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
           <a
             href={profile.githubUrl}
             target="_blank"
