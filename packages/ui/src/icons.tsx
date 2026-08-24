@@ -116,6 +116,16 @@ export function LinkIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+export function LockIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+      <rect x="4.5" y="11" width="15" height="10" rx="1.5" />
+      <path d="M7.5 11V7.5a4.5 4.5 0 0 1 9 0V11" strokeLinecap="round" />
+      <circle cx="12" cy="16" r="1.2" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function ToolIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>

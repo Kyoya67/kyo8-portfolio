@@ -5,7 +5,14 @@ import type { Skill, SkillCategory, SkillChild } from "@/types";
 import { getSkills, updateSkills } from "@/lib/api/skills";
 import { PanelFrame, PanelHeading } from "@kyo8/ui";
 
-const CATEGORIES: SkillCategory[] = ["frontend", "backend", "infrastructure", "database", "blockchain"];
+const CATEGORIES: SkillCategory[] = [
+  "frontend",
+  "backend",
+  "infrastructure",
+  "database",
+  "authentication",
+  "blockchain",
+];
 
 function newId(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;

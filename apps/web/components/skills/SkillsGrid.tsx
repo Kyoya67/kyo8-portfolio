@@ -2,13 +2,14 @@
 
 import type { Skill, SkillCategory } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import { CloudIcon, CodeIcon, DatabaseIcon, LinkIcon, ServerIcon } from "@kyo8/ui";
+import { CloudIcon, CodeIcon, DatabaseIcon, LinkIcon, LockIcon, ServerIcon } from "@kyo8/ui";
 
 const CATEGORY_ORDER: SkillCategory[] = [
   "frontend",
   "backend",
   "infrastructure",
   "database",
+  "authentication",
   "blockchain",
 ];
 
@@ -17,6 +18,7 @@ const CATEGORY_ICONS: Record<SkillCategory, React.ComponentType<React.SVGProps<S
   backend: ServerIcon,
   infrastructure: CloudIcon,
   database: DatabaseIcon,
+  authentication: LockIcon,
   blockchain: LinkIcon,
 };
 

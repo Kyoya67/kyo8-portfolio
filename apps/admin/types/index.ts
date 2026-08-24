@@ -7,6 +7,7 @@ export type SkillCategory =
   | "backend"
   | "infrastructure"
   | "database"
+  | "authentication"
   | "blockchain";
 
 export type CareerType = "work" | "internship" | "education";
