@@ -32,7 +32,9 @@ type zennItem struct {
 }
 
 type ZennArticleRepository interface {
+	ListArticles(context.Context) ([]model.Article, error)
 	SaveArticle(context.Context, model.Article) error
+	DeleteArticle(context.Context, string) error
 }
 
 type ZennService struct {
@@ -68,7 +70,11 @@ func (s *ZennService) SyncArticles(ctx context.Context) (int, error) {
 	if err := xml.NewDecoder(res.Body).Decode(&feed); err != nil {
 		return 0, fmt.Errorf("decode Zenn RSS: %w", err)
 	}
+	if len(feed.Items) == 0 {
+		return 0, fmt.Errorf("Zenn RSS contains no articles; skip deletion to protect existing data")
+	}
 
+	feedArticleIDs := make(map[string]struct{}, len(feed.Items))
 	for order, item := range feed.Items {
 		article, err := convertZennItem(item, order+1)
 		if err != nil {
@@ -76,6 +82,23 @@ func (s *ZennService) SyncArticles(ctx context.Context) (int, error) {
 		}
 		if err := s.repository.SaveArticle(ctx, article); err != nil {
 			return 0, fmt.Errorf("save Zenn article %s: %w", article.ID, err)
+		}
+		feedArticleIDs[article.ID] = struct{}{}
+	}
+
+	existingArticles, err := s.repository.ListArticles(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("list existing Zenn articles: %w", err)
+	}
+	for _, article := range existingArticles {
+		if article.Source != "zenn" {
+			continue
+		}
+		if _, exists := feedArticleIDs[article.ID]; exists {
+			continue
+		}
+		if err := s.repository.DeleteArticle(ctx, article.ID); err != nil {
+			return 0, fmt.Errorf("delete removed Zenn article %s: %w", article.ID, err)
 		}
 	}
 
