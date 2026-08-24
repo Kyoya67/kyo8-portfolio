@@ -27,11 +27,7 @@ interface DictionaryShape {
   projects: {
     eyebrow: string;
     title: string;
-    allLink: string;
-    pageEyebrow: string;
     pageTitle: string;
-    pageDescription: string;
-    allProjectsLink: string;
     overview: string;
     technologies: string;
     links: string;
@@ -42,12 +38,7 @@ interface DictionaryShape {
     eyebrow: string;
     title: string;
     readLink: string;
-    allLink: string;
-    pageDescription: string;
-    allFilter: string;
-    postsCount: (count: number) => string;
     sourceLabels: Record<ArticleSource, string>;
-    backLink: string;
   };
   career: {
     eyebrow: string;
@@ -99,11 +90,7 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
     projects: {
       eyebrow: "Work",
       title: "Selected Projects",
-      allLink: "View all projects",
-      pageEyebrow: "Work",
       pageTitle: "Projects",
-      pageDescription: "A selection of systems and tools I've designed and built end to end.",
-      allProjectsLink: "All projects",
       overview: "Overview",
       technologies: "Technologies",
       links: "Links",
@@ -114,16 +101,11 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       eyebrow: "Writing",
       title: "Articles",
       readLink: "Read",
-      allLink: "All articles",
-      pageDescription: "Posts from this site and external write-ups, in one place.",
-      allFilter: "All",
-      postsCount: (count) => `${count} post${count === 1 ? "" : "s"}`,
       sourceLabels: {
         internal: "Blog",
         zenn: "Zenn",
         external: "External",
       },
-      backLink: "All articles",
     },
     career: {
       eyebrow: "Journey",
@@ -177,11 +159,7 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
     projects: {
       eyebrow: "Work",
       title: "Selected Projects",
-      allLink: "すべてのプロジェクトを見る",
-      pageEyebrow: "Work",
       pageTitle: "Projects",
-      pageDescription: "設計から実装まで一貫して手がけたシステムやツールの一覧です。",
-      allProjectsLink: "プロジェクト一覧へ",
       overview: "概要",
       technologies: "使用技術",
       links: "リンク",
@@ -192,16 +170,11 @@ export const dictionary: Record<"en" | "ja", DictionaryShape> = {
       eyebrow: "Writing",
       title: "Articles",
       readLink: "読む",
-      allLink: "記事一覧",
-      pageDescription: "このサイトの記事と、外部に書いた記事をまとめています。",
-      allFilter: "すべて",
-      postsCount: (count) => `${count}件`,
       sourceLabels: {
         internal: "ブログ",
         zenn: "Zenn",
         external: "外部",
       },
-      backLink: "記事一覧へ",
     },
     career: {
       eyebrow: "Journey",

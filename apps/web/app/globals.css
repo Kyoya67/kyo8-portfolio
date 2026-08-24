@@ -89,6 +89,14 @@ body {
   color: var(--bg);
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .bg-grid {
   background-image:
     linear-gradient(to right, var(--border) 1px, transparent 1px),
