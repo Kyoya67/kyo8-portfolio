@@ -8,8 +8,11 @@ import { PanelFrame, PanelHeading } from "@kyo8/ui";
 interface FormState {
   name: string;
   handle: string;
+  headlineEn: string;
   headlineJa: string;
+  bioEn: string;
   bioJa: string;
+  locationEn: string;
   locationJa: string;
   focus: string;
   githubUrl: string;
@@ -22,8 +25,11 @@ function toFormState(profile: Profile): FormState {
   return {
     name: profile.name,
     handle: profile.handle,
+    headlineEn: profile.headline.en,
     headlineJa: profile.headline.ja,
+    bioEn: profile.bio.en,
     bioJa: profile.bio.ja,
+    locationEn: profile.location.en,
     locationJa: profile.location.ja,
     focus: profile.focus.join(", "),
     githubUrl: profile.githubUrl,
@@ -38,9 +44,9 @@ function toProfile(base: Profile, form: FormState): Profile {
     ...base,
     name: form.name,
     handle: form.handle,
-    headline: { ...base.headline, ja: form.headlineJa },
-    bio: { ...base.bio, ja: form.bioJa },
-    location: { ...base.location, ja: form.locationJa },
+    headline: { en: form.headlineEn, ja: form.headlineJa },
+    bio: { en: form.bioEn, ja: form.bioJa },
+    location: { en: form.locationEn, ja: form.locationJa },
     focus: form.focus
       .split(",")
       .map((item) => item.trim())
@@ -151,14 +157,29 @@ export default function ProfilePage() {
           <Field label="Name" value={form.name} onChange={(v) => updateField("name", v)} />
           <Field label="Handle" value={form.handle} onChange={(v) => updateField("handle", v)} />
           <Field
+            label="Headline (en)"
+            value={form.headlineEn}
+            onChange={(v) => updateField("headlineEn", v)}
+          />
+          <Field
             label="Headline (ja)"
             value={form.headlineJa}
             onChange={(v) => updateField("headlineJa", v)}
           />
           <TextareaField
+            label="Bio (en)"
+            value={form.bioEn}
+            onChange={(v) => updateField("bioEn", v)}
+          />
+          <TextareaField
             label="Bio (ja)"
             value={form.bioJa}
             onChange={(v) => updateField("bioJa", v)}
+          />
+          <Field
+            label="Location (en)"
+            value={form.locationEn}
+            onChange={(v) => updateField("locationEn", v)}
           />
           <Field
             label="Location (ja)"
@@ -183,11 +204,7 @@ export default function ProfilePage() {
           <Field label="X URL" value={form.xUrl} onChange={(v) => updateField("xUrl", v)} />
           <Field label="Email" value={form.email} onChange={(v) => updateField("email", v)} />
 
-          <p className="border-t border-border pt-6 text-[11px] tracking-[0.05em] text-fg-dim">
-            › 英語表記（en）はフロントエンド側の固定値です。ここでは日本語（ja）のみ編集できます。
-          </p>
-
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 border-t border-border pt-6">
             <button
               type="submit"
               disabled={saving}
