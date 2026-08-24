@@ -16,28 +16,28 @@ export default function AboutPreview({ profile }: { profile: Profile }) {
       <PanelFrame>
         <PanelHeading number="01" title={t.about.title} />
 
-        <div className="grid grid-cols-1 gap-8 p-6 sm:p-10 md:grid-cols-[auto_1fr_1fr] md:items-start md:gap-10">
-          <div className="flex items-start gap-5 md:contents">
-            <div className="shrink-0 border border-border p-2 sm:p-3 md:justify-self-start">
-              <Image
-                src="/makora.png"
-                alt={profile.name}
-                width={96}
-                height={96}
-                className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 [image-rendering:pixelated]"
-              />
-            </div>
-
-            <div className="flex flex-col gap-4">
-              {paragraphs.map((paragraph) => (
-                <p key={paragraph} className="text-sm leading-relaxed text-fg-muted sm:text-base">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+        <div className="grid grid-cols-1 gap-6 p-6 sm:p-10 md:grid-cols-[auto_1fr_1fr] md:items-start md:gap-10">
+          <div className="order-1 shrink-0 border border-border p-2 sm:p-3">
+            <Image
+              src="/makora.png"
+              alt={profile.name}
+              width={96}
+              height={96}
+              className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 [image-rendering:pixelated]"
+            />
           </div>
 
-          <TerminalPanel profile={profile} />
+          <div className="order-2 md:order-3">
+            <TerminalPanel profile={profile} />
+          </div>
+
+          <div className="order-3 flex flex-col gap-4 md:order-2">
+            {paragraphs.map((paragraph) => (
+              <p key={paragraph} className="text-sm leading-relaxed text-fg-muted sm:text-base">
+                {paragraph}
+              </p>
+            ))}
+          </div>
         </div>
       </PanelFrame>
     </div>

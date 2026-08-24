@@ -19,9 +19,12 @@ export default function CareerTimeline({ careers }: { careers: Career[] }) {
               <span className="absolute top-1.5 left-0 h-[11px] w-[11px] rounded-full border border-fg bg-bg" />
 
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                <div className="flex gap-8">
-                  <div className="w-20 shrink-0">
-                    <p className="text-sm font-bold tracking-tight">
+                <div className="flex flex-col gap-1.5 sm:flex-row sm:gap-8">
+                  <div className="sm:w-20 sm:shrink-0">
+                    <p className="text-sm font-bold tracking-tight sm:hidden">
+                      {end} - {start}
+                    </p>
+                    <p className="hidden text-sm leading-tight font-bold tracking-tight sm:block">
                       {end} -<br />
                       {start}
                     </p>
