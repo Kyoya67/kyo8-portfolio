@@ -44,7 +44,7 @@ export default function SkillsGrid({ skills }: { skills: Skill[] }) {
   })).filter((group) => group.items.length > 0);
 
   return (
-    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-6">
       {grouped.map((group) => {
         const Icon = CATEGORY_ICONS[group.category];
         return (
