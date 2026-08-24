@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import type { Article } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import { formatDate } from "@/lib/format";
+import { formatDate, truncate } from "@/lib/format";
 import { PanelFrame, PanelHeading, ArrowUpRightIcon } from "@kyo8/ui";
 import ArticleDetailContent from "@/components/articles/ArticleDetailContent";
 import Carousel from "@/components/ui/Carousel";
@@ -31,7 +31,9 @@ export default function ArticlesPreview({ articles }: { articles: Article[] }) {
                     {formatDate(article.publishedAt, locale)} · {article.sourceLabel}
                   </p>
                   <h3 className="text-sm font-bold sm:text-base">{article.title[locale]}</h3>
-                  <p className="mt-1 text-xs text-fg-muted sm:text-sm">{article.summary[locale]}</p>
+                  <p className="mt-1 text-xs text-fg-muted sm:text-sm">
+                    {truncate(article.summary[locale], 60)}
+                  </p>
                   <span className="mt-3 inline-flex shrink-0 items-center gap-1.5 text-[11px] tracking-[0.1em] text-fg-dim uppercase transition-colors group-hover:text-fg">
                     {t.articles.readLink}
                     <ArrowUpRightIcon className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -40,13 +42,13 @@ export default function ArticlesPreview({ articles }: { articles: Article[] }) {
               );
 
               const image = article.imageUrl && (
-                <div className="relative aspect-[16/10] overflow-hidden border-b border-border-strong bg-bg-inset">
+                <div className="relative aspect-[1200/630] overflow-hidden border-b border-border-strong bg-bg-inset">
                   <Image
                     src={article.imageUrl}
                     alt={article.title[locale]}
                     fill
                     sizes="320px"
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </div>
               );

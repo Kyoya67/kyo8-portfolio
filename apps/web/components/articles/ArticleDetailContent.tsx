@@ -12,13 +12,13 @@ export default function ArticleDetailContent({ article }: { article: Article }) 
   return (
     <div>
       {article.imageUrl && (
-        <div className="relative aspect-[16/9] overflow-hidden border-b border-border bg-bg-inset">
+        <div className="relative aspect-[1200/630] overflow-hidden border-b border-border bg-bg-inset">
           <Image
             src={article.imageUrl}
             alt={article.title[locale]}
             fill
             sizes="(min-width: 640px) 672px, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
       )}
