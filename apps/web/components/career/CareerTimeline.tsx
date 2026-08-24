@@ -22,8 +22,8 @@ export default function CareerTimeline({ careers }: { careers: Career[] }) {
                 <div className="flex gap-8">
                   <div className="w-20 shrink-0">
                     <p className="text-sm font-bold tracking-tight">
-                      {start} –<br />
-                      {end}
+                      {end} -<br />
+                      {start}
                     </p>
                   </div>
                   <div>

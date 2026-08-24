@@ -18,8 +18,5 @@ FROM public.ecr.aws/lambda/provided:al2023
 
 COPY --from=build /out/api ${LAMBDA_TASK_ROOT}/api
 COPY --from=build /out/batch ${LAMBDA_TASK_ROOT}/batch
-COPY entrypoint.sh ${LAMBDA_TASK_ROOT}/entrypoint
-RUN chmod +x ${LAMBDA_TASK_ROOT}/entrypoint
 
-ENTRYPOINT [ "/var/task/entrypoint" ]
 CMD [ "api" ]
