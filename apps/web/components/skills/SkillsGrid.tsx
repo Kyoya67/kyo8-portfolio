@@ -25,7 +25,7 @@ const CATEGORY_ICONS: Record<SkillCategory, React.ComponentType<React.SVGProps<S
 function CapabilityTags({ capabilities }: { capabilities: string[] }) {
   if (capabilities.length === 0) return null;
   return (
-    <div className="mt-1.5 flex flex-wrap gap-1.5">
+    <div className="mt-1.5 ml-3.5 flex flex-wrap gap-1.5">
       {capabilities.map((capability) => (
         <span key={capability} className="border border-border px-1.5 py-0.5 text-[10px] text-fg-dim">
           {capability}
