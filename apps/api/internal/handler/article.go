@@ -18,22 +18,8 @@ func NewArticleHandler(articleService *service.ArticleService) *ArticleHandler {
 	return &ArticleHandler{service: articleService}
 }
 
-func (h *ArticleHandler) ListPublicArticles(w http.ResponseWriter, r *http.Request) {
-	h.list(w, r, true)
-}
-
 func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
-	h.list(w, r, false)
-}
-
-func (h *ArticleHandler) list(w http.ResponseWriter, r *http.Request, publishedOnly bool) {
-	var articles []model.Article
-	var err error
-	if publishedOnly {
-		articles, err = h.service.ListPublicArticles(r.Context())
-	} else {
-		articles, err = h.service.ListArticles(r.Context())
-	}
+	articles, err := h.service.ListArticles(r.Context())
 	if err != nil {
 		log.Printf("articles request failed: method=%s error=%v", r.Method, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -52,22 +38,29 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	h.save(w, r)
-}
-
-func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
-	h.save(w, r)
-}
-
-func (h *ArticleHandler) save(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
 	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	if id := mux.Vars(r)["id"]; id != "" {
-		article.ID = id
+	if article.ID == "" {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
+	if err := h.service.SaveArticle(r.Context(), article); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
+	var article model.Article
+	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	article.ID = mux.Vars(r)["id"]
 	if article.ID == "" {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return

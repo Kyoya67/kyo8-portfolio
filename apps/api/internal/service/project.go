@@ -7,7 +7,7 @@ import (
 )
 
 type ProjectRepository interface {
-	ListProjects(context.Context, bool) ([]model.Project, error)
+	ListProjects(context.Context) ([]model.Project, error)
 	GetProject(context.Context, string) (model.Project, error)
 	SaveProject(context.Context, model.Project) error
 	DeleteProject(context.Context, string) error
@@ -21,12 +21,8 @@ func NewProjectService(repository ProjectRepository) *ProjectService {
 	return &ProjectService{repository: repository}
 }
 
-func (s *ProjectService) ListPublicProjects(ctx context.Context) ([]model.Project, error) {
-	return s.repository.ListProjects(ctx, true)
-}
-
 func (s *ProjectService) ListProjects(ctx context.Context) ([]model.Project, error) {
-	return s.repository.ListProjects(ctx, false)
+	return s.repository.ListProjects(ctx)
 }
 
 func (s *ProjectService) GetProject(ctx context.Context, id string) (model.Project, error) {

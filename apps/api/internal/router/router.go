@@ -16,16 +16,20 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	profileRepository := repository.NewProfileRepository(db)
 	profileService := service.NewProfileService(profileRepository)
 	profileHandler := handler.NewProfileHandler(profileService)
+
 	skillRepository := repository.NewSkillRepository(db)
 	skillService := service.NewSkillService(skillRepository)
 	skillHandler := handler.NewSkillHandler(skillService)
+
 	projectRepository := repository.NewProjectRepository(db)
 	projectService := service.NewProjectService(projectRepository)
 	imageUploadService := service.NewImageUploadService(config)
 	projectHandler := handler.NewProjectHandler(projectService, imageUploadService)
+
 	articleRepository := repository.NewArticleRepository(db)
 	articleService := service.NewArticleService(articleRepository)
 	articleHandler := handler.NewArticleHandler(articleService)
+
 	careerRepository := repository.NewCareerRepository(db)
 	careerService := service.NewCareerService(careerRepository)
 	careerHandler := handler.NewCareerHandler(careerService)
@@ -44,25 +48,27 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	}))
 
 	r.HandleFunc("/health", handler.Health).Methods("GET")
+
 	r.HandleFunc("/profile", profileHandler.GetProfile).Methods("GET")
 	r.HandleFunc("/admin/profile", profileHandler.UpdateProfile).Methods("POST")
+
 	r.HandleFunc("/skills", skillHandler.GetSkills).Methods("GET")
 	r.HandleFunc("/admin/skills", skillHandler.UpdateSkills).Methods("POST")
-	r.HandleFunc("/projects", projectHandler.ListPublicProjects).Methods("GET")
-	r.HandleFunc("/admin/projects", projectHandler.ListProjects).Methods("GET")
+
+	r.HandleFunc("/projects", projectHandler.ListProjects).Methods("GET")
+	r.HandleFunc("/projects/{id}", projectHandler.GetProject).Methods("GET")
 	r.HandleFunc("/admin/projects", projectHandler.CreateProject).Methods("POST")
-	r.HandleFunc("/admin/projects/{id}", projectHandler.GetProject).Methods("GET")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.UpdateProject).Methods("PUT")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.DeleteProject).Methods("DELETE")
 	r.HandleFunc("/admin/projects/{id}/image-upload", projectHandler.CreateImageUploadURL).Methods("POST")
-	r.HandleFunc("/articles", articleHandler.ListPublicArticles).Methods("GET")
-	r.HandleFunc("/admin/articles", articleHandler.ListArticles).Methods("GET")
+
+	r.HandleFunc("/articles", articleHandler.ListArticles).Methods("GET")
+	r.HandleFunc("/articles/{id}", articleHandler.GetArticle).Methods("GET")
 	r.HandleFunc("/admin/articles", articleHandler.CreateArticle).Methods("POST")
-	r.HandleFunc("/admin/articles/{id}", articleHandler.GetArticle).Methods("GET")
 	r.HandleFunc("/admin/articles/{id}", articleHandler.UpdateArticle).Methods("PUT")
 	r.HandleFunc("/admin/articles/{id}", articleHandler.DeleteArticle).Methods("DELETE")
+
 	r.HandleFunc("/careers", careerHandler.ListCareers).Methods("GET")
-	r.HandleFunc("/admin/careers", careerHandler.ListCareers).Methods("GET")
 	r.HandleFunc("/admin/careers", careerHandler.CreateCareer).Methods("POST")
 	r.HandleFunc("/admin/careers/{id}", careerHandler.UpdateCareer).Methods("PUT")
 	r.HandleFunc("/admin/careers/{id}", careerHandler.DeleteCareer).Methods("DELETE")

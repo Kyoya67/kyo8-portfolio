@@ -13,7 +13,7 @@ export interface ProjectImageUploadResponse {
 }
 
 export async function listProjects(): Promise<Project[]> {
-  const res = await apiFetch("/admin/projects");
+  const res = await apiFetch("/projects", undefined, { auth: false });
   return res.json();
 }
 

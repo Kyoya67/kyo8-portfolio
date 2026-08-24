@@ -2,7 +2,7 @@ import type { Article } from "@/types";
 import { apiFetch } from "./client";
 
 export async function listArticles(): Promise<Article[]> {
-  const res = await apiFetch("/admin/articles");
+  const res = await apiFetch("/articles", undefined, { auth: false });
   return res.json();
 }
 

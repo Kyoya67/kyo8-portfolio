@@ -27,14 +27,8 @@ func NewProjectRepository(db *dynamodb.Client) *ProjectRepository {
 	return &ProjectRepository{db: db, tableName: tableName}
 }
 
-func (r *ProjectRepository) ListProjects(ctx context.Context, publishedOnly bool) ([]model.Project, error) {
+func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, error) {
 	input := &dynamodb.ScanInput{TableName: aws.String(r.tableName)}
-	if publishedOnly {
-		input.FilterExpression = aws.String("published = :published")
-		input.ExpressionAttributeValues = map[string]types.AttributeValue{
-			":published": &types.AttributeValueMemberBOOL{Value: true},
-		}
-	}
 
 	output, err := r.db.Scan(ctx, input)
 	if err != nil {

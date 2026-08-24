@@ -19,22 +19,8 @@ func NewProjectHandler(projectService *service.ProjectService, imageService *ser
 	return &ProjectHandler{service: projectService, imageService: imageService}
 }
 
-func (h *ProjectHandler) ListPublicProjects(w http.ResponseWriter, r *http.Request) {
-	h.list(w, r, true)
-}
-
 func (h *ProjectHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
-	h.list(w, r, false)
-}
-
-func (h *ProjectHandler) list(w http.ResponseWriter, r *http.Request, publishedOnly bool) {
-	var projects []model.Project
-	var err error
-	if publishedOnly {
-		projects, err = h.service.ListPublicProjects(r.Context())
-	} else {
-		projects, err = h.service.ListProjects(r.Context())
-	}
+	projects, err := h.service.ListProjects(r.Context())
 	if err != nil {
 		log.Printf("projects request failed: method=%s error=%v", r.Method, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -53,22 +39,29 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
-	h.save(w, r)
-}
-
-func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
-	h.save(w, r)
-}
-
-func (h *ProjectHandler) save(w http.ResponseWriter, r *http.Request) {
 	var project model.Project
 	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	if id := mux.Vars(r)["id"]; id != "" {
-		project.ID = id
+	if project.ID == "" {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
+	if err := h.service.SaveProject(r.Context(), project); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
+	var project model.Project
+	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	project.ID = mux.Vars(r)["id"]
 	if project.ID == "" {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return

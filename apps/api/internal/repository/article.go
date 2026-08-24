@@ -27,14 +27,8 @@ func NewArticleRepository(db *dynamodb.Client) *ArticleRepository {
 	return &ArticleRepository{db: db, tableName: tableName}
 }
 
-func (r *ArticleRepository) ListArticles(ctx context.Context, publishedOnly bool) ([]model.Article, error) {
+func (r *ArticleRepository) ListArticles(ctx context.Context) ([]model.Article, error) {
 	input := &dynamodb.ScanInput{TableName: aws.String(r.tableName)}
-	if publishedOnly {
-		input.FilterExpression = aws.String("published = :published")
-		input.ExpressionAttributeValues = map[string]types.AttributeValue{
-			":published": &types.AttributeValueMemberBOOL{Value: true},
-		}
-	}
 
 	output, err := r.db.Scan(ctx, input)
 	if err != nil {

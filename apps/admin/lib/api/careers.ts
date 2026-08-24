@@ -2,7 +2,7 @@ import type { Career } from "@/types";
 import { apiFetch } from "./client";
 
 export async function listCareers(): Promise<Career[]> {
-  const res = await apiFetch("/admin/careers");
+  const res = await apiFetch("/careers", undefined, { auth: false });
   return res.json();
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 type ArticleRepository interface {
-	ListArticles(context.Context, bool) ([]model.Article, error)
+	ListArticles(context.Context) ([]model.Article, error)
 	GetArticle(context.Context, string) (model.Article, error)
 	SaveArticle(context.Context, model.Article) error
 	DeleteArticle(context.Context, string) error
@@ -21,12 +21,8 @@ func NewArticleService(repository ArticleRepository) *ArticleService {
 	return &ArticleService{repository: repository}
 }
 
-func (s *ArticleService) ListPublicArticles(ctx context.Context) ([]model.Article, error) {
-	return s.repository.ListArticles(ctx, true)
-}
-
 func (s *ArticleService) ListArticles(ctx context.Context) ([]model.Article, error) {
-	return s.repository.ListArticles(ctx, false)
+	return s.repository.ListArticles(ctx)
 }
 
 func (s *ArticleService) GetArticle(ctx context.Context, id string) (model.Article, error) {
