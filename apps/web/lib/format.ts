@@ -26,8 +26,9 @@ function formatYearMonth(value: string): string {
   return `${year}.${month.padStart(2, "0")}`;
 }
 
-export function formatCareerRange(startDate: string, endDate: string | null, now: string): string {
-  const start = formatYearMonth(startDate);
-  const end = endDate ? formatYearMonth(endDate) : now;
-  return `${start} – ${end}`;
+export function formatCareerRange(startDate: string, endDate: string | null, now: string) {
+  return {
+    start: formatYearMonth(startDate),
+    end: endDate ? formatYearMonth(endDate) : now,
+  };
 }
