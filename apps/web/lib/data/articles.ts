@@ -2,6 +2,18 @@ import type { Article } from "@/types";
 
 export const articles: Article[] = [
   {
+    id: "mock-warning",
+    slug: null,
+    title: { en: "⚠ MOCK DATA (API unreachable)", ja: "⚠ モックデータ（APIに接続できません）" },
+    summary: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    url: "#",
+    source: "internal",
+    sourceLabel: "MOCK",
+    publishedAt: "2000-01-01",
+    published: true,
+    order: 0,
+  },
+  {
     id: "a01",
     slug: "single-table-dynamodb-schema",
     title: {

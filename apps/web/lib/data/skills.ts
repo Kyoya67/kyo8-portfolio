@@ -2,6 +2,14 @@ import type { Skill } from "@/types";
 
 export const skills: Skill[] = [
   {
+    id: "mock-warning",
+    name: "⚠ MOCK DATA (API unreachable)",
+    category: "frontend",
+    order: 0,
+    capabilities: [],
+    children: [],
+  },
+  {
     id: "s01",
     name: "TypeScript",
     category: "frontend",

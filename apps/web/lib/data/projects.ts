@@ -2,6 +2,21 @@ import type { Project } from "@/types";
 
 export const projects: Project[] = [
   {
+    id: "mock-warning",
+    slug: "mock-data-warning",
+    title: { en: "⚠ MOCK DATA (API unreachable)", ja: "⚠ モックデータ（APIに接続できません）" },
+    summary: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    description: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    graphic: "grid",
+    repositoryUrl: "https://github.com/",
+    websiteUrl: null,
+    technologies: [],
+    featured: true,
+    published: true,
+    order: 0,
+    year: "----",
+  },
+  {
     id: "p01",
     slug: "analytics-platform",
     title: { en: "Analytics Platform", ja: "Analytics Platform" },

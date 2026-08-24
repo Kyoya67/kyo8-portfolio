@@ -2,6 +2,17 @@ import type { Career } from "@/types";
 
 export const careers: Career[] = [
   {
+    id: "mock-warning",
+    type: "work",
+    organization: "⚠ MOCK DATA (API unreachable)",
+    position: { en: "Placeholder", ja: "プレースホルダー" },
+    startDate: "2000-01",
+    endDate: null,
+    description: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    note: "",
+    order: 999,
+  },
+  {
     id: "c01",
     type: "work",
     organization: "Mercoin (Mercari)",
