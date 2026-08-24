@@ -19,11 +19,12 @@ concurrency:
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   ECR_REPOSITORY: ${{ vars.ECR_API_REPOSITORY }}
-  LAMBDA_FUNCTION_NAME: kyo8-portfolio-api-stg
+  API_LAMBDA_FUNCTION_NAME: kyo8-portfolio-api-stg
+  BATCH_LAMBDA_FUNCTION_NAME: kyo8-portfolio-batch-stg
 
 jobs:
   deploy:
-    name: Build and push API image
+    name: Build and push Lambda image
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +53,7 @@ jobs:
         with:
           context: ./apps/api
           file: ./apps/api/Dockerfile
-          platforms: linux/arm64
+          platforms: linux/amd64,linux/arm64
           provenance: false
           push: true
           tags: |
@@ -61,12 +62,32 @@ jobs:
       - name: Update Lambda function
         run: |
           aws lambda update-function-code \
-            --function-name "${LAMBDA_FUNCTION_NAME}" \
+            --function-name "${API_LAMBDA_FUNCTION_NAME}" \
+            --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
+            --region "${AWS_REGION}"
+
+      - name: Configure batch Lambda command
+        run: |
+          aws lambda update-function-configuration \
+            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
+            --image-config '{"Command":["batch"]}' \
+            --region "${AWS_REGION}"
+
+      - name: Update batch Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
             --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
             --region "${AWS_REGION}"
 
       - name: Wait for Lambda update
         run: |
           aws lambda wait function-updated-v2 \
-            --function-name "${LAMBDA_FUNCTION_NAME}" \
+            --function-name "${API_LAMBDA_FUNCTION_NAME}" \
+            --region "${AWS_REGION}"
+
+      - name: Wait for batch Lambda update
+        run: |
+          aws lambda wait function-updated-v2 \
+            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
             --region "${AWS_REGION}"
