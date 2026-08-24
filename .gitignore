@@ -33,6 +33,13 @@ yarn-error.log*
 .vercel
 .amplify-hosting/
 
+# Terraform local state and provider cache
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
