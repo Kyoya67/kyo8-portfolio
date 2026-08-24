@@ -29,22 +29,29 @@ func (h *CareerHandler) ListCareers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CareerHandler) CreateCareer(w http.ResponseWriter, r *http.Request) {
-	h.save(w, r)
-}
-
-func (h *CareerHandler) UpdateCareer(w http.ResponseWriter, r *http.Request) {
-	h.save(w, r)
-}
-
-func (h *CareerHandler) save(w http.ResponseWriter, r *http.Request) {
 	var career model.Career
 	if err := json.NewDecoder(r.Body).Decode(&career); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	if id := mux.Vars(r)["id"]; id != "" {
-		career.ID = id
+	if career.ID == "" {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
 	}
+	if err := h.service.SaveCareer(r.Context(), career); err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *CareerHandler) UpdateCareer(w http.ResponseWriter, r *http.Request) {
+	var career model.Career
+	if err := json.NewDecoder(r.Body).Decode(&career); err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	career.ID = mux.Vars(r)["id"]
 	if career.ID == "" {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
