@@ -73,6 +73,12 @@ jobs:
             --image-config '{"Command":["batch"]}' \
             --region "${AWS_REGION}"
 
+      - name: Wait for batch configuration update
+        run: |
+          aws lambda wait function-updated-v2 \
+            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
+            --region "${AWS_REGION}"
+
       - name: Update batch Lambda function
         run: |
           aws lambda update-function-code \
