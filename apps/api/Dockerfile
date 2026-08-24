@@ -18,5 +18,7 @@ FROM public.ecr.aws/lambda/provided:al2023
 
 COPY --from=build /out/api ${LAMBDA_TASK_ROOT}/api
 COPY --from=build /out/batch ${LAMBDA_TASK_ROOT}/batch
+COPY bootstrap ${LAMBDA_RUNTIME_DIR}/bootstrap
+RUN chmod +x ${LAMBDA_RUNTIME_DIR}/bootstrap
 
-CMD [ "api" ]
+CMD [ "bootstrap" ]

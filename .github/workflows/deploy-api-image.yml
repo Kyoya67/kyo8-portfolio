@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - "apps/api/**"
+      - ".github/workflows/deploy-api-image.yml"
   workflow_dispatch:
 
 permissions:
@@ -64,19 +65,6 @@ jobs:
           aws lambda update-function-code \
             --function-name "${API_LAMBDA_FUNCTION_NAME}" \
             --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
-            --region "${AWS_REGION}"
-
-      - name: Configure batch Lambda command
-        run: |
-          aws lambda update-function-configuration \
-            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
-            --image-config '{"Command":["batch"]}' \
-            --region "${AWS_REGION}"
-
-      - name: Wait for batch configuration update
-        run: |
-          aws lambda wait function-updated-v2 \
-            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
             --region "${AWS_REGION}"
 
       - name: Update batch Lambda function
