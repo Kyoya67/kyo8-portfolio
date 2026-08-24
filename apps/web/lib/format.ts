@@ -31,8 +31,9 @@ export function formatDate(value: string, locale: Locale) {
 export function formatCareerRange(startDate: string, endDate: string | null, locale: Locale, now: string) {
   const start = formatMonth(startDate, locale);
   const end = endDate ? formatMonth(endDate, locale) : null;
+  const year = end && end.year !== start.year ? `${start.year}-${end.year}` : start.year;
   return {
-    year: start.year,
+    year,
     range: `${start.month} - ${end ? end.month : now}`,
   };
 }

@@ -6,7 +6,7 @@ import { useLocale } from "@/lib/i18n/LocaleProvider";
 
 export default function CareerTimeline({ careers }: { careers: Career[] }) {
   const { locale, t } = useLocale();
-  const sorted = [...careers].sort((a, b) => a.order - b.order);
+  const sorted = [...careers].sort((a, b) => b.order - a.order);
 
   return (
     <div className="relative">
