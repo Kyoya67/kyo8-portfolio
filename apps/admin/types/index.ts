@@ -65,7 +65,6 @@ export interface Career {
   startDate: string;
   endDate: string | null;
   description: LocalizedText;
-  note: string;
   order: number;
 }
 

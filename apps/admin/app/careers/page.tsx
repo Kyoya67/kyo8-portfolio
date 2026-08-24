@@ -20,7 +20,6 @@ function newCareer(): Career {
     startDate: "",
     endDate: null,
     description: { en: "", ja: "" },
-    note: "",
     order: 1,
   };
 }
@@ -249,13 +248,6 @@ export default function CareersPage() {
                     }
                   />
                 </div>
-
-                <Field
-                  label="Note"
-                  value={career.note}
-                  onChange={(v) => updateCareerField(career.id, { note: v })}
-                  className="mt-3"
-                />
 
                 <div className="mt-4 flex items-center gap-4 border-t border-border pt-4">
                   <button

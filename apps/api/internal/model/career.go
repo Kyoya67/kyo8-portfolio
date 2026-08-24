@@ -8,6 +8,5 @@ type Career struct {
 	StartDate    string        `json:"startDate" dynamodbav:"startDate"`
 	EndDate      *string       `json:"endDate" dynamodbav:"endDate"`
 	Description  LocalizedText `json:"description" dynamodbav:"description"`
-	Note         string        `json:"note" dynamodbav:"note"`
 	Order        int           `json:"order" dynamodbav:"order"`
 }
