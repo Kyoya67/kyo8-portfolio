@@ -70,7 +70,6 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
-            --architectures arm64 \
             --image-config '{"Command":["batch"]}' \
             --region "${AWS_REGION}"
 
@@ -79,6 +78,7 @@ jobs:
           aws lambda update-function-code \
             --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
             --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
+            --architectures arm64 \
             --region "${AWS_REGION}"
 
       - name: Wait for Lambda update
