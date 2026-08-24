@@ -78,6 +78,7 @@ export interface Article {
   summary: LocalizedText;
   body?: LocalizedText;
   url: string;
+  imageUrl: string;
   source: ArticleSource;
   sourceLabel: string;
   publishedAt: string;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import type { Article } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { formatDate } from "@/lib/format";
@@ -38,6 +39,18 @@ export default function ArticlesPreview({ articles }: { articles: Article[] }) {
                 </>
               );
 
+              const image = article.imageUrl && (
+                <div className="relative aspect-[16/10] overflow-hidden border-b border-border-strong bg-bg-inset">
+                  <Image
+                    src={article.imageUrl}
+                    alt={article.title[locale]}
+                    fill
+                    sizes="320px"
+                    className="object-cover"
+                  />
+                </div>
+              );
+
               return (
                 <div key={article.id} className="w-72 shrink-0 snap-start sm:w-80">
                   {external ? (
@@ -45,17 +58,19 @@ export default function ArticlesPreview({ articles }: { articles: Article[] }) {
                       href={article.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="group block h-full border border-border-strong bg-bg p-6 transition-colors hover:bg-bg-inset"
+                      className="group flex h-full flex-col border border-border-strong bg-bg transition-colors hover:bg-bg-inset"
                     >
-                      {content}
+                      {image}
+                      <div className="flex-1 p-6">{content}</div>
                     </a>
                   ) : (
                     <button
                       type="button"
                       onClick={() => setSelected(article)}
-                      className="group block h-full w-full border border-border-strong bg-bg p-6 text-left transition-colors hover:bg-bg-inset"
+                      className="group flex h-full w-full flex-col border border-border-strong bg-bg text-left transition-colors hover:bg-bg-inset"
                     >
-                      {content}
+                      {image}
+                      <div className="flex-1 p-6">{content}</div>
                     </button>
                   )}
                 </div>

@@ -19,6 +19,7 @@ function newArticle(): Article {
     summary: { en: "", ja: "" },
     body: { en: "", ja: "" },
     url: "",
+    imageUrl: "",
     source: "internal",
     sourceLabel: "",
     publishedAt: "",

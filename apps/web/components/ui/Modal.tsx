@@ -25,7 +25,7 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-bg/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-bg/80 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -37,7 +37,7 @@ export default function Modal({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute top-4 right-4 z-10 text-fg-dim transition-colors hover:text-fg cursor-pointer"
+            className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center border border-border-strong bg-bg text-fg-muted transition-colors hover:text-fg cursor-pointer"
           >
             ✕
           </button>
