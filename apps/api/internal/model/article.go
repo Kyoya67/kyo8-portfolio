@@ -7,6 +7,7 @@ type Article struct {
 	Summary     LocalizedText `json:"summary" dynamodbav:"summary"`
 	Body        LocalizedText `json:"body" dynamodbav:"body"`
 	URL         string        `json:"url" dynamodbav:"url"`
+	ImageURL    string        `json:"imageUrl" dynamodbav:"imageUrl"`
 	Source      string        `json:"source" dynamodbav:"source"`
 	SourceLabel string        `json:"sourceLabel" dynamodbav:"sourceLabel"`
 	PublishedAt string        `json:"publishedAt" dynamodbav:"publishedAt"`

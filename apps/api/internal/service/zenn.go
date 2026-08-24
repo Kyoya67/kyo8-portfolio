@@ -23,6 +23,12 @@ type zennItem struct {
 	Description string `xml:"description"`
 	Link        string `xml:"link"`
 	PublishedAt string `xml:"pubDate"`
+	Enclosure   struct {
+		URL string `xml:"url,attr"`
+	} `xml:"enclosure"`
+	MediaContent struct {
+		URL string `xml:"url,attr"`
+	} `xml:"content"`
 }
 
 type ZennArticleRepository interface {
@@ -104,10 +110,20 @@ func convertZennItem(item zennItem, order int) (model.Article, error) {
 			JA: item.Description,
 		},
 		URL:         item.Link,
+		ImageURL:    firstNonEmpty(item.Enclosure.URL, item.MediaContent.URL),
 		Source:      "zenn",
 		SourceLabel: "Zenn",
 		PublishedAt: publishedAt.UTC().Format(time.RFC3339),
 		Published:   true,
 		Order:       order,
 	}, nil
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, value := range values {
+		if strings.TrimSpace(value) != "" {
+			return value
+		}
+	}
+	return ""
 }
