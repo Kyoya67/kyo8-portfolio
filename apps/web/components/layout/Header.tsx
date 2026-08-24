@@ -20,7 +20,6 @@ const NAV_ITEMS: { id: SectionId; label: string }[] = [
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<SectionId | null>(null);
 
   const isHome = pathname === "/";
@@ -50,7 +49,6 @@ export default function Header() {
   }, [isHome]);
 
   function handleNavClick(e: React.MouseEvent<HTMLAnchorElement>, id: SectionId) {
-    setOpen(false);
     if (!isHome) return;
     const target = document.getElementById(id);
     if (!target) return;
@@ -64,11 +62,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <Link
-          href="/"
-          className="text-sm font-bold text-fg"
-          onClick={() => setOpen(false)}
-        >
+        <Link href="/" className="text-sm font-bold text-fg">
           KYO8.dev
         </Link>
 
@@ -92,45 +86,10 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-3 md:flex">
-            <LocaleToggle />
-            <ThemeToggle />
-          </div>
-          <button
-            type="button"
-            aria-label="Toggle menu"
-            onClick={() => setOpen((v) => !v)}
-            className="flex h-9 w-9 flex-col items-center justify-center gap-[5px] border border-border-strong md:hidden cursor-pointer"
-          >
-            <span className={`h-px w-4 bg-fg transition-transform ${open ? "translate-y-[3px] rotate-45" : ""}`} />
-            <span className={`h-px w-4 bg-fg transition-transform ${open ? "-translate-y-[3px] -rotate-45" : ""}`} />
-          </button>
+          <LocaleToggle />
+          <ThemeToggle />
         </div>
       </div>
-
-      {open && (
-        <div className="border-t border-border px-6 py-6 md:hidden">
-          <nav className="flex flex-col gap-5">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.id}
-                href={`/#${item.id}`}
-                onClick={(e) => handleNavClick(e, item.id)}
-                className={`inline-flex items-center gap-1.5 text-xs tracking-[0.1em] uppercase ${
-                  effectiveActiveId === item.id ? "text-fg" : "text-fg-muted"
-                }`}
-              >
-                <span className="text-fg-dim">›</span>
-                {item.label}
-              </Link>
-            ))}
-            <div className="flex items-center gap-3 pt-2">
-              <LocaleToggle />
-              <ThemeToggle />
-            </div>
-          </nav>
-        </div>
-      )}
     </header>
   );
 }
