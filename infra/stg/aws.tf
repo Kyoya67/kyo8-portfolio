@@ -61,18 +61,6 @@ module "route53" {
       values = ["_9f79abac4b9be6f5dd3a1a5834eb46e0.jkddzztszm.acm-validations.aws."]
     },
     {
-      name   = "_6228e76244d0484503ba9f8264899a87.stg.kyo8.dev"
-      type   = "CNAME"
-      ttl    = 500
-      values = ["_e69ac7cabef027c212c78f1d12df7c6d.jkddzztszm.acm-validations.aws."]
-    },
-    {
-      name   = "_8379528e8cc6a085731662482501c545.admin.stg.kyo8.dev"
-      type   = "CNAME"
-      ttl    = 500
-      values = ["_63b01cdd44b60e6381164383b69aa377.jkddzztszm.acm-validations.aws."]
-    },
-    {
       name = "stg.kyo8.dev"
       type = "A"
       alias = {
