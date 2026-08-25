@@ -25,3 +25,9 @@ module "event_bridge_scheduler" {
   batch_lambda_arn         = module.lambda.lambda_batch_arn
   batch_scheduler_role_arn = module.iam_role.batch_scheduler_arn
 }
+
+module "api_gateway" {
+  source         = "../modules/aws/api_gateway"
+  env            = local.env
+  api_lambda_arn = module.lambda.lambda_api_arn
+}
