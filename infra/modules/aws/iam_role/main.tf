@@ -15,6 +15,15 @@ resource "aws_iam_role" "lambda_api" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_api" {
+  role = "kyo8-portfolio-lambda-api-${var.env}"
+  for_each = {
+    AWSLambdaBasicExecutionRole = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    execution-dynamo            = "arn:aws:iam::${var.account_id}:policy/execution-dynamo-${var.env}"
+  }
+  policy_arn = each.value
+}
+
 /************************************************************
 Lambda Batch execution role
 ************************************************************/
@@ -30,6 +39,15 @@ resource "aws_iam_role" "lambda_batch" {
     }]
     Version = "2012-10-17"
   })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_batch" {
+  role = "kyo8-portfolio-lambda-batch-${var.env}"
+  for_each = {
+    AWSLambdaBasicExecutionRole = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    execution-dynamo            = "arn:aws:iam::${var.account_id}:policy/execution-dynamo-${var.env}"
+  }
+  policy_arn = each.value
 }
 
 /************************************************************
@@ -48,11 +66,22 @@ resource "aws_iam_role" "github_actions" {
       }
       Effect = "Allow"
       Principal = {
-        Federated = "arn:aws:iam::145888859080:oidc-provider/token.actions.githubusercontent.com"
+        Federated = "arn:aws:iam::${var.account_id}:oidc-provider/token.actions.githubusercontent.com"
       }
     }]
     Version = "2012-10-17"
   })
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions" {
+  role = "github-actions-${var.env}"
+  for_each = {
+    ecr-push                   = "arn:aws:iam::${var.account_id}:policy/ecr-push-${var.env}"
+    lambda-update              = "arn:aws:iam::${var.account_id}:policy/lambda-update-${var.env}"
+    secrets-manager-read       = "arn:aws:iam::${var.account_id}:policy/secrets-manager-read-${var.env}"
+    parameter-store-read-write = "arn:aws:iam::${var.account_id}:policy/parameter-store-read-write-${var.env}"
+  }
+  policy_arn = each.value
 }
 
 /************************************************************
@@ -71,3 +100,9 @@ resource "aws_iam_role" "batch_scheduler" {
     Version = "2012-10-17"
   })
 }
+
+resource "aws_iam_role_policy_attachment" "batch_scheduler" {
+  role       = "kyo8-portfolio-batch-scheduler-${var.env}"
+  policy_arn = "arn:aws:iam::${var.account_id}:policy/kyo8-portfolio-batch-invoke-lambda-${var.env}"
+}
+
