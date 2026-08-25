@@ -85,7 +85,7 @@ resource "aws_iam_role_policy_attachment" "github_actions" {
 }
 
 /************************************************************
-Batch Scheduler execution role
+EventBridge Scheduler Batch execution role
 ************************************************************/
 resource "aws_iam_role" "batch_scheduler" {
   name = "kyo8-portfolio-batch-scheduler-${var.env}"

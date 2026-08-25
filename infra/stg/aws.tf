@@ -18,3 +18,10 @@ module "lambda" {
     lambda_batch = module.iam_role.lambda_batch_arn
   }
 }
+
+module "event_bridge_scheduler" {
+  source                   = "../modules/aws/event_bridge_scheduler"
+  env                      = local.env
+  batch_lambda_arn         = module.lambda.lambda_batch_arn
+  batch_scheduler_role_arn = module.iam_role.batch_scheduler_arn
+}
