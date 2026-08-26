@@ -91,3 +91,8 @@ module "route53" {
     }
   ]
 }
+
+import {
+  to = module.api_gateway.aws_api_gateway_authorizer.cognito_kyo8_portfolio
+  id = "763cenil1m/fqdevy"
+}
