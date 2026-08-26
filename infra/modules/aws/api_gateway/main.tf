@@ -6,7 +6,6 @@ resource "aws_api_gateway_rest_api" "kyo8_portfolio" {
   api_key_source    = "HEADER"
   name              = "kyo8-portfolio-${var.env}"
   put_rest_api_mode = "overwrite"
-  region            = "ap-northeast-1"
   endpoint_configuration {
     ip_address_type = "ipv4"
     types           = ["REGIONAL"]
@@ -18,7 +17,7 @@ resource "aws_api_gateway_rest_api" "kyo8_portfolio" {
  ********************************************************/
 
 resource "aws_api_gateway_stage" "v1" {
-  deployment_id = "l8dyww"
+  deployment_id = aws_api_gateway_deployment.kyo8_portfolios.id
   rest_api_id   = aws_api_gateway_rest_api.kyo8_portfolio.id
   stage_name    = "v1"
 }
@@ -38,9 +37,8 @@ resource "aws_api_gateway_deployment" "kyo8_portfolios" {
  ********************************************************/
 
 resource "aws_api_gateway_resource" "proxy" {
-  parent_id   = "sr2vp9ebv2"
+  parent_id   = aws_api_gateway_rest_api.kyo8_portfolio.root_resource_id
   path_part   = "{proxy+}"
-  region      = "ap-northeast-1"
   rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
@@ -64,7 +62,6 @@ resource "aws_api_gateway_integration" "proxy_get" {
   http_method             = "GET"
   integration_http_method = "POST"
   passthrough_behavior    = "WHEN_NO_MATCH"
-  region                  = "ap-northeast-1"
   resource_id             = "vz4t7l"
   response_transfer_mode  = "BUFFERED"
   rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
@@ -80,14 +77,12 @@ resource "aws_api_gateway_integration" "proxy_get" {
 resource "aws_api_gateway_resource" "admin" {
   parent_id   = "sr2vp9ebv2"
   path_part   = "admin"
-  region      = "ap-northeast-1"
   rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_resource" "admin_proxy" {
   parent_id   = "o5qwbn"
   path_part   = "{proxy+}"
-  region      = "ap-northeast-1"
   rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
@@ -113,7 +108,6 @@ resource "aws_api_gateway_integration" "admin_proxy_post" {
   http_method             = "POST"
   integration_http_method = "POST"
   passthrough_behavior    = "WHEN_NO_MATCH"
-  region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
   rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
@@ -143,7 +137,6 @@ resource "aws_api_gateway_integration" "admin_proxy_put" {
   http_method             = "PUT"
   integration_http_method = "POST"
   passthrough_behavior    = "WHEN_NO_MATCH"
-  region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
   rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
@@ -174,7 +167,6 @@ resource "aws_api_gateway_integration" "admin_proxy_delete" {
   http_method             = "DELETE"
   integration_http_method = "POST"
   passthrough_behavior    = "WHEN_NO_MATCH"
-  region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
   rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
@@ -203,7 +195,6 @@ resource "aws_api_gateway_integration" "admin_proxy_options" {
   http_method             = "OPTIONS"
   integration_http_method = "POST"
   passthrough_behavior    = "WHEN_NO_MATCH"
-  region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
   rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id

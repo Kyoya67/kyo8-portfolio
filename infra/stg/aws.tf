@@ -11,9 +11,10 @@ module "ecr" {
 }
 
 module "lambda" {
-  source     = "../modules/aws/lambda"
-  env        = local.env
-  account_id = local.account_id
+  source         = "../modules/aws/lambda"
+  env            = local.env
+  account_id     = local.account_id
+  api_gateway_id = module.api_gateway.api_gateway_id
   role_arn = {
     lambda_api   = module.iam_role.lambda_api_arn
     lambda_batch = module.iam_role.lambda_batch_arn
@@ -89,9 +90,4 @@ module "route53" {
       }
     }
   ]
-}
-
-import {
-  to = module.api_gateway.aws_api_gateway_deployment.kyo8_portfolios
-  id = "763cenil1m/l8dyww"
 }

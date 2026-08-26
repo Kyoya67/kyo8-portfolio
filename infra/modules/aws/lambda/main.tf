@@ -12,13 +12,13 @@ resource "aws_lambda_function" "kyo8_portfolio_api" {
   }
 }
 
-# resource "aws_lambda_permission" "api_gateway_kyo8_portfolio_api" {
-#   statement_id  = "apigateway-all"
-#   action        = "lambda:InvokeFunction"
-#   function_name = "kyo8-portfolio-api-${var.env}"
-#   principal     = "apigateway.amazonaws.com"
-#   source_arn    = "arn:aws:execute-api:ap-northeast-1:${var.account_id}:${var.slack_metrics.api_gateway_id}/*/*/*"
-# }
+resource "aws_lambda_permission" "api_gateway_kyo8_portfolio_api" {
+  statement_id  = "apigateway-all"
+  action        = "lambda:InvokeFunction"
+  function_name = "kyo8-portfolio-api-${var.env}"
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "arn:aws:execute-api:ap-northeast-1:${var.account_id}:${var.api_gateway_id}/*/*/*"
+}
 
 resource "aws_lambda_function" "kyo8_portfolio_batch" {
   architectures                  = ["arm64"]
