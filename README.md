@@ -32,7 +32,7 @@ kyo8-portfolio/
 
 # AWSアーキテクチャ
 
-<img src="docs/aws-architecture.svg" alt="AWS architecture" width="50%">
+<img src="docs/aws-architecture.png" alt="AWS architecture" width="50%">
 
 # Terraform
 
