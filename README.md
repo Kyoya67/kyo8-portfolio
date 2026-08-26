@@ -1,8 +1,16 @@
 # kyo8-portfolio
+ポートフォリオサイトです。公開サイトと管理画面を同一リポジトリで管理するモノレポ構成です。
 
-Kyoyaのポートフォリオサイトです。公開サイトと管理画面を同一リポジトリで管理するモノレポ構成です。
+# 目次
+- [リポジトリ構成](#リポジトリ構成)
+- [AWSアーキテクチャ](#aws-アーキテクチャ)
+- [Terraform](#terraform)
+- [APIルーティング](#apiルーティング)
+- [Cognito認証フロー](#cognito-認証フロー)
+- [デプロイ](#デプロイ)
+- [バッチ同期](#バッチ同期)
 
-## Repository structure
+# リポジトリ構成
 
 `````text
 kyo8-portfolio/
@@ -11,51 +19,54 @@ kyo8-portfolio/
 │   ├── admin/     # 管理用 Next.js
 │   └── api/       # Go API / Lambda
 ├── infra/
-│   ├── stg/       # Terraform staging root
-│   ├── prd/       # Terraform production root
-│   └── modules/   # Terraform modules
+│   ├── stg/       # ステージング環境
+│   ├── prd/       # 本番環境
+│   └── modules/   # Terraformモジュール
 └── .github/
     └── workflows/ # CI/CD
 `````
 
-`apps/web`と`apps/admin`はnpm workspacesで管理し、`apps/api`は独立したGo Moduleです。
+`apps/web`と`apps/admin`はNext.jsのフロントエンドです。共通コンポーネントはnpm workspacesで管理しています。
 
-## AWS architecture
+`apps/api`はGoで書かれたAPIで、LambdaコンテナとしてECRにデプロイされます。
 
-<img src="docs/aws-architecture.svg" alt="AWS architecture" width="70%">
+# AWSアーキテクチャ
 
-環境ごとに`stg`と`prd`を分離し、Terraformのstateも環境別に管理します。
+<img src="docs/aws-architecture.svg" alt="AWS architecture" width="50%">
 
-## API routing
+# Terraform
 
-`````text
+環境ごとに`stg`と`prd`を分離し、TerraformのstateをS3バケットで環境別に管理します。
+
+## 主な管理対象：
+
+- ECR
+- Lambda
+- API Gateway
+- DynamoDB
+- Cognito 
+- EventBridge Scheduler
+- ACM certificates
+- Route53
+
+# APIルーティング
+## Public API
+```text
 GET /{proxy+}
 └── Lambda API
-
-管理APIは`/admin/{proxy+}`配下にまとめ、書き込み操作にCognito認証を要求します。
-
-POST   /admin/{proxy+}  # Cognito User Pools
-PUT    /admin/{proxy+}  # Cognito User Pools
-DELETE /admin/{proxy+}  # Cognito User Pools
-OPTIONS /admin/{proxy+} # CORS preflight、認証なし
-`````
-
-Lambda内ではAPI GatewayのイベントをHTTPリクエストへ変換し、Goのrouterへ渡します。
-
-```mermaid
-flowchart LR
-    Event[API Gateway Event]
-    Adapter[Lambda adapter]
-    Router[Go Router]
-    Handler[Handler]
-    Service[Service]
-    Repository[Repository]
-    Dynamo[(DynamoDB)]
-
-    Event --> Adapter --> Router --> Handler --> Service --> Repository --> Dynamo
 ```
+一般ユーザー向けのAPIは、`/{proxy+}`配下にまとめます。書き込み操作はありません。
 
-## Cognito authentication flow
+## Admin API
+```text
+OPTIONS /admin/{proxy+} # CORS preflight、認証なし
+POST   /admin/{proxy+}  # Cognito認証
+PUT    /admin/{proxy+}  # Cognito認証
+DELETE /admin/{proxy+}  # Cognito認証
+```
+管理APIは`/admin/{proxy+}`配下にまとめ、書き込み操作にCognito認証を要求します。OPTIONSリクエストはCORS preflight用で、認証なしで許可します。
+
+# Cognito認証フロー
 
 管理画面は、ブラウザだけで完結するSPA向けAuthorization Code Flow with PKCEを使用します。Cognito App ClientにはClient Secretを設定しません。
 
@@ -91,13 +102,13 @@ sequenceDiagram
 - Access tokenの期限切れ時はRefresh tokenで更新する
 - `/admin/*`の書き込みはAPI GatewayのCognito User Pools authorizerで保護する
 
-## Deployment
+# デプロイ
 
-### Frontend
+## フロントエンド
 
 `apps/web`と`apps/admin`はAWS Amplifyでデプロイします。Amplifyの環境変数にAPI URLやCognito設定を指定します。
 
-### Backend
+## バックエンド
 
 GitHub Actionsが`apps/api`をDocker buildし、ARM64用のLambdaコンテナイメージとしてECRへpushします。その後、API用とBatch用のLambda関数を同じイメージから更新します。
 
@@ -122,21 +133,21 @@ flowchart LR
 /var/task/batch  # Batch Lambda
 ```
 
-### Batch synchronization
+# バッチ同期
 
 EventBridge SchedulerがBatch Lambdaを定期実行し、ZennのRSSを取得して記事データをDynamoDBへ保存します。Batch LambdaはAPI Gatewayから公開するエンドポイントを持ちません。
 
-## Terraform
+`````mermaid
+sequenceDiagram
+    participant S as EventBridge Scheduler
+    participant L as Lambda Batch
+    participant Z as Zenn RSS
+    participant D as DynamoDB
 
-TerraformではAWSリソースの構成を管理します。DynamoDBのテーブル定義やIAM権限はTerraformで管理しますが、テーブル内のポートフォリオデータはアプリケーションデータのためTerraformの管理対象にはしません。
-
-主な管理対象：
-
-- ECR
-- Lambda
-- API Gateway
-- DynamoDB
-- Cognito 
-- EventBridge Scheduler
-- ACM certificates
-- Route53
+    S->>L: 定期的に起動
+    L->>Z: RSSフィードを取得
+    Z-->>L: 記事一覧・OGP画像URL
+    L->>L: 記事データを変換
+    L->>D: articleテーブルへ保存
+    D-->>L: 保存結果
+`````
