@@ -46,6 +46,16 @@ resource "aws_api_gateway_base_path_mapping" "api" {
  ********************************************************/
 resource "aws_api_gateway_deployment" "kyo8_portfolios" {
   rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      var.deploy_version
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 /********************************************************
