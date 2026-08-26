@@ -19,9 +19,18 @@ resource "aws_api_gateway_rest_api" "kyo8_portfolio" {
 
 resource "aws_api_gateway_stage" "v1" {
   deployment_id = "l8dyww"
-  region        = "ap-northeast-1"
-  rest_api_id   = "763cenil1m"
+  rest_api_id   = aws_api_gateway_rest_api.kyo8_portfolio.id
   stage_name    = "v1"
+}
+
+/********************************************************
+ * API Gateway Deployment
+ ********************************************************/
+resource "aws_api_gateway_deployment" "kyo8_portfolios" {
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
+  # trigggers = {
+  #   redeploy = sha1(jsonencode(local.api_endpoints))
+  # }
 }
 
 /********************************************************
@@ -32,7 +41,7 @@ resource "aws_api_gateway_resource" "proxy" {
   parent_id   = "sr2vp9ebv2"
   path_part   = "{proxy+}"
   region      = "ap-northeast-1"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 /********************************************************
@@ -46,7 +55,7 @@ resource "aws_api_gateway_method" "proxy_get" {
     "method.request.path.proxy" = true
   }
   resource_id = "vz4t7l"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_integration" "proxy_get" {
@@ -58,7 +67,7 @@ resource "aws_api_gateway_integration" "proxy_get" {
   region                  = "ap-northeast-1"
   resource_id             = "vz4t7l"
   response_transfer_mode  = "BUFFERED"
-  rest_api_id             = "763cenil1m"
+  rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
   timeout_milliseconds    = 29000
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/${var.api_lambda_arn}/invocations"
@@ -72,14 +81,14 @@ resource "aws_api_gateway_resource" "admin" {
   parent_id   = "sr2vp9ebv2"
   path_part   = "admin"
   region      = "ap-northeast-1"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_resource" "admin_proxy" {
   parent_id   = "o5qwbn"
   path_part   = "{proxy+}"
   region      = "ap-northeast-1"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 /********************************************************
@@ -94,7 +103,7 @@ resource "aws_api_gateway_method" "admin_proxy_post" {
     "method.request.path.proxy" = true
   }
   resource_id = "65e9p2"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_integration" "admin_proxy_post" {
@@ -107,7 +116,7 @@ resource "aws_api_gateway_integration" "admin_proxy_post" {
   region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
-  rest_api_id             = "763cenil1m"
+  rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
   timeout_milliseconds    = 29000
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/${var.api_lambda_arn}/invocations"
@@ -125,7 +134,7 @@ resource "aws_api_gateway_method" "admin_proxy_put" {
     "method.request.path.proxy" = true
   }
   resource_id = "65e9p2"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_integration" "admin_proxy_put" {
@@ -137,7 +146,7 @@ resource "aws_api_gateway_integration" "admin_proxy_put" {
   region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
-  rest_api_id             = "763cenil1m"
+  rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
   timeout_milliseconds    = 29000
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/${var.api_lambda_arn}/invocations"
@@ -155,7 +164,7 @@ resource "aws_api_gateway_method" "admin_proxy_delete" {
     "method.request.path.proxy" = true
   }
   resource_id = "65e9p2"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_integration" "admin_proxy_delete" {
@@ -168,7 +177,7 @@ resource "aws_api_gateway_integration" "admin_proxy_delete" {
   region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
-  rest_api_id             = "763cenil1m"
+  rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
   timeout_milliseconds    = 29000
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/${var.api_lambda_arn}/invocations"
@@ -185,7 +194,7 @@ resource "aws_api_gateway_method" "admin_proxy_options" {
     "method.request.path.proxy" = true
   }
   resource_id = "65e9p2"
-  rest_api_id = "763cenil1m"
+  rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
 }
 
 resource "aws_api_gateway_integration" "admin_proxy_options" {
@@ -197,7 +206,7 @@ resource "aws_api_gateway_integration" "admin_proxy_options" {
   region                  = "ap-northeast-1"
   resource_id             = "65e9p2"
   response_transfer_mode  = "BUFFERED"
-  rest_api_id             = "763cenil1m"
+  rest_api_id             = aws_api_gateway_rest_api.kyo8_portfolio.id
   timeout_milliseconds    = 29000
   type                    = "AWS_PROXY"
   uri                     = "arn:aws:apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/${var.api_lambda_arn}/invocations"

@@ -11,8 +11,9 @@ module "ecr" {
 }
 
 module "lambda" {
-  source = "../modules/aws/lambda"
-  env    = local.env
+  source     = "../modules/aws/lambda"
+  env        = local.env
+  account_id = local.account_id
   role_arn = {
     lambda_api   = module.iam_role.lambda_api_arn
     lambda_batch = module.iam_role.lambda_batch_arn
@@ -50,8 +51,8 @@ module "acm_cloud_pratica_com_ap_northeast_1" {
 }
 
 module "route53" {
-  source  = "../modules/aws/route53"
-  zone_id = "Z00967331CHXOCE6YU4S6"
+  source    = "../modules/aws/route53"
+  zone_name = local.base_host
 
   records = [
     {
@@ -88,4 +89,9 @@ module "route53" {
       }
     }
   ]
+}
+
+import {
+  to = module.api_gateway.aws_api_gateway_deployment.kyo8_portfolios
+  id = "763cenil1m/l8dyww"
 }

@@ -1,9 +1,13 @@
-resource "aws_route53_record" "this" {
+resource "aws_route53_zone" "zone" {
+  name = var.zone_name
+}
+
+resource "aws_route53_record" "record" {
   for_each = { for record in var.records : record.name => record }
 
   name    = each.value.name
   type    = each.value.type
-  zone_id = var.zone_id
+  zone_id = aws_route53_zone.zone.id
   ttl     = try(each.value.ttl, null)
   records = try(each.value.values, null)
 

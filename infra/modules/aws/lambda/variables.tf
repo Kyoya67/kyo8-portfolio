@@ -8,3 +8,7 @@ variable "role_arn" {
     lambda_batch : string
   })
 }
+
+variable "account_id" {
+  type = string
+}
