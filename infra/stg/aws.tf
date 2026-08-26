@@ -27,18 +27,16 @@ module "event_bridge_scheduler" {
   batch_lambda_arn         = module.lambda.lambda_batch_arn
   batch_scheduler_role_arn = module.iam_role.batch_scheduler_arn
 }
-
-module "api_gateway" {
-  source         = "../modules/aws/api_gateway"
-  env            = local.env
-  api_lambda_arn = module.lambda.lambda_api_arn
-  account_id     = local.account_id
-}
-
 module "cognito" {
   source = "../modules/aws/cognito"
   env    = local.env
   urls   = ["http://localhost:3001", "https://admin.stg.kyo8.dev"]
+}
+module "api_gateway" {
+  source         = "../modules/aws/api_gateway"
+  env            = local.env
+  api_lambda_arn = module.lambda.lambda_api_arn
+  user_pool_arn  = module.cognito.user_pool_arn
 }
 
 module "dynamoDB" {

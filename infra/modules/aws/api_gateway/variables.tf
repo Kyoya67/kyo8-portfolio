@@ -6,6 +6,6 @@ variable "api_lambda_arn" {
   type = string
 }
 
-variable "account_id" {
+variable "user_pool_arn" {
   type = string
 }

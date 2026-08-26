@@ -27,9 +27,6 @@ resource "aws_api_gateway_stage" "v1" {
  ********************************************************/
 resource "aws_api_gateway_deployment" "kyo8_portfolios" {
   rest_api_id = aws_api_gateway_rest_api.kyo8_portfolio.id
-  # trigggers = {
-  #   redeploy = sha1(jsonencode(local.api_endpoints))
-  # }
 }
 
 /********************************************************
@@ -89,13 +86,11 @@ resource "aws_api_gateway_resource" "admin_proxy" {
  * API Gateway Authorizer: Cognito User Pools
  ********************************************************/
 resource "aws_api_gateway_authorizer" "cognito_kyo8_portfolio" {
-  authorizer_result_ttl_in_seconds = 300
-  identity_source                  = "method.request.header.Authorization"
-  name                             = "cognito-kyo8-portfolio-${var.env}"
-  provider_arns                    = ["arn:aws:cognito-idp:ap-northeast-1:${var.account_id}:userpool/ap-northeast-1_eXwFoX41t"]
-  region                           = "ap-northeast-1"
-  rest_api_id                      = aws_api_gateway_rest_api.kyo8_portfolio.id
-  type                             = "COGNITO_USER_POOLS"
+  name            = "cognito-kyo8-portfolio-${var.env}"
+  identity_source = "method.request.header.Authorization"
+  provider_arns   = [var.user_pool_arn]
+  rest_api_id     = aws_api_gateway_rest_api.kyo8_portfolio.id
+  type            = "COGNITO_USER_POOLS"
 }
 
 /********************************************************
