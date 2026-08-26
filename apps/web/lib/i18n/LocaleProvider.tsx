@@ -8,11 +8,11 @@ const STORAGE_KEY = "locale";
 const listeners = new Set<() => void>();
 
 function readLocale(): Locale {
-  return window.localStorage.getItem(STORAGE_KEY) === "ja" ? "ja" : "en";
+  return window.localStorage.getItem(STORAGE_KEY) === "en" ? "en" : "ja";
 }
 
 function getServerSnapshot(): Locale {
-  return "en";
+  return "ja";
 }
 
 function subscribe(callback: () => void) {

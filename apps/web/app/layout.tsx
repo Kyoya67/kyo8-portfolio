@@ -37,7 +37,7 @@ const THEME_INIT = `
   try {
     var theme = localStorage.getItem("theme") === "light" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", theme);
-    var locale = localStorage.getItem("locale") === "ja" ? "ja" : "en";
+    var locale = localStorage.getItem("locale") === "en" ? "en" : "ja";
     document.documentElement.lang = locale;
   } catch (e) {}
 })();
@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   return (
     <html
-      lang="en"
+      lang="ja"
       data-theme="dark"
       className={`${geistMono.variable} h-full`}
       suppressHydrationWarning
