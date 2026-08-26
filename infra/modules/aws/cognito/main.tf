@@ -51,6 +51,6 @@ resource "aws_cognito_user_pool_client" "admin_spa" {
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
-  domain       = "ap-northeast-1exwfox41t"
+  domain       = "kyo8-portfolio-${var.env}"
   user_pool_id = aws_cognito_user_pool.main.id
 }
