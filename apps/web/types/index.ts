@@ -1,5 +1,5 @@
 export type Locale = "en" | "ja";
- 
+
 export type LocalizedText = Record<Locale, string>;
 
 export type SkillCategory =
