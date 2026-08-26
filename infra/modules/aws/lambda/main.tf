@@ -7,6 +7,15 @@ resource "aws_lambda_function" "kyo8_portfolio_api" {
   reserved_concurrent_executions = -1
   role                           = var.role_arn.lambda_api
   timeout                        = 3
+  environment {
+    variables = {
+      PROFILE_TABLE_NAME = "profile-${var.env}"
+      SKILL_TABLE_NAME   = "skill-${var.env}"
+      ARTICLE_TABLE_NAME = "article-${var.env}"
+      PROJECT_TABLE_NAME = "project-${var.env}"
+      CAREER_TABLE_NAME  = "career-${var.env}"
+    }
+  }
   lifecycle {
     ignore_changes = [image_uri]
   }
@@ -29,6 +38,15 @@ resource "aws_lambda_function" "kyo8_portfolio_batch" {
   reserved_concurrent_executions = -1
   role                           = var.role_arn.lambda_batch
   timeout                        = 3
+  environment {
+    variables = {
+      PROFILE_TABLE_NAME = "profile-${var.env}"
+      SKILL_TABLE_NAME   = "skill-${var.env}"
+      ARTICLE_TABLE_NAME = "article-${var.env}"
+      PROJECT_TABLE_NAME = "project-${var.env}"
+      CAREER_TABLE_NAME  = "career-${var.env}"
+    }
+  }
   image_config {
     command = ["batch"]
 

@@ -23,6 +23,25 @@ resource "aws_api_gateway_stage" "v1" {
 }
 
 /********************************************************
+ * API Gateway Custom Domain
+ ********************************************************/
+
+resource "aws_api_gateway_domain_name" "api" {
+  domain_name              = var.custom_domain_name
+  regional_certificate_arn = var.certificate_arn
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+resource "aws_api_gateway_base_path_mapping" "api" {
+  api_id      = aws_api_gateway_rest_api.kyo8_portfolio.id
+  domain_name = aws_api_gateway_domain_name.api.domain_name
+  stage_name  = aws_api_gateway_stage.v1.stage_name
+}
+
+/********************************************************
  * API Gateway Deployment
  ********************************************************/
 resource "aws_api_gateway_deployment" "kyo8_portfolios" {

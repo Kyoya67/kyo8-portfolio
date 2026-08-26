@@ -33,10 +33,12 @@ module "cognito" {
   urls   = ["http://localhost:3001", "https://admin.stg.kyo8.dev"]
 }
 module "api_gateway" {
-  source         = "../modules/aws/api_gateway"
-  env            = local.env
-  api_lambda_arn = module.lambda.lambda_api_arn
-  user_pool_arn  = module.cognito.user_pool_arn
+  source             = "../modules/aws/api_gateway"
+  env                = local.env
+  api_lambda_arn     = module.lambda.lambda_api_arn
+  user_pool_arn      = module.cognito.user_pool_arn
+  custom_domain_name = "api-v1.stg.kyo8.dev"
+  certificate_arn    = module.acm_cloud_pratica_com_ap_northeast_1.certificate_arn
 }
 
 module "dynamoDB" {
@@ -84,8 +86,8 @@ module "route53" {
       type = "A"
       alias = {
         evaluate_target_health = false
-        name                   = "d-7l22g1rytb.execute-api.ap-northeast-1.amazonaws.com"
-        zone_id                = "Z1YSHQZHG15GKL"
+        name                   = module.api_gateway.regional_domain_name
+        zone_id                = module.api_gateway.regional_hosted_zone_id
       }
     }
   ]
