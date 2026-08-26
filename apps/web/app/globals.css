@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
 
 :root {
   --bg: #fafaf9;
@@ -86,6 +87,14 @@ body {
 ::selection {
   background: var(--fg);
   color: var(--bg);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .bg-grid {

@@ -1,7 +1,33 @@
+import { PanelFrame, PanelHeading, BracketButton } from "@kyo8/ui";
+
 export default function Home() {
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <p className="text-sm text-zinc-500">KYO8 Admin — coming soon</p>
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+      <PanelFrame className="animate-fade-up">
+        <PanelHeading number="01" title="Dashboard" />
+        <div className="flex flex-col gap-6 px-6 py-10">
+          <p className="text-xs tracking-[0.1em] text-fg-muted uppercase">
+            KYO8.dev content management
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <BracketButton href="/profile" solid>
+              Profile
+            </BracketButton>
+            <BracketButton href="/skills" solid>
+              Skills
+            </BracketButton>
+            <BracketButton href="/projects" solid>
+              Projects
+            </BracketButton>
+            <BracketButton href="/articles" solid>
+              Articles
+            </BracketButton>
+            <BracketButton href="/careers" solid>
+              Career
+            </BracketButton>
+          </div>
+        </div>
+      </PanelFrame>
     </div>
   );
 }

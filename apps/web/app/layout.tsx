@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
+import { getProfileOrFallback } from "@/lib/api/profile";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
@@ -10,10 +11,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const TITLE = "KYO8 — Backend / Infrastructure Engineer";
+const DESCRIPTION =
+  "Kyoya's portfolio — backend and infrastructure engineering. Go, AWS, Terraform, and low-level systems.";
+
 export const metadata: Metadata = {
-  title: "KYO8 — Backend / Infrastructure Engineer",
-  description:
-    "Kyoya's portfolio — backend and infrastructure engineering. Go, AWS, Terraform, and low-level systems.",
+  metadataBase: new URL("https://kyo8.dev"),
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: "kyo8.dev",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const THEME_INIT = `
@@ -27,7 +43,9 @@ const THEME_INIT = `
 })();
 `;
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const profile = await getProfileOrFallback();
+
   return (
     <html
       lang="en"
@@ -43,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <LocaleProvider>
           <Header />
           <main className="flex-1">{children}</main>
-          <Footer />
+          <Footer profile={profile} />
         </LocaleProvider>
       </body>
     </html>

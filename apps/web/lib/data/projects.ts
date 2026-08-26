@@ -2,9 +2,24 @@ import type { Project } from "@/types";
 
 export const projects: Project[] = [
   {
+    id: "mock-warning",
+    slug: "mock-data-warning",
+    title: { en: "⚠ MOCK DATA (API unreachable)", ja: "⚠ モックデータ（APIに接続できません）" },
+    summary: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    description: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    graphic: "grid",
+    repositoryUrl: "https://github.com/",
+    websiteUrl: null,
+    technologies: [],
+    featured: true,
+    published: true,
+    order: 0,
+    year: "----",
+  },
+  {
     id: "p01",
     slug: "analytics-platform",
-    title: "Analytics Platform",
+    title: { en: "Analytics Platform", ja: "Analytics Platform" },
     summary: {
       en: "Real-time analytics platform built with Go and AWS.",
       ja: "GoとAWSで構築したリアルタイム分析プラットフォーム。",
@@ -25,7 +40,7 @@ export const projects: Project[] = [
   {
     id: "p02",
     slug: "onchain-nft-minter",
-    title: "On-chain NFT Minter",
+    title: { en: "On-chain NFT Minter", ja: "On-chain NFT Minter" },
     summary: {
       en: "NFT minting platform on Ethereum with on-chain metadata.",
       ja: "オンチェーンメタデータを持つEthereum上のNFTミンティングプラットフォーム。",
@@ -46,7 +61,7 @@ export const projects: Project[] = [
   {
     id: "p03",
     slug: "microservices-platform",
-    title: "Microservices Platform",
+    title: { en: "Microservices Platform", ja: "Microservices Platform" },
     summary: {
       en: "Scalable microservices architecture with Go, gRPC, and Docker.",
       ja: "Go・gRPC・Dockerによるスケーラブルなマイクロサービス基盤。",
@@ -67,7 +82,7 @@ export const projects: Project[] = [
   {
     id: "p04",
     slug: "kyo8-portfolio",
-    title: "kyo8.dev Portfolio",
+    title: { en: "kyo8.dev Portfolio", ja: "kyo8.dev Portfolio" },
     summary: {
       en: "This site — a Next.js + Go + AWS portfolio with an admin CMS.",
       ja: "このサイト自体 — Next.js + Go + AWSで構築した、管理画面付きポートフォリオ。",

@@ -139,6 +139,20 @@ const GRAPHICS: Record<Project["graphic"], () => React.JSX.Element> = {
 };
 
 export default function ProjectGraphic({ project }: { project: Project }) {
+  if (project.imageUrl) {
+    return (
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-border bg-bg-inset">
+        {/* Arbitrary external/S3 URLs, so next/image's domain allowlist doesn't apply. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={project.imageUrl}
+          alt={project.title.en}
+          className="h-full w-full object-cover"
+        />
+      </div>
+    );
+  }
+
   const Art = GRAPHICS[project.graphic];
   return (
     <div className="relative flex aspect-[16/10] items-center justify-center overflow-hidden border-b border-border bg-bg-inset text-fg">

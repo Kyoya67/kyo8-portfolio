@@ -15,6 +15,9 @@ build/
 
 # Go build artifacts
 apps/api/bin/
+apps/api/api
+apps/api/local
+apps/api/server
 *.test
 
 # misc
@@ -32,6 +35,13 @@ yarn-error.log*
 # vercel / amplify
 .vercel
 .amplify-hosting/
+
+# Terraform local state and provider cache
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
 
 # typescript
 *.tsbuildinfo

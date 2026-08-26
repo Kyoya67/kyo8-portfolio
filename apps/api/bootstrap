@@ -1,0 +1,10 @@
+#!/bin/sh
+
+case "${AWS_LAMBDA_FUNCTION_NAME}" in
+  kyo8-portfolio-batch-stg)
+    exec "${LAMBDA_TASK_ROOT}/batch"
+    ;;
+  *)
+    exec "${LAMBDA_TASK_ROOT}/api"
+    ;;
+esac

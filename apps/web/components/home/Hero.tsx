@@ -1,12 +1,12 @@
 "use client";
 
-import { profile } from "@/lib/data/profile";
+import type { Profile } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "@/components/ui/PanelFrame";
-import { GitHubIcon, LinkedInIcon, MailIcon, XIcon } from "@/components/icons";
+import { PanelFrame } from "@kyo8/ui";
+import { GitHubIcon, LinkedInIcon, XIcon } from "@kyo8/ui";
 import HexTicker from "./HexTicker";
 
-export default function Hero() {
+export default function Hero({ profile }: { profile: Profile }) {
   const { locale, t } = useLocale();
 
   return (
@@ -27,7 +27,7 @@ export default function Hero() {
 
             <div className="mt-8">
               
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
           <a
             href={profile.githubUrl}
             target="_blank"
@@ -46,7 +46,7 @@ export default function Hero() {
             >
 
               <XIcon className="h-3.5 w-3.5" />
-              X (Twitter)
+              (Twitter)
             </a>
           )}
           {profile.linkedinUrl && (

@@ -1,8 +1,8 @@
 import type { Profile } from "@/types";
 
 export const profile: Profile = {
-  name: "Kyoya",
-  handle: "KYO8",
+  name: "[MOCK] Kyoya",
+  handle: "[MOCK] KYO8",
   headline: {
     en: "KYO8\nBackend \nInfrastructure Engineer",
     ja: "KYO8\nバックエンド \nインフラエンジニア",

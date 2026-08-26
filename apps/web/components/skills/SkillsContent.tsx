@@ -1,11 +1,11 @@
 "use client";
 
-import PageHeader from "@/components/ui/PageHeader";
+import { PageHeader } from "@kyo8/ui";
 import SkillsGrid from "@/components/skills/SkillsGrid";
-import { skills } from "@/lib/data/skills";
+import type { Skill } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 
-export default function SkillsContent() {
+export default function SkillsContent({ skills }: { skills: Skill[] }) {
   const { t } = useLocale();
 
   return (

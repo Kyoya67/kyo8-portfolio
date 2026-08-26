@@ -1,6 +1,6 @@
 "use client";
 
-import PageHeader from "@/components/ui/PageHeader";
+import { PageHeader } from "@kyo8/ui";
 import CareerTimeline from "@/components/career/CareerTimeline";
 import { careers } from "@/lib/data/careers";
 import { useLocale } from "@/lib/i18n/LocaleProvider";

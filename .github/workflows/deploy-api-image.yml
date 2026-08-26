@@ -6,6 +6,7 @@ on:
       - develop
     paths:
       - "apps/api/**"
+      - ".github/workflows/deploy-api-image.yml"
   workflow_dispatch:
 
 permissions:
@@ -19,10 +20,12 @@ concurrency:
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   ECR_REPOSITORY: ${{ vars.ECR_API_REPOSITORY }}
+  API_LAMBDA_FUNCTION_NAME: kyo8-portfolio-api-stg
+  BATCH_LAMBDA_FUNCTION_NAME: kyo8-portfolio-batch-stg
 
 jobs:
   deploy:
-    name: Build and push API image
+    name: Build and push Lambda image
     runs-on: ubuntu-latest
 
     steps:
@@ -42,6 +45,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set image tag
+        id: image-tag
+        run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
@@ -51,5 +58,31 @@ jobs:
           provenance: false
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:develop
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}
+
+      - name: Update api Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name "${API_LAMBDA_FUNCTION_NAME}" \
+            --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
+            --region "${AWS_REGION}"
+
+      - name: Update batch Lambda function
+        run: |
+          aws lambda update-function-code \
+            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
+            --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.image-tag.outputs.tag }}" \
+            --architectures arm64 \
+            --region "${AWS_REGION}"
+
+      - name: Wait for Lambda update
+        run: |
+          aws lambda wait function-updated-v2 \
+            --function-name "${API_LAMBDA_FUNCTION_NAME}" \
+            --region "${AWS_REGION}"
+
+      - name: Wait for batch Lambda update
+        run: |
+          aws lambda wait function-updated-v2 \
+            --function-name "${BATCH_LAMBDA_FUNCTION_NAME}" \
+            --region "${AWS_REGION}"

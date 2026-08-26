@@ -1,12 +1,12 @@
 "use client";
 
-import { careers } from "@/lib/data/careers";
+import type { Career } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
-import PanelFrame from "@/components/ui/PanelFrame";
-import PanelHeading from "@/components/ui/PanelHeading";
+import { PanelFrame } from "@kyo8/ui";
+import { PanelHeading } from "@kyo8/ui";
 import CareerTimeline from "@/components/career/CareerTimeline";
 
-export default function CareerPreview() {
+export default function CareerPreview({ careers }: { careers: Career[] }) {
   const { t } = useLocale();
 
   return (

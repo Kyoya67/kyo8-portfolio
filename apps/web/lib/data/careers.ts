@@ -2,6 +2,16 @@ import type { Career } from "@/types";
 
 export const careers: Career[] = [
   {
+    id: "mock-warning",
+    type: "work",
+    organization: "⚠ MOCK DATA (API unreachable)",
+    position: { en: "Placeholder", ja: "プレースホルダー" },
+    startDate: "2000-01",
+    endDate: null,
+    description: { en: "This is placeholder content.", ja: "これはプレースホルダーです。" },
+    order: 999,
+  },
+  {
     id: "c01",
     type: "work",
     organization: "Mercoin (Mercari)",
@@ -15,7 +25,6 @@ export const careers: Career[] = [
       en: "Working on the development of an NFT marketplace.",
       ja: "NFTマーケットプレイスの開発に従事。",
     },
-    note: "push value",
     order: 1,
   },
   {
@@ -32,7 +41,6 @@ export const careers: Career[] = [
       en: "Worked on API development for an online service.",
       ja: "オンラインサービスのAPI開発を担当。",
     },
-    note: "call",
     order: 2,
   },
   {
@@ -49,7 +57,6 @@ export const careers: Career[] = [
       en: "Research on media expression and technology.",
       ja: "メディア表現とテクノロジーの研究。",
     },
-    note: "continue",
     order: 3,
   },
   {
@@ -66,7 +73,6 @@ export const careers: Career[] = [
       en: "Studied distributed systems and formal methods.",
       ja: "分散システム・形式手法を中心に学習。",
     },
-    note: "return",
     order: 4,
   },
 ];
