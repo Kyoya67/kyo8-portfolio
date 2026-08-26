@@ -22,37 +22,7 @@ kyo8-portfolio/
 
 ## AWS architecture
 
-```mermaid
-flowchart TD
-    User[Browser]
-    Admin[Admin Browser]
-    DNS[Route 53]
-    Web[Amplify Hosting<br/>apps/web]
-    AdminApp[Amplify Hosting<br/>apps/admin]
-    APIDomain[API Gateway Custom Domain<br/>api-v1.kyo8.dev]
-    APIGW[API Gateway REST API]
-    API[Lambda API<br/>Container Image]
-    Batch[Lambda Batch<br/>Container Image]
-    ECR[ECR]
-    DB[(DynamoDB)]
-    Cognito[Cognito User Pool<br/>Hosted UI]
-    Scheduler[EventBridge Scheduler]
-    S3[S3]
-
-    User --> DNS --> Web
-    Admin --> DNS --> AdminApp
-    Web --> APIDomain
-    AdminApp --> APIDomain
-    AdminApp --> Cognito
-    APIDomain --> APIGW
-    APIGW --> API
-    ECR --> API
-    ECR --> Batch
-    API --> DB
-    Batch --> DB
-    Scheduler --> Batch
-    API --> S3
-```
+<img src="docs/aws-architecture.svg" alt="AWS architecture" width="70%">
 
 環境ごとに`stg`と`prd`を分離し、Terraformのstateも環境別に管理します。
 
@@ -164,32 +134,9 @@ TerraformではAWSリソースの構成を管理します。DynamoDBのテーブ
 
 - ECR
 - Lambda
-- API Gateway REST API、リソース、メソッド、統合、ステージ、カスタムドメイン
-- DynamoDB tables
-- Cognito User Pool、App Client、User Pool Domain
+- API Gateway
+- DynamoDB
+- Cognito 
 - EventBridge Scheduler
 - ACM certificates
-- Route 53 hosted zone and records
-- S3
-
-## Local development
-
-Go APIは`apps/api`で実行します。
-
-`````bash
-cd apps/api
-go run ./cmd/server
-`````
-
-APIのヘルスチェック：
-
-`````bash
-curl -i http://localhost:8080/health
-`````
-
-テストとビルド：
-
-`````bash
-go test ./...
-go build ./cmd/server
-`````
+- Route53
