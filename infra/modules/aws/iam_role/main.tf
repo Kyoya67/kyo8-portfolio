@@ -61,7 +61,7 @@ resource "aws_iam_role" "github_actions" {
       Condition = {
         StringEquals = {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-          "token.actions.githubusercontent.com:sub" = "repo:Kyoya67@86813838/kyo8-portfolio@1339384256:ref:refs/heads/develop"
+          "token.actions.githubusercontent.com:sub" = "repo:Kyoya67/kyo8-portfolio:ref:refs/heads/${var.env == "prd" ? "main" : "develop"}"
         }
       }
       Effect = "Allow"
@@ -105,4 +105,3 @@ resource "aws_iam_role_policy_attachment" "batch_scheduler" {
   role       = "kyo8-portfolio-batch-scheduler-${var.env}"
   policy_arn = "arn:aws:iam::${var.account_id}:policy/kyo8-portfolio-batch-invoke-lambda-${var.env}"
 }
-
