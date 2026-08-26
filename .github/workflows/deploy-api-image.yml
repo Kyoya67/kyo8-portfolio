@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - main
     paths:
       - "apps/api/**"
       - ".github/workflows/deploy-api-image.yml"
@@ -27,7 +28,13 @@ env:
 jobs:
   deploy:
     name: Build and push Lambda image
+    environment: ${{ github.ref_name == 'main' && 'prd' || 'stg' }}
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      ECR_REPOSITORY: ${{ vars.ECR_API_REPOSITORY }}
+      API_LAMBDA_FUNCTION_NAME: kyo8-portfolio-api-${{ github.ref_name == 'main' && 'prd' || 'stg' }}
+      BATCH_LAMBDA_FUNCTION_NAME: kyo8-portfolio-batch-${{ github.ref_name == 'main' && 'prd' || 'stg' }}
 
     steps:
       - name: Checkout
