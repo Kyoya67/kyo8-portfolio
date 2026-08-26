@@ -28,7 +28,6 @@ env:
 jobs:
   deploy:
     name: Build and push Lambda image
-    environment: ${{ github.ref_name == 'main' && 'prd' || 'stg' }}
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ vars.AWS_REGION }}
