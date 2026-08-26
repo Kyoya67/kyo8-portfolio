@@ -51,8 +51,6 @@ resource "aws_cognito_user_pool_client" "admin_spa" {
 }
 
 resource "aws_cognito_user_pool_domain" "main" {
-  domain                = "ap-northeast-1exwfox41t"
-  managed_login_version = 2
-  region                = "ap-northeast-1"
-  user_pool_id          = "ap-northeast-1_eXwFoX41t"
+  domain       = "ap-northeast-1exwfox41t"
+  user_pool_id = aws_cognito_user_pool.main.id
 }
