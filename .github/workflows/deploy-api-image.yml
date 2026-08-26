@@ -29,11 +29,6 @@ jobs:
   deploy:
     name: Build and push Lambda image
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: ${{ vars.AWS_REGION }}
-      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-      API_LAMBDA_FUNCTION_NAME: kyo8-portfolio-api-${{ github.ref_name == 'main' && 'prd' || 'stg' }}
-      BATCH_LAMBDA_FUNCTION_NAME: kyo8-portfolio-batch-${{ github.ref_name == 'main' && 'prd' || 'stg' }}
 
     steps:
       - name: Checkout
