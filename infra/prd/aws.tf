@@ -29,12 +29,13 @@ module "event_bridge_scheduler" {
 }
 
 module "api_gateway" {
-  source         = "../modules/aws/api_gateway"
-  env            = local.env
-  api_lambda_arn = module.lambda.lambda_api_arn
-  user_pool_arn  = module.cognito.user_pool_arn
+  source             = "../modules/aws/api_gateway"
+  env                = local.env
+  api_lambda_arn     = module.lambda.lambda_api_arn
+  user_pool_arn      = module.cognito.user_pool_arn
+  custom_domain_name = "api-v1.kyo8.dev"
+  certificate_arn    = module.acm_cloud_pratica_com_ap_northeast_1.certificate_arn
 }
-
 module "cognito" {
   source = "../modules/aws/cognito"
   env    = local.env
@@ -57,6 +58,12 @@ module "route53" {
   zone_name = local.base_host
   records = [
     {
+      name   = "_d5ec9989bc01635d92870014e2a71eb2.kyo8.dev"
+      type   = "CNAME"
+      ttl    = 300
+      values = ["_730c0559e2742dd414af9c864574bc45.jkddzztszm.acm-validations.aws."]
+    },
+    {
       name = "stg.kyo8.dev"
       type = "NS"
       ttl  = 300
@@ -66,6 +73,15 @@ module "route53" {
         "ns-429.awsdns-53.com.",
         "ns-1835.awsdns-37.co.uk.",
       ]
+    },
+    {
+      name = "api-v1.kyo8.dev"
+      type = "A"
+      alias = {
+        name                   = module.api_gateway.regional_domain_name
+        zone_id                = module.api_gateway.regional_hosted_zone_id
+        evaluate_target_health = false
+      }
     }
   ]
 }
