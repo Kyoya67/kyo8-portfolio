@@ -18,6 +18,13 @@ concurrency:
   group: deploy-api-image-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ROLE_ARN: ${{ secrets[github.ref_name == 'main' && 'AWS_ROLE_ARN_PRD' || 'AWS_ROLE_ARN_STG'] }}
+  ECR_REPOSITORY: ${{ vars[github.ref_name == 'main' && 'ECR_API_REPOSITORY_PRD' || 'ECR_API_REPOSITORY_STG'] }}
+  API_LAMBDA_FUNCTION_NAME: kyo8-portfolio-api-${{ github.ref_name == 'main' && 'prd' || 'stg' }}
+  BATCH_LAMBDA_FUNCTION_NAME: kyo8-portfolio-batch-${{ github.ref_name == 'main' && 'prd' || 'stg' }}
+
 jobs:
   deploy:
     name: Build and push Lambda image
@@ -37,7 +44,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
 
       - name: Login to Amazon ECR
         id: login-ecr
