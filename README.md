@@ -32,7 +32,7 @@ kyo8-portfolio/
 
 # AWSアーキテクチャ
 
-<img src="docs/architecture.png" alt="AWS architecture" width="100%">
+<img src="docs/aws-architecture.png" alt="AWS architecture" width="100%">
 
 # Terraform
 
@@ -112,19 +112,7 @@ sequenceDiagram
 
 GitHub Actionsが`apps/api`をDocker buildし、ARM64用のLambdaコンテナイメージとしてECRへpushします。その後、API用とBatch用のLambda関数を同じイメージから更新します。
 
-```mermaid
-flowchart LR
-    Git[GitHub push]
-    Actions[GitHub Actions<br/>OIDC]
-    Docker[Docker build<br/>linux/arm64]
-    ECR[ECR repository]
-    API[Lambda API<br/>Command: api]
-    Batch[Lambda Batch<br/>Command: batch]
-
-    Git --> Actions --> Docker --> ECR
-    ECR --> API
-    ECR --> Batch
-```
+<img src="docs/workflow.png" alt="GitHub Actions workflow" width="100%">
 
 `apps/api/Dockerfile`では、APIとBatchの2つのGoバイナリを1つのコンテナイメージへ配置します。Lambdaごとに起動するコマンドを切り替えます。
 
