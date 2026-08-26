@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef } from "react";
-import { ArrowRightIcon } from "@kyo8/ui";
 
 const DRAG_THRESHOLD = 6;
 
@@ -15,12 +14,6 @@ interface DragState {
 export default function Carousel({ children }: { children: React.ReactNode }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef<DragState | null>(null);
-
-  function scrollByAmount(direction: 1 | -1) {
-    const el = trackRef.current;
-    if (!el) return;
-    el.scrollBy({ left: direction * el.clientWidth * 0.9, behavior: "smooth" });
-  }
 
   function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     drag.current = {
@@ -69,24 +62,6 @@ export default function Carousel({ children }: { children: React.ReactNode }) {
         {children}
       </div>
 
-      <div className="mt-3 flex justify-end gap-2 px-6 sm:px-8">
-        <button
-          type="button"
-          onClick={() => scrollByAmount(-1)}
-          aria-label="Previous"
-          className="flex h-8 w-8 items-center justify-center border border-border-strong text-fg-muted transition-colors hover:border-fg hover:text-fg cursor-pointer"
-        >
-          <ArrowRightIcon className="h-3.5 w-3.5 rotate-180" />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollByAmount(1)}
-          aria-label="Next"
-          className="flex h-8 w-8 items-center justify-center border border-border-strong text-fg-muted transition-colors hover:border-fg hover:text-fg cursor-pointer"
-        >
-          <ArrowRightIcon className="h-3.5 w-3.5" />
-        </button>
-      </div>
     </div>
   );
 }

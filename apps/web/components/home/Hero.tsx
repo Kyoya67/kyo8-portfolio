@@ -7,7 +7,7 @@ import { GitHubIcon, LinkedInIcon, XIcon } from "@kyo8/ui";
 import HexTicker from "./HexTicker";
 
 export default function Hero({ profile }: { profile: Profile }) {
-  const { locale, t } = useLocale();
+  const { locale } = useLocale();
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-10"><PanelFrame>
@@ -23,8 +23,6 @@ export default function Hero({ profile }: { profile: Profile }) {
             <p className="mt-5 text-xs tracking-[0.15em] text-fg-muted uppercase sm:text-sm">
               {profile.headline[locale]}
             </p>
-            <p className="mt-1 text-xs text-fg-dim sm:text-sm">{t.hero.basedIn(profile.location[locale])}</p>
-
             <div className="mt-8">
               
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
