@@ -147,7 +147,7 @@ export default function ProjectGraphic({ project }: { project: Project }) {
         <img
           src={project.imageUrl}
           alt={project.title.en}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
         />
       </div>
     );
