@@ -32,6 +32,7 @@ module "api_gateway" {
   source         = "../modules/aws/api_gateway"
   env            = local.env
   api_lambda_arn = module.lambda.lambda_api_arn
+  account_id     = local.account_id
 }
 
 module "cognito" {
@@ -90,9 +91,4 @@ module "route53" {
       }
     }
   ]
-}
-
-import {
-  to = module.api_gateway.aws_api_gateway_authorizer.cognito_kyo8_portfolio
-  id = "763cenil1m/fqdevy"
 }

@@ -92,9 +92,9 @@ resource "aws_api_gateway_authorizer" "cognito_kyo8_portfolio" {
   authorizer_result_ttl_in_seconds = 300
   identity_source                  = "method.request.header.Authorization"
   name                             = "cognito-kyo8-portfolio-${var.env}"
-  provider_arns                    = ["arn:aws:cognito-idp:ap-northeast-1:145888859080:userpool/ap-northeast-1_eXwFoX41t"]
+  provider_arns                    = ["arn:aws:cognito-idp:ap-northeast-1:${var.account_id}:userpool/ap-northeast-1_eXwFoX41t"]
   region                           = "ap-northeast-1"
-  rest_api_id                      = "763cenil1m"
+  rest_api_id                      = aws_api_gateway_rest_api.kyo8_portfolio.id
   type                             = "COGNITO_USER_POOLS"
 }
 
