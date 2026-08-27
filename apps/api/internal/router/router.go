@@ -35,16 +35,6 @@ func New(db *dynamodb.Client) http.Handler {
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
-	r.PathPrefix("/").Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
-	})
-	// mux's default NotFoundHandler/MethodNotAllowedHandler don't go through r.Use,
-	// so an unmatched route would otherwise come back with no CORS headers and the
-	// browser reports it as a CORS failure instead of a 404.
-	r.NotFoundHandler = middleware.CORS(http.HandlerFunc(http.NotFound))
-	r.MethodNotAllowedHandler = middleware.CORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-	}))
 
 	r.HandleFunc("/health", handler.Health).Methods("GET")
 

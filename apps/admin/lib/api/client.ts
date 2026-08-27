@@ -60,8 +60,12 @@ export async function apiFetch(
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
+    const message =
+      res.status === 404
+        ? `Resource not found: ${path}`
+        : `Request to ${path} failed with status ${res.status}${body ? `: ${body}` : ""}`;
     throw new ApiError(
-      `Request to ${path} failed with status ${res.status}${body ? `: ${body}` : ""}`,
+      message,
       res.status
     );
   }
