@@ -20,7 +20,7 @@ func newHandler(db *dynamodb.Client, awsConfig aws.Config) func(
 	ctx context.Context,
 	request events.APIGatewayProxyRequest,
 ) (events.APIGatewayProxyResponse, error) {
-	apiRouter := router.New(db, awsConfig)
+	apiRouter := router.New(db)
 
 	return func(
 		ctx context.Context,
