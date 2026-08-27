@@ -7,12 +7,11 @@ import (
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/middleware"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/repository"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/gorilla/mux"
 )
 
-func New(db *dynamodb.Client, config aws.Config) http.Handler {
+func New(db *dynamodb.Client) http.Handler {
 	profileRepository := repository.NewProfileRepository(db)
 	profileService := service.NewProfileService(profileRepository)
 	profileHandler := handler.NewProfileHandler(profileService)
@@ -23,8 +22,7 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 
 	projectRepository := repository.NewProjectRepository(db)
 	projectService := service.NewProjectService(projectRepository)
-	imageUploadService := service.NewImageUploadService(config)
-	projectHandler := handler.NewProjectHandler(projectService, imageUploadService)
+	projectHandler := handler.NewProjectHandler(projectService)
 
 	articleRepository := repository.NewArticleRepository(db)
 	articleService := service.NewArticleService(articleRepository)
@@ -61,7 +59,6 @@ func New(db *dynamodb.Client, config aws.Config) http.Handler {
 	r.HandleFunc("/admin/projects", projectHandler.CreateProject).Methods("POST")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.UpdateProject).Methods("PUT")
 	r.HandleFunc("/admin/projects/{id}", projectHandler.DeleteProject).Methods("DELETE")
-	r.HandleFunc("/admin/projects/{id}/image-upload", projectHandler.CreateImageUploadURL).Methods("POST")
 
 	r.HandleFunc("/articles", articleHandler.ListArticles).Methods("GET")
 	r.HandleFunc("/articles/{id}", articleHandler.GetArticle).Methods("GET")
