@@ -27,21 +27,6 @@ func NewArticleRepository(db *dynamodb.Client) *ArticleRepository {
 	return &ArticleRepository{db: db, tableName: tableName}
 }
 
-func (r *ArticleRepository) ListArticles(ctx context.Context) ([]model.Article, error) {
-	input := &dynamodb.ScanInput{TableName: aws.String(r.tableName)}
-
-	output, err := r.db.Scan(ctx, input)
-	if err != nil {
-		return nil, fmt.Errorf("list articles from DynamoDB: %w", err)
-	}
-
-	articles := make([]model.Article, 0, len(output.Items))
-	if err := attributevalue.UnmarshalListOfMaps(output.Items, &articles); err != nil {
-		return nil, fmt.Errorf("unmarshal articles: %w", err)
-	}
-	return articles, nil
-}
-
 func (r *ArticleRepository) GetArticle(ctx context.Context, id string) (model.Article, error) {
 	output, err := r.db.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: aws.String(r.tableName),
@@ -61,6 +46,21 @@ func (r *ArticleRepository) GetArticle(ctx context.Context, id string) (model.Ar
 		return model.Article{}, fmt.Errorf("unmarshal article: %w", err)
 	}
 	return article, nil
+}
+
+func (r *ArticleRepository) ListArticles(ctx context.Context) ([]model.Article, error) {
+	input := &dynamodb.ScanInput{TableName: aws.String(r.tableName)}
+
+	output, err := r.db.Scan(ctx, input)
+	if err != nil {
+		return nil, fmt.Errorf("list articles from DynamoDB: %w", err)
+	}
+
+	articles := make([]model.Article, 0, len(output.Items))
+	if err := attributevalue.UnmarshalListOfMaps(output.Items, &articles); err != nil {
+		return nil, fmt.Errorf("unmarshal articles: %w", err)
+	}
+	return articles, nil
 }
 
 func (r *ArticleRepository) SaveArticle(ctx context.Context, article model.Article) error {

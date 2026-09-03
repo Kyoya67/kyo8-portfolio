@@ -39,7 +39,7 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (model.Profile, erro
 		},
 	})
 	if err != nil {
-		return model.Profile{}, fmt.Errorf("get profile from DynamoDB: %w", err)
+		return model.Profile{}, classifyDynamoError(err)
 	}
 
 	if len(output.Item) == 0 {
@@ -67,7 +67,7 @@ func (r *ProfileRepository) UpdateProfile(ctx context.Context, profile model.Pro
 		Item:      item,
 	})
 	if err != nil {
-		return fmt.Errorf("save profile to DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 
 	return nil

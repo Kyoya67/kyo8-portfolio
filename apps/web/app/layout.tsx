@@ -52,7 +52,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       data-theme="dark"
       className={`${geistMono.variable} h-full`}
       suppressHydrationWarning
-    > 
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>

@@ -1,7 +1,7 @@
 package apperrors
 
 type Error struct {
-	Code    string
+	ErrCode string
 	Message string
 	Err     error `json:"-"`
 }
