@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"os"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -32,12 +32,12 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, 
 
 	output, err := r.db.Scan(ctx, input)
 	if err != nil {
-		return nil, fmt.Errorf("list projects from DynamoDB: %w", err)
+		return nil, classifyDynamoError(err)
 	}
 
 	projects := make([]model.Project, 0, len(output.Items))
 	if err := attributevalue.UnmarshalListOfMaps(output.Items, &projects); err != nil {
-		return nil, fmt.Errorf("unmarshal projects: %w", err)
+		return nil, apperrors.DataMappingFailed.Wrap(err, "failed to decode projects data")
 	}
 	return projects, nil
 }
@@ -50,15 +50,15 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id string) (model.Pr
 		},
 	})
 	if err != nil {
-		return model.Project{}, fmt.Errorf("get project from DynamoDB: %w", err)
+		return model.Project{}, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return model.Project{}, fmt.Errorf("project not found")
+		return model.Project{}, apperrors.NotFound.Wrap(nil, "project not found")
 	}
 
 	var project model.Project
 	if err := attributevalue.UnmarshalMap(output.Item, &project); err != nil {
-		return model.Project{}, fmt.Errorf("unmarshal project: %w", err)
+		return model.Project{}, apperrors.DataMappingFailed.Wrap(err, "failed to decode project data")
 	}
 	return project, nil
 }
@@ -66,11 +66,11 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id string) (model.Pr
 func (r *ProjectRepository) SaveProject(ctx context.Context, project model.Project) error {
 	item, err := attributevalue.MarshalMap(project)
 	if err != nil {
-		return fmt.Errorf("marshal project: %w", err)
+		return apperrors.DataMappingFailed.Wrap(err, "failed to encode project data")
 	}
 	_, err = r.db.PutItem(ctx, &dynamodb.PutItemInput{TableName: aws.String(r.tableName), Item: item})
 	if err != nil {
-		return fmt.Errorf("save project to DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 	return nil
 }
@@ -83,7 +83,7 @@ func (r *ProjectRepository) DeleteProject(ctx context.Context, id string) error 
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("delete project from DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 	return nil
 }

@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"os"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -39,16 +39,16 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (model.Profile, erro
 		},
 	})
 	if err != nil {
-		return model.Profile{}, fmt.Errorf("get profile from DynamoDB: %w", err)
+		return model.Profile{}, classifyDynamoError(err)
 	}
 
 	if len(output.Item) == 0 {
-		return model.Profile{}, fmt.Errorf("profile not found")
+		return model.Profile{}, apperrors.NotFound.Wrap(nil, "profile not found")
 	}
 
 	var profile model.Profile
 	if err := attributevalue.UnmarshalMap(output.Item, &profile); err != nil {
-		return model.Profile{}, fmt.Errorf("unmarshal profile: %w", err)
+		return model.Profile{}, apperrors.DataMappingFailed.Wrap(err, "failed to decode profile data")
 	}
 
 	return profile, nil
@@ -57,7 +57,7 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (model.Profile, erro
 func (r *ProfileRepository) UpdateProfile(ctx context.Context, profile model.Profile) error {
 	item, err := attributevalue.MarshalMap(profile)
 	if err != nil {
-		return fmt.Errorf("marshal profile: %w", err)
+		return apperrors.DataMappingFailed.Wrap(err, "failed to encode profile data")
 	}
 
 	item["id"] = &types.AttributeValueMemberS{Value: "profile"}
@@ -67,7 +67,7 @@ func (r *ProfileRepository) UpdateProfile(ctx context.Context, profile model.Pro
 		Item:      item,
 	})
 	if err != nil {
-		return fmt.Errorf("save profile to DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 
 	return nil

@@ -21,12 +21,12 @@ func NewArticleService(repository ArticleRepository) *ArticleService {
 	return &ArticleService{repository: repository}
 }
 
-func (s *ArticleService) ListArticles(ctx context.Context) ([]model.Article, error) {
-	return s.repository.ListArticles(ctx)
-}
-
 func (s *ArticleService) GetArticle(ctx context.Context, id string) (model.Article, error) {
 	return s.repository.GetArticle(ctx, id)
+}
+
+func (s *ArticleService) ListArticles(ctx context.Context) ([]model.Article, error) {
+	return s.repository.ListArticles(ctx)
 }
 
 func (s *ArticleService) SaveArticle(ctx context.Context, article model.Article) error {

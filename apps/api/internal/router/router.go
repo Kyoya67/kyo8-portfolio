@@ -35,13 +35,13 @@ func New(db *dynamodb.Client) http.Handler {
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
-	r.PathPrefix("/").Methods(http.MethodOptions).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusNoContent)
-	})
-	// mux's default NotFoundHandler/MethodNotAllowedHandler don't go through r.Use,
-	// so an unmatched route would otherwise come back with no CORS headers and the
-	// browser reports it as a CORS failure instead of a 404.
+
+	// ルートが存在しない場合もCORSヘッダーを付けて404を返す。
+	// r.Useだけでは、Gorilla Muxのルート不一致時の処理に適用されないため。
 	r.NotFoundHandler = middleware.CORS(http.HandlerFunc(http.NotFound))
+
+	// パスは存在するがHTTPメソッドが登録されていない場合も、
+	// CORSヘッダーを付けて405 Method Not Allowedを返す。
 	r.MethodNotAllowedHandler = middleware.CORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}))

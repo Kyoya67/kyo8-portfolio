@@ -35,6 +35,7 @@ module "cognito" {
 module "api_gateway" {
   source             = "../modules/aws/api_gateway"
   env                = local.env
+  deploy_version     = "1"
   api_lambda_arn     = module.lambda.lambda_api_arn
   user_pool_arn      = module.cognito.user_pool_arn
   custom_domain_name = "api-v1.stg.kyo8.dev"
