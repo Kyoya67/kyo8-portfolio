@@ -25,6 +25,8 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 	switch ErrCode(appErr.ErrCode) {
 	case ReqBodyDecodeFailed, BadParam:
 		statusCode = http.StatusBadRequest
+	case NotFound:
+		statusCode = http.StatusNotFound
 	case DependencyThrottled, DependencyUnavailable:
 		statusCode = http.StatusServiceUnavailable
 	case DependencyAuthFailed, DependencyConfigError:

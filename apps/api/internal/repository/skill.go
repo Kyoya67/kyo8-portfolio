@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"os"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -41,7 +41,7 @@ func (r *SkillRepository) GetSkills(ctx context.Context) ([]model.Skill, error) 
 		},
 	})
 	if err != nil {
-		return nil, fmt.Errorf("get skills from DynamoDB: %w", err)
+		return nil, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
 		return []model.Skill{}, nil
@@ -49,7 +49,7 @@ func (r *SkillRepository) GetSkills(ctx context.Context) ([]model.Skill, error) 
 
 	var item skillItem
 	if err := attributevalue.UnmarshalMap(output.Item, &item); err != nil {
-		return nil, fmt.Errorf("unmarshal skills: %w", err)
+		return nil, apperrors.DataMappingFailed.Wrap(err, "failed to decode skills data")
 	}
 	return item.Skills, nil
 }
@@ -57,7 +57,7 @@ func (r *SkillRepository) GetSkills(ctx context.Context) ([]model.Skill, error) 
 func (r *SkillRepository) UpdateSkills(ctx context.Context, skills []model.Skill) error {
 	item, err := attributevalue.MarshalMap(skillItem{ID: "skills", Skills: skills})
 	if err != nil {
-		return fmt.Errorf("marshal skills: %w", err)
+		return apperrors.DataMappingFailed.Wrap(err, "failed to encode skills data")
 	}
 
 	_, err = r.db.PutItem(ctx, &dynamodb.PutItemInput{
@@ -65,7 +65,7 @@ func (r *SkillRepository) UpdateSkills(ctx context.Context, skills []model.Skill
 		Item:      item,
 	})
 	if err != nil {
-		return fmt.Errorf("save skills to DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 	return nil
 }

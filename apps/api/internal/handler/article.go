@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 	"github.com/gorilla/mux"
@@ -23,33 +24,35 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 	articles, err := h.service.ListArticles(r.Context())
 	if err != nil {
 		log.Printf("articles request failed: method=%s error=%v", r.Method, err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
-	writeJSON(w, articles)
+	writeJSON(w, r, articles)
 }
 
 func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 	article, err := h.service.GetArticle(r.Context(), mux.Vars(r)["id"])
 	if err != nil {
-		http.Error(w, "Not Found", http.StatusNotFound)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
-	writeJSON(w, article)
+	writeJSON(w, r, article)
 }
 
 func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
 	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	if article.ID == "" {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		err := apperrors.BadParam.Wrap(nil, "article id is required")
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	if err := h.service.SaveArticle(r.Context(), article); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -58,16 +61,18 @@ func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
 	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	article.ID = mux.Vars(r)["id"]
 	if article.ID == "" {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		err := apperrors.BadParam.Wrap(nil, "article id is required")
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	if err := h.service.SaveArticle(r.Context(), article); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -75,7 +80,7 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 
 func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	if err := h.service.DeleteArticle(r.Context(), mux.Vars(r)["id"]); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -85,8 +90,8 @@ func (h *ArticleHandler) SyncZennArticles(w http.ResponseWriter, r *http.Request
 	count, err := h.zennService.SyncArticles(r.Context())
 	if err != nil {
 		log.Printf("Zenn article sync failed: error=%v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
-	writeJSON(w, map[string]int{"synced": count})
+	writeJSON(w, r, map[string]int{"synced": count})
 }

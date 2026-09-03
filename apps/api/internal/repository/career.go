@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"os"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -30,12 +30,12 @@ func NewCareerRepository(db *dynamodb.Client) *CareerRepository {
 func (r *CareerRepository) ListCareers(ctx context.Context) ([]model.Career, error) {
 	output, err := r.db.Scan(ctx, &dynamodb.ScanInput{TableName: aws.String(r.tableName)})
 	if err != nil {
-		return nil, fmt.Errorf("list careers from DynamoDB: %w", err)
+		return nil, classifyDynamoError(err)
 	}
 
 	careers := make([]model.Career, 0, len(output.Items))
 	if err := attributevalue.UnmarshalListOfMaps(output.Items, &careers); err != nil {
-		return nil, fmt.Errorf("unmarshal careers: %w", err)
+		return nil, apperrors.DataMappingFailed.Wrap(err, "failed to decode careers data")
 	}
 	return careers, nil
 }
@@ -48,15 +48,15 @@ func (r *CareerRepository) GetCareer(ctx context.Context, id string) (model.Care
 		},
 	})
 	if err != nil {
-		return model.Career{}, fmt.Errorf("get career from DynamoDB: %w", err)
+		return model.Career{}, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return model.Career{}, fmt.Errorf("career not found")
+		return model.Career{}, apperrors.NotFound.Wrap(nil, "career not found")
 	}
 
 	var career model.Career
 	if err := attributevalue.UnmarshalMap(output.Item, &career); err != nil {
-		return model.Career{}, fmt.Errorf("unmarshal career: %w", err)
+		return model.Career{}, apperrors.DataMappingFailed.Wrap(err, "failed to decode career data")
 	}
 	return career, nil
 }
@@ -64,11 +64,11 @@ func (r *CareerRepository) GetCareer(ctx context.Context, id string) (model.Care
 func (r *CareerRepository) SaveCareer(ctx context.Context, career model.Career) error {
 	item, err := attributevalue.MarshalMap(career)
 	if err != nil {
-		return fmt.Errorf("marshal career: %w", err)
+		return apperrors.DataMappingFailed.Wrap(err, "failed to encode career data")
 	}
 	_, err = r.db.PutItem(ctx, &dynamodb.PutItemInput{TableName: aws.String(r.tableName), Item: item})
 	if err != nil {
-		return fmt.Errorf("save career to DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 	return nil
 }
@@ -81,7 +81,7 @@ func (r *CareerRepository) DeleteCareer(ctx context.Context, id string) error {
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("delete career from DynamoDB: %w", err)
+		return classifyDynamoError(err)
 	}
 	return nil
 }
