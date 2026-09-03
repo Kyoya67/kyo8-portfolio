@@ -6,6 +6,7 @@
 - [AWSアーキテクチャ](#aws-アーキテクチャ)
 - [Terraform](#terraform)
 - [APIルーティング](#apiルーティング)
+- [エラーハンドリング](#エラーハンドリング)
 - [Cognito認証フロー](#cognito-認証フロー)
 - [デプロイ](#デプロイ)
 - [バッチ同期](#バッチ同期)
@@ -65,6 +66,42 @@ PUT    /admin/{proxy+}  # Cognito認証
 DELETE /admin/{proxy+}  # Cognito認証
 ```
 管理APIは`/admin/{proxy+}`配下にまとめ、書き込み操作にCognito認証を要求します。OPTIONSリクエストはCORS preflight用で、認証なしで許可します。
+
+# エラーハンドリング
+
+アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。エラーにはアプリケーション用のエラーコード、クライアント向けメッセージ、元のエラーを保持します。元のエラーは`json:"-"`によりHTTPレスポンスへ公開せず、ログで確認します。
+
+エラー処理の責務は次のように分けています。
+
+- Repository：DynamoDB SDKのエラーを`apperrors`へ変換する
+- Service：Repositoryから返されたエラーをそのまま上位へ返す
+- Handler：`apperrors.ErrorHandler`でHTTPステータスとJSONレスポンスへ変換する
+
+Repositoryでは、DynamoDB固有のエラーとデータ変換エラーを分類します。共通の分類処理は`apps/api/internal/repository/dynamo_error.go`にあります。
+
+主なエラーコードとHTTPステータスは次の通りです。
+
+`````text
+D001 DependencyUnavailable  503 Service Unavailable
+D002 DependencyAuthFailed   500 Internal Server Error
+D003 DependencyConfigError  500 Internal Server Error
+D004 DependencyThrottled    503 Service Unavailable
+D005 Timeout                504 Gateway Timeout
+D006 DataMappingFailed      500 Internal Server Error
+R001 BadParam              400 Bad Request
+R002 ReqBodyDecodeFailed   400 Bad Request
+R003 ResponseEncodeFailed  500 Internal Server Error
+R004 NotFound              404 Not Found
+`````
+
+内部のDynamoDBエラー詳細はレスポンスへ返さず、例えば次のようなアプリケーション用エラーを返します。
+
+`````json
+{
+  "ErrCode": "D004",
+  "Message": "DynamoDB request was throttled"
+}
+`````
 
 # Cognito認証フロー
 
