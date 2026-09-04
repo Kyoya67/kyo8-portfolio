@@ -8,6 +8,8 @@
 - [Terraform](#terraform)
 - [APIルーティング](#apiルーティング)
 - [エラーハンドリング](#エラーハンドリング)
+- [入力検証](#入力検証)
+- [DynamoDB一覧取得](#dynamodb一覧取得)
 - [Cognito認証フロー](#cognito-認証フロー)
 - [デプロイ](#デプロイ)
 - [バッチ同期](#バッチ同期)
@@ -70,7 +72,7 @@ DELETE /admin/{proxy+}  # Cognito認証
 
 # エラーハンドリング
 
-アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。エラーにはアプリケーション用のエラーコード、クライアント向けメッセージ、元のエラーを保持します。元のエラーは`json:"-"`によりHTTPレスポンスへ公開せず、ログで確認します。
+アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。エラーにはアプリケーション用のエラーコード、クライアント向けメッセージ、元のエラーを保持します。元のエラーは`json:"-"`によりHTTPレスポンスへ公開せず、`ErrorHandler`がエラーコード、HTTPメソッド、パス、ステータス、メッセージ、元エラーを構造化されたキー・バリュー形式でログに出力します。
 
 エラー処理の責務は次のように分けています。
 
@@ -89,10 +91,12 @@ D003 DependencyConfigError  500 Internal Server Error
 D004 DependencyThrottled    503 Service Unavailable
 D005 Timeout                504 Gateway Timeout
 D006 DataMappingFailed      500 Internal Server Error
+D007 ExternalServiceFailed  502 Bad Gateway
 R001 BadParam              400 Bad Request
 R002 ReqBodyDecodeFailed   400 Bad Request
 R003 ResponseEncodeFailed  500 Internal Server Error
 R004 NotFound              404 Not Found
+R005 RequestBodyTooLarge   400 Bad Request
 `````
 
 内部のDynamoDBエラー詳細はレスポンスへ返さず、例えば次のようなアプリケーション用エラーを返します。
@@ -103,6 +107,22 @@ R004 NotFound              404 Not Found
   "Message": "DynamoDB request was throttled"
 }
 `````
+
+# 入力検証
+
+JSONリクエストの検証は`internal/handler/decode.go`に共通化しています。
+
+- `http.MaxBytesReader`でリクエストボディを1MiBに制限する
+- `DisallowUnknownFields`でモデルに存在しないJSONフィールドを拒否する
+- JSONを2回Decodeし、1回目のJSONの後ろに余計な値がないことを確認する
+
+2回目のDecodeで`io.EOF`が返る場合は、最初のJSON以外にデータがないため正常です。2つ目のJSONや不正な文字列がある場合は、`ReqBodyDecodeFailed (R002)`として400を返します。ボディサイズ超過は`RequestBodyTooLarge (R005)`として400を返します。
+
+# DynamoDB一覧取得
+
+記事・プロジェクト・経歴の一覧取得では、現時点ではDynamoDBの`Scan`を1回だけ実行します。DynamoDBの`Scan`は1回あたり最大1MBまでという制限がありますが、現在のポートフォリオで扱うデータ量では実害がないと判断し、Paginatorによる複数ページ取得は実装していません。
+
+データ量が増えて1MBを超える場合は、一覧結果が一部だけになる可能性があります。その場合は、RepositoryにPaginatorを追加するか、用途に応じてPartition Keyを使った`Query`へ変更します。画面側で取得単位を制御する必要がある場合は、`LastEvaluatedKey`をAPIのページネーション情報として返します。
 
 # Cognito認証フロー
 

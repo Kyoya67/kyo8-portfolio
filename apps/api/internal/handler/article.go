@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
@@ -23,7 +21,6 @@ func NewArticleHandler(articleService *service.ArticleService, zennService *serv
 func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 	articles, err := h.service.ListArticles(r.Context())
 	if err != nil {
-		log.Printf("articles request failed: method=%s error=%v", r.Method, err)
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
@@ -41,8 +38,7 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 
 func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
-	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &article); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
@@ -60,8 +56,7 @@ func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 
 func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
-	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &article); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
@@ -89,7 +84,6 @@ func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 func (h *ArticleHandler) SyncZennArticles(w http.ResponseWriter, r *http.Request) {
 	count, err := h.zennService.SyncArticles(r.Context())
 	if err != nil {
-		log.Printf("Zenn article sync failed: error=%v", err)
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
