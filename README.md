@@ -8,7 +8,6 @@
 - [Terraform](#terraform)
 - [APIルーティング](#apiルーティング)
 - [エラーハンドリング](#エラーハンドリング)
-- [入力検証](#入力検証)
 - [DynamoDB一覧取得](#dynamodb一覧取得)
 - [Cognito認証フロー](#cognito-認証フロー)
 - [デプロイ](#デプロイ)
@@ -82,22 +81,22 @@ DELETE /admin/{proxy+}  # Cognito認証
 
 Repositoryでは、DynamoDB固有のエラーとデータ変換エラーを分類します。共通の分類処理は`apps/api/internal/repository/dynamo_error.go`にあります。
 
-主なエラーコードとHTTPステータスは次の通りです。
+主なエラーコード、発生条件、クライアントとCloudWatchに返す内容は次の通りです。クライアントには内部エラーの詳細を返さず、CloudWatchの`cause`に元エラーを記録します。
 
-`````text
-D001 DependencyUnavailable  503 Service Unavailable
-D002 DependencyAuthFailed   500 Internal Server Error
-D003 DependencyConfigError  500 Internal Server Error
-D004 DependencyThrottled    503 Service Unavailable
-D005 Timeout                504 Gateway Timeout
-D006 DataMappingFailed      500 Internal Server Error
-D007 ExternalServiceFailed  502 Bad Gateway
-R001 BadParam              400 Bad Request
-R002 ReqBodyDecodeFailed   400 Bad Request
-R003 ResponseEncodeFailed  500 Internal Server Error
-R004 NotFound              404 Not Found
-R005 RequestBodyTooLarge   400 Bad Request
-`````
+| コード | HTTPステータス | 発生例 | クライアント | CloudWatch |
+| --- | --- | --- | --- | --- |
+| `D001` DependencyUnavailable | 503 Service Unavailable | DynamoDB通信失敗、Zenn一時停止 | `DynamoDB is unavailable` / `Zenn RSS is unavailable` | `cause`に元エラー |
+| `D002` DependencyAuthFailed | 500 Internal Server Error | AWS認証・権限エラー | `DynamoDB authentication failed` | `cause`にAWSエラー |
+| `D003` DependencyConfigError | 500 Internal Server Error | DynamoDBテーブル不存在 | `DynamoDB table is not configured correctly` | `cause`に設定エラー |
+| `D004` DependencyThrottled | 503 Service Unavailable | DynamoDBスロットリング、Zenn 429 | `... request was throttled` | `cause`にスロットリングエラー |
+| `D005` Timeout | 504 Gateway Timeout | Zenn RSSタイムアウト | `Zenn RSS request timed out` | `cause`にタイムアウト |
+| `D006` DataMappingFailed | 500 Internal Server Error | DynamoDB・RSSデータ変換失敗 | `failed to decode ... data` | `cause`に変換エラー |
+| `D007` ExternalServiceFailed | 502 Bad Gateway | Zennの429以外の4xx、空RSS | `Zenn RSS request failed` | `cause`にZennのステータス |
+| `R001` BadParam | 400 Bad Request | 必須ID・パラメータ不正 | `project id is required`など | `cause`に入力エラー |
+| `R002` ReqBodyDecodeFailed | 400 Bad Request | 不正JSON、未知フィールド、複数JSON、後続の不正文字 | `Failed to decode request body` | `cause`にデコードエラー |
+| `R003` ResponseEncodeFailed | 500 Internal Server Error | レスポンスのJSON変換失敗 | `Failed to encode response body` | `cause`にエンコードエラー |
+| `R004` NotFound | 404 Not Found | 指定データ不存在 | `article not found`など | `cause`に不存在情報 |
+| `R005` RequestBodyTooLarge | 400 Bad Request | ボディが1MiB超過 | `request body is too large` | `cause`にサイズ超過 |
 
 内部のDynamoDBエラー詳細はレスポンスへ返さず、例えば次のようなアプリケーション用エラーを返します。
 
@@ -108,21 +107,7 @@ R005 RequestBodyTooLarge   400 Bad Request
 }
 `````
 
-# 入力検証
-
-JSONリクエストの検証は`internal/handler/decode.go`に共通化しています。
-
-- `http.MaxBytesReader`でリクエストボディを1MiBに制限する
-- `DisallowUnknownFields`でモデルに存在しないJSONフィールドを拒否する
-- JSONを2回Decodeし、1回目のJSONの後ろに余計な値がないことを確認する
-
-2回目のDecodeで`io.EOF`が返る場合は、最初のJSON以外にデータがないため正常です。2つ目のJSONや不正な文字列がある場合は、`ReqBodyDecodeFailed (R002)`として400を返します。ボディサイズ超過は`RequestBodyTooLarge (R005)`として400を返します。
-
-# DynamoDB一覧取得
-
-記事・プロジェクト・経歴の一覧取得では、現時点ではDynamoDBの`Scan`を1回だけ実行します。DynamoDBの`Scan`は1回あたり最大1MBまでという制限がありますが、現在のポートフォリオで扱うデータ量では実害がないと判断し、Paginatorによる複数ページ取得は実装していません。
-
-データ量が増えて1MBを超える場合は、一覧結果が一部だけになる可能性があります。その場合は、RepositoryにPaginatorを追加するか、用途に応じてPartition Keyを使った`Query`へ変更します。画面側で取得単位を制御する必要がある場合は、`LastEvaluatedKey`をAPIのページネーション情報として返します。
+入力検証は`internal/handler/decode.go`に共通化しています。リクエストボディのサイズを制限し、モデルに存在しないJSONフィールドを拒否します。また、1つのリクエストにJSONが複数含まれていたり、JSONの後ろに不正な文字が続いていたりする場合も入力エラーとして弾きます。
 
 # Cognito認証フロー
 
