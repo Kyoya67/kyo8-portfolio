@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
@@ -22,7 +21,6 @@ func NewCareerHandler(careerService *service.CareerService) *CareerHandler {
 func (h *CareerHandler) ListCareers(w http.ResponseWriter, r *http.Request) {
 	careers, err := h.service.ListCareers(r.Context())
 	if err != nil {
-		log.Printf("careers request failed: method=%s error=%v", r.Method, err)
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

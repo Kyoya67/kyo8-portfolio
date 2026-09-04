@@ -3,8 +3,9 @@ package apperrors
 import (
 	"encoding/json"
 	"errors"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
 // エラーが発生したときのレスポンス処理をここで一括で行う
@@ -17,8 +18,6 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 			Err:     err,
 		}
 	}
-
-	log.Printf("error: %s\n", appErr)
 
 	var statusCode int
 
@@ -36,6 +35,21 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 	default:
 		statusCode = http.StatusInternalServerError
 	}
+
+	cause := "<nil>"
+	if appErr.Err != nil {
+		cause = appErr.Err.Error()
+	}
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger.Error(
+		"error occurred",
+		"error code", appErr.ErrCode,
+		"method", req.Method,
+		"path", req.URL.Path,
+		"status", statusCode,
+		"message", appErr.Message,
+		"cause", cause,
+	)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(statusCode)

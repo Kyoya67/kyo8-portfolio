@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
@@ -22,7 +21,6 @@ func NewProjectHandler(projectService *service.ProjectService) *ProjectHandler {
 func (h *ProjectHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
 	projects, err := h.service.ListProjects(r.Context())
 	if err != nil {
-		log.Printf("projects request failed: method=%s error=%v", r.Method, err)
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
@@ -88,7 +86,6 @@ func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 func writeJSON(w http.ResponseWriter, r *http.Request, value any) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if err := json.NewEncoder(w).Encode(value); err != nil {
-		log.Printf("json response failed: error=%v", err)
 		err = apperrors.ResponseEncodeFailed.Wrap(err, "Failed to encode response body")
 		apperrors.ErrorHandler(w, r, err)
 	}
