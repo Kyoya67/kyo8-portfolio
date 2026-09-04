@@ -3,12 +3,15 @@ package service
 import (
 	"context"
 	"encoding/xml"
+	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
 )
 
@@ -59,26 +62,27 @@ func (s *ZennService) SyncArticles(ctx context.Context) (int, error) {
 
 	res, err := s.client.Do(req)
 	if err != nil {
-		return 0, fmt.Errorf("fetch Zenn RSS: %w", err)
+		return 0, classifyZennHTTPError(err)
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("fetch Zenn RSS: status=%d", res.StatusCode)
+		return 0, classifyZennStatusError(res.StatusCode)
 	}
 
 	var feed zennFeed
 	if err := xml.NewDecoder(res.Body).Decode(&feed); err != nil {
-		return 0, fmt.Errorf("decode Zenn RSS: %w", err)
+		return 0, apperrors.DataMappingFailed.Wrap(err, "failed to decode Zenn RSS")
 	}
 	if len(feed.Items) == 0 {
-		return 0, fmt.Errorf("Zenn RSS contains no articles; skip deletion to protect existing data")
+		err := errors.New("Zenn RSS contains no articles; skip deletion to protect existing data")
+		return 0, apperrors.ExternalServiceFailed.Wrap(err, "Zenn RSS returned no articles")
 	}
 
 	feedArticleIDs := make(map[string]struct{}, len(feed.Items))
 	for order, item := range feed.Items {
 		article, err := convertZennItem(item, order+1)
 		if err != nil {
-			return 0, err
+			return 0, apperrors.DataMappingFailed.Wrap(err, "failed to convert Zenn article")
 		}
 		if err := s.repository.SaveArticle(ctx, article); err != nil {
 			return 0, fmt.Errorf("save Zenn article %s: %w", article.ID, err)
@@ -103,6 +107,36 @@ func (s *ZennService) SyncArticles(ctx context.Context) (int, error) {
 	}
 
 	return len(feed.Items), nil
+}
+
+func classifyZennHTTPError(err error) error {
+	if errors.Is(err, context.Canceled) {
+		return err
+	}
+
+	if errors.Is(err, context.DeadlineExceeded) {
+		return apperrors.Timeout.Wrap(err, "Zenn RSS request timed out")
+	}
+
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
+		return apperrors.Timeout.Wrap(err, "Zenn RSS request timed out")
+	}
+
+	return apperrors.ExternalServiceFailed.Wrap(err, "failed to fetch Zenn RSS")
+}
+
+func classifyZennStatusError(statusCode int) error {
+	err := fmt.Errorf("Zenn RSS returned status=%d", statusCode)
+
+	switch {
+	case statusCode == http.StatusTooManyRequests:
+		return apperrors.DependencyThrottled.Wrap(err, "Zenn RSS request was throttled")
+	case statusCode >= http.StatusInternalServerError:
+		return apperrors.DependencyUnavailable.Wrap(err, "Zenn RSS is unavailable")
+	default:
+		return apperrors.ExternalServiceFailed.Wrap(err, "Zenn RSS request failed")
+	}
 }
 
 func convertZennItem(item zennItem, order int) (model.Article, error) {

@@ -30,6 +30,8 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 		statusCode = http.StatusServiceUnavailable
 	case DependencyAuthFailed, DependencyConfigError:
 		statusCode = http.StatusInternalServerError
+	case ExternalServiceFailed:
+		statusCode = http.StatusBadGateway
 	case Timeout:
 		statusCode = http.StatusGatewayTimeout
 	default:

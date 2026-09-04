@@ -88,6 +88,7 @@ D003 DependencyConfigError  500 Internal Server Error
 D004 DependencyThrottled    503 Service Unavailable
 D005 Timeout                504 Gateway Timeout
 D006 DataMappingFailed      500 Internal Server Error
+D007 ExternalServiceFailed  502 Bad Gateway
 R001 BadParam              400 Bad Request
 R002 ReqBodyDecodeFailed   400 Bad Request
 R003 ResponseEncodeFailed  500 Internal Server Error

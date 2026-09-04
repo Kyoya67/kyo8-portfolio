@@ -16,6 +16,7 @@ const (
 	DependencyThrottled   ErrCode = "D004"
 	Timeout               ErrCode = "D005"
 	DataMappingFailed     ErrCode = "D006"
+	ExternalServiceFailed ErrCode = "D007"
 )
 
 func (code ErrCode) Wrap(err error, message string) error {
