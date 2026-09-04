@@ -7,11 +7,10 @@
 - [AWSアーキテクチャ](#aws-アーキテクチャ)
 - [Terraform](#terraform)
 - [APIルーティング](#apiルーティング)
-- [エラーハンドリング](#エラーハンドリング)
-- [DynamoDB一覧取得](#dynamodb一覧取得)
 - [Cognito認証フロー](#cognito-認証フロー)
 - [デプロイ](#デプロイ)
 - [バッチ同期](#バッチ同期)
+- [エラーハンドリング](#エラーハンドリング)
 
 # リポジトリ構成
 
@@ -68,66 +67,6 @@ PUT    /admin/{proxy+}  # Cognito認証
 DELETE /admin/{proxy+}  # Cognito認証
 ```
 管理APIは`/admin/{proxy+}`配下にまとめ、書き込み操作にCognito認証を要求します。OPTIONSリクエストはCORS preflight用で、認証なしで許可します。
-
-# エラーハンドリング
-
-アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。
-
-エラー処理の責務は次のように分けています。
-
-- Repository：DynamoDB SDKのエラーを`apperrors`へ変換する
-- Service：Repositoryから返されたエラーをそのまま上位へ返す
-- Handler：`apperrors.ErrorHandler`でHTTPステータスとJSONレスポンスへ変換する
-
-Repositoryでは、DynamoDB固有のエラーとデータ変換エラーを分類します。共通の分類処理は`apps/api/internal/repository/dynamo_error.go`にあります。
-
-主なエラーコードとHTTPステータスは次の通りです。
-
-| コード | HTTPステータス |
-| --- | --- |
-| `D001` DependencyUnavailable | 503 Service Unavailable |
-| `D002` DependencyAuthFailed | 500 Internal Server Error |
-| `D003` DependencyConfigError | 500 Internal Server Error |
-| `D004` DependencyThrottled | 503 Service Unavailable |
-| `D005` Timeout | 504 Gateway Timeout |
-| `D006` DataMappingFailed | 500 Internal Server Error |
-| `D007` ExternalServiceFailed | 502 Bad Gateway |
-| `R001` BadParam | 400 Bad Request |
-| `R002` ReqBodyDecodeFailed | 400 Bad Request |
-| `R003` ResponseEncodeFailed | 500 Internal Server Error |
-| `R004` NotFound | 404 Not Found |
-| `R005` RequestBodyTooLarge | 400 Bad Request |
-
-HTTPステータスコードはレスポンスヘッダーで返し、エラーコードとメッセージはレスポンスボディで返します。内部のDynamoDBエラー詳細はクライアントへ返さず、CloudWatchのログにのみ記録します。
-
-例えば、DynamoDBがスロットリングされた場合は次のようになります。
-
-### クライアントへのレスポンス：
-
-`````text
-HTTP/1.1 503 Service Unavailable
-Content-Type: application/json; charset=utf-8
-
-{"ErrCode":"D004","Message":"DynamoDB request was throttled"}
-`````
-
-### CloudWatchへのログ：
-
-`````json
-{
-  "level": "ERROR",
-  "msg": "error occurred",
-  "error code": "D004",
-  "method": "GET",
-  "path": "/profile",
-  "status": 503,
-  "message": "DynamoDB request was throttled",
-  "cause": "ProvisionedThroughputExceededException: ..."
-}
-`````
-
-クライアントには安全なエラーコードとメッセージだけを返し、CloudWatchには調査に必要なHTTPリクエスト情報と元エラーを記録します。
-
 
 # Cognito認証フロー
 
@@ -202,3 +141,63 @@ sequenceDiagram
     L->>D: articleテーブルへ保存
     D-->>L: 保存結果
 `````
+
+# エラーハンドリング
+
+アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。
+
+エラー処理の責務は次のように分けています。
+
+- Repository：DynamoDB SDKのエラーを`apperrors`へ変換する
+- Service：Repositoryから返されたエラーをそのまま上位へ返す
+- Handler：`apperrors.ErrorHandler`でHTTPステータスとJSONレスポンスへ変換する
+
+Repositoryでは、DynamoDB固有のエラーとデータ変換エラーを分類します。共通の分類処理は`apps/api/internal/repository/dynamo_error.go`にあります。
+
+主なエラーコードとHTTPステータスは次の通りです。
+
+| コード | HTTPステータス |
+| --- | --- |
+| `D001` DependencyUnavailable | 503 Service Unavailable |
+| `D002` DependencyAuthFailed | 500 Internal Server Error |
+| `D003` DependencyConfigError | 500 Internal Server Error |
+| `D004` DependencyThrottled | 503 Service Unavailable |
+| `D005` Timeout | 504 Gateway Timeout |
+| `D006` DataMappingFailed | 500 Internal Server Error |
+| `D007` ExternalServiceFailed | 502 Bad Gateway |
+| `R001` BadParam | 400 Bad Request |
+| `R002` ReqBodyDecodeFailed | 400 Bad Request |
+| `R003` ResponseEncodeFailed | 500 Internal Server Error |
+| `R004` NotFound | 404 Not Found |
+| `R005` RequestBodyTooLarge | 400 Bad Request |
+
+HTTPステータスコードはレスポンスヘッダーで返し、エラーコードとメッセージはレスポンスボディで返します。内部のDynamoDBエラー詳細はクライアントへ返さず、CloudWatchのログにのみ記録します。
+
+例えば、DynamoDBがスロットリングされた場合は次のようになります。
+
+### クライアントへのレスポンス：
+
+`````text
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+
+{"ErrCode":"D004","Message":"DynamoDB request was throttled"}
+`````
+
+### CloudWatchへのログ：
+
+`````json
+{
+  "level": "ERROR",
+  "msg": "error occurred",
+  "error code": "D004",
+  "method": "GET",
+  "path": "/profile",
+  "status": 503,
+  "message": "DynamoDB request was throttled",
+  "cause": "ProvisionedThroughputExceededException: ..."
+}
+`````
+
+クライアントには安全なエラーコードとメッセージだけを返し、CloudWatchには調査に必要なHTTPリクエスト情報と元エラーを記録します。
+
