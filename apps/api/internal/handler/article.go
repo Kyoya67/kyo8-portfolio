@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
@@ -39,8 +38,7 @@ func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
 
 func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
-	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &article); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
@@ -58,8 +56,7 @@ func (h *ArticleHandler) CreateArticle(w http.ResponseWriter, r *http.Request) {
 
 func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	var article model.Article
-	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &article); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

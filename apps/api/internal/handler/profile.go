@@ -37,8 +37,7 @@ func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProfileHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	var profile model.Profile
-	if err := json.NewDecoder(r.Body).Decode(&profile); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &profile); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

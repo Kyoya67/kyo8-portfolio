@@ -36,8 +36,7 @@ func (h *SkillHandler) GetSkills(w http.ResponseWriter, r *http.Request) {
 
 func (h *SkillHandler) UpdateSkills(w http.ResponseWriter, r *http.Request) {
 	var skills []model.Skill
-	if err := json.NewDecoder(r.Body).Decode(&skills); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &skills); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

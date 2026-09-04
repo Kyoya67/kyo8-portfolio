@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
@@ -38,8 +37,7 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	var project model.Project
-	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &project); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}
@@ -57,8 +55,7 @@ func (h *ProjectHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	var project model.Project
-	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
-		err = apperrors.ReqBodyDecodeFailed.Wrap(err, "Failed to decode request body")
+	if err := decodeJSONBody(w, r, &project); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

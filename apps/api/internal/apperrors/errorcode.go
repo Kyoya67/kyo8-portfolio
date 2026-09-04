@@ -9,6 +9,7 @@ const (
 	ReqBodyDecodeFailed  ErrCode = "R002"
 	ResponseEncodeFailed ErrCode = "R003"
 	NotFound             ErrCode = "R004"
+	RequestBodyTooLarge  ErrCode = "R005"
 
 	DependencyUnavailable ErrCode = "D001"
 	DependencyAuthFailed  ErrCode = "D002"
