@@ -82,11 +82,3 @@ func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
-func writeJSON(w http.ResponseWriter, r *http.Request, value any) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	if err := json.NewEncoder(w).Encode(value); err != nil {
-		err = apperrors.ResponseEncodeFailed.Wrap(err, "Failed to encode response body")
-		apperrors.ErrorHandler(w, r, err)
-	}
-}
