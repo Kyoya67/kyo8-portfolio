@@ -71,7 +71,7 @@ DELETE /admin/{proxy+}  # Cognito認証
 
 # エラーハンドリング
 
-アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。エラーにはアプリケーション用のエラーコード、クライアント向けメッセージ、元のエラーを保持します。元のエラーは`json:"-"`によりHTTPレスポンスへ公開せず、`ErrorHandler`がエラーコード、HTTPメソッド、パス、ステータス、メッセージ、元エラーを構造化されたキー・バリュー形式でログに出力します。
+アプリケーション固有のエラーは`apps/api/internal/apperrors`で管理します。
 
 エラー処理の責務は次のように分けています。
 
@@ -81,33 +81,53 @@ DELETE /admin/{proxy+}  # Cognito認証
 
 Repositoryでは、DynamoDB固有のエラーとデータ変換エラーを分類します。共通の分類処理は`apps/api/internal/repository/dynamo_error.go`にあります。
 
-主なエラーコード、発生条件、クライアントとCloudWatchに返す内容は次の通りです。クライアントには内部エラーの詳細を返さず、CloudWatchの`cause`に元エラーを記録します。
+主なエラーコードとHTTPステータスは次の通りです。
 
-| コード | HTTPステータス | 発生例 | クライアント | CloudWatch |
-| --- | --- | --- | --- | --- |
-| `D001` DependencyUnavailable | 503 Service Unavailable | DynamoDB通信失敗、Zenn一時停止 | `DynamoDB is unavailable` / `Zenn RSS is unavailable` | `cause`に元エラー |
-| `D002` DependencyAuthFailed | 500 Internal Server Error | AWS認証・権限エラー | `DynamoDB authentication failed` | `cause`にAWSエラー |
-| `D003` DependencyConfigError | 500 Internal Server Error | DynamoDBテーブル不存在 | `DynamoDB table is not configured correctly` | `cause`に設定エラー |
-| `D004` DependencyThrottled | 503 Service Unavailable | DynamoDBスロットリング、Zenn 429 | `... request was throttled` | `cause`にスロットリングエラー |
-| `D005` Timeout | 504 Gateway Timeout | Zenn RSSタイムアウト | `Zenn RSS request timed out` | `cause`にタイムアウト |
-| `D006` DataMappingFailed | 500 Internal Server Error | DynamoDB・RSSデータ変換失敗 | `failed to decode ... data` | `cause`に変換エラー |
-| `D007` ExternalServiceFailed | 502 Bad Gateway | Zennの429以外の4xx、空RSS | `Zenn RSS request failed` | `cause`にZennのステータス |
-| `R001` BadParam | 400 Bad Request | 必須ID・パラメータ不正 | `project id is required`など | `cause`に入力エラー |
-| `R002` ReqBodyDecodeFailed | 400 Bad Request | 不正JSON、未知フィールド、複数JSON、後続の不正文字 | `Failed to decode request body` | `cause`にデコードエラー |
-| `R003` ResponseEncodeFailed | 500 Internal Server Error | レスポンスのJSON変換失敗 | `Failed to encode response body` | `cause`にエンコードエラー |
-| `R004` NotFound | 404 Not Found | 指定データ不存在 | `article not found`など | `cause`に不存在情報 |
-| `R005` RequestBodyTooLarge | 400 Bad Request | ボディが1MiB超過 | `request body is too large` | `cause`にサイズ超過 |
+| コード | HTTPステータス |
+| --- | --- |
+| `D001` DependencyUnavailable | 503 Service Unavailable |
+| `D002` DependencyAuthFailed | 500 Internal Server Error |
+| `D003` DependencyConfigError | 500 Internal Server Error |
+| `D004` DependencyThrottled | 503 Service Unavailable |
+| `D005` Timeout | 504 Gateway Timeout |
+| `D006` DataMappingFailed | 500 Internal Server Error |
+| `D007` ExternalServiceFailed | 502 Bad Gateway |
+| `R001` BadParam | 400 Bad Request |
+| `R002` ReqBodyDecodeFailed | 400 Bad Request |
+| `R003` ResponseEncodeFailed | 500 Internal Server Error |
+| `R004` NotFound | 404 Not Found |
+| `R005` RequestBodyTooLarge | 400 Bad Request |
 
-内部のDynamoDBエラー詳細はレスポンスへ返さず、例えば次のようなアプリケーション用エラーを返します。
+HTTPステータスコードはレスポンスヘッダーで返し、エラーコードとメッセージはレスポンスボディで返します。内部のDynamoDBエラー詳細はクライアントへ返さず、CloudWatchのログにのみ記録します。
+
+例えば、DynamoDBがスロットリングされた場合は次のようになります。
+
+### クライアントへのレスポンス：
+
+`````text
+HTTP/1.1 503 Service Unavailable
+Content-Type: application/json; charset=utf-8
+
+{"ErrCode":"D004","Message":"DynamoDB request was throttled"}
+`````
+
+### CloudWatchへのログ：
 
 `````json
 {
-  "ErrCode": "D004",
-  "Message": "DynamoDB request was throttled"
+  "level": "ERROR",
+  "msg": "error occurred",
+  "error code": "D004",
+  "method": "GET",
+  "path": "/profile",
+  "status": 503,
+  "message": "DynamoDB request was throttled",
+  "cause": "ProvisionedThroughputExceededException: ..."
 }
 `````
 
-入力検証は`internal/handler/decode.go`に共通化しています。リクエストボディのサイズを制限し、モデルに存在しないJSONフィールドを拒否します。また、1つのリクエストにJSONが複数含まれていたり、JSONの後ろに不正な文字が続いていたりする場合も入力エラーとして弾きます。
+クライアントには安全なエラーコードとメッセージだけを返し、CloudWatchには調査に必要なHTTPリクエスト情報と元エラーを記録します。
+
 
 # Cognito認証フロー
 
