@@ -181,7 +181,7 @@ HTTPステータスコードはレスポンスヘッダーで返し、エラー�
 HTTP/1.1 503 Service Unavailable
 Content-Type: application/json; charset=utf-8
 
-{"ErrCode":"D004","Message":"DynamoDB request was throttled"}
+{"ErrCode":"D004","Message":"temporarily unavailable"}
 `````
 
 ### CloudWatchへのログ：
@@ -194,10 +194,9 @@ Content-Type: application/json; charset=utf-8
   "method": "GET",
   "path": "/profile",
   "status": 503,
-  "message": "DynamoDB request was throttled",
+  "message": "temporarily unavailable",
   "cause": "ProvisionedThroughputExceededException: ..."
 }
 `````
 
 クライアントには安全なエラーコードとメッセージだけを返し、CloudWatchには調査に必要なHTTPリクエスト情報と元エラーを記録します。
-

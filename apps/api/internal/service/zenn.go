@@ -71,18 +71,18 @@ func (s *ZennService) SyncArticles(ctx context.Context) (int, error) {
 
 	var feed zennFeed
 	if err := xml.NewDecoder(res.Body).Decode(&feed); err != nil {
-		return 0, apperrors.DataMappingFailed.Wrap(err, "failed to decode Zenn RSS")
+		return 0, apperrors.DataMappingFailed.Wrap(err, "internal data processing error")
 	}
 	if len(feed.Items) == 0 {
 		err := errors.New("Zenn RSS contains no articles; skip deletion to protect existing data")
-		return 0, apperrors.ExternalServiceFailed.Wrap(err, "Zenn RSS returned no articles")
+		return 0, apperrors.ExternalServiceFailed.Wrap(err, "temporarily unavailable")
 	}
 
 	feedArticleIDs := make(map[string]struct{}, len(feed.Items))
 	for order, item := range feed.Items {
 		article, err := convertZennItem(item, order+1)
 		if err != nil {
-			return 0, apperrors.DataMappingFailed.Wrap(err, "failed to convert Zenn article")
+			return 0, apperrors.DataMappingFailed.Wrap(err, "internal data processing error")
 		}
 		if err := s.repository.SaveArticle(ctx, article); err != nil {
 			return 0, fmt.Errorf("save Zenn article %s: %w", article.ID, err)
@@ -115,15 +115,15 @@ func classifyZennHTTPError(err error) error {
 	}
 
 	if errors.Is(err, context.DeadlineExceeded) {
-		return apperrors.Timeout.Wrap(err, "Zenn RSS request timed out")
+		return apperrors.Timeout.Wrap(err, "request timed out")
 	}
 
 	var netErr net.Error
 	if errors.As(err, &netErr) && netErr.Timeout() {
-		return apperrors.Timeout.Wrap(err, "Zenn RSS request timed out")
+		return apperrors.Timeout.Wrap(err, "request timed out")
 	}
 
-	return apperrors.ExternalServiceFailed.Wrap(err, "failed to fetch Zenn RSS")
+	return apperrors.ExternalServiceFailed.Wrap(err, "temporarily unavailable")
 }
 
 func classifyZennStatusError(statusCode int) error {
@@ -131,11 +131,11 @@ func classifyZennStatusError(statusCode int) error {
 
 	switch {
 	case statusCode == http.StatusTooManyRequests:
-		return apperrors.DependencyThrottled.Wrap(err, "Zenn RSS request was throttled")
+		return apperrors.DependencyThrottled.Wrap(err, "temporarily unavailable")
 	case statusCode >= http.StatusInternalServerError:
-		return apperrors.DependencyUnavailable.Wrap(err, "Zenn RSS is unavailable")
+		return apperrors.DependencyUnavailable.Wrap(err, "temporarily unavailable")
 	default:
-		return apperrors.ExternalServiceFailed.Wrap(err, "Zenn RSS request failed")
+		return apperrors.ExternalServiceFailed.Wrap(err, "temporarily unavailable")
 	}
 }
 
