@@ -3,9 +3,9 @@ package apperrors
 import (
 	"encoding/json"
 	"errors"
-	"log/slog"
 	"net/http"
-	"os"
+
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/logging"
 )
 
 // エラーが発生したときのレスポンス処理をここで一括で行う
@@ -40,8 +40,7 @@ func ErrorHandler(w http.ResponseWriter, req *http.Request, err error) {
 	if appErr.Err != nil {
 		cause = appErr.Err.Error()
 	}
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	logger.Error(
+	logging.Default.Error(
 		"error occurred",
 		"error code", appErr.ErrCode,
 		"method", req.Method,

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/logging"
+
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 )
 
@@ -17,5 +19,12 @@ func writeJSON(w http.ResponseWriter, r *http.Request, value any) {
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(body)
+	if _, err := w.Write(body); err != nil {
+		logging.Default.Error(
+			"failed to write response",
+			"method", r.Method,
+			"path", r.URL.Path,
+			"error", err,
+		)
+	}
 }
