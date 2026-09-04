@@ -72,7 +72,7 @@ DELETE /admin/{proxy+}  # Cognito認証
 
 管理画面は、ブラウザだけで完結するSPA向けAuthorization Code Flow with PKCEを使用します。Cognito App ClientにはClient Secretを設定しません。
 
-```mermaid
+`````mermaid
 sequenceDiagram
     participant B as Browser
     participant A as Admin App
@@ -93,7 +93,21 @@ sequenceDiagram
     API->>C: Cognito authorizerでトークン検証
     C-->>API: 検証結果
     API-->>A: 管理APIのレスポンス
-```
+    alt APIが401を返す
+        A->>C: POST /oauth2/token<br/>refresh_token
+        alt トークン更新に成功
+            C-->>A: 新しいID token / Access token
+            A->>A: 新しいトークンをsessionStorageへ保存
+            A->>API: 同じリクエストを新しいID tokenで1回だけ再試行
+            API->>C: Cognito authorizerでトークン検証
+            API-->>A: APIレスポンス
+        else Refresh tokenが期限切れ・無効
+            C-->>A: 更新失敗
+            A->>A: トークンを削除
+            A-->>B: ログイン画面へ遷移
+        end
+    end
+`````
 
 実装上のポイント：
 
