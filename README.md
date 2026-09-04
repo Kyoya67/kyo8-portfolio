@@ -85,7 +85,7 @@ sequenceDiagram
     C-->>B: ログイン画面
     B->>C: パスキー等で認証
     C-->>A: /callback?code=...&state=...
-    A->>A: stateとcode_verifierを確認
+    A->>A: stateを検証し、code_verifierを取得
     A->>C: POST /oauth2/token<br/>code + code_verifier
     C-->>A: ID token / Access token / Refresh token
     A->>A: sessionStorageへ保存
@@ -99,9 +99,9 @@ sequenceDiagram
 
 - 認可コードのトークン交換はブラウザからCognitoへ直接行う
 - `code_verifier`はブラウザから送信し、PKCEで認可コードを保護する
-- APIリクエストでは現在IDトークンを`Authorization`ヘッダーへ付与する
+- APIリクエストではID tokenを`Authorization`ヘッダーへ付与し、API GatewayのCognito authorizerで認証を行う。なお、このプロジェクトではOAuthスコープを設定していないためID tokenを使用している（[AWS公式ドキュメント](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html)）。
 - トークンの保存先は`sessionStorage`
-- Access tokenの期限切れ時はRefresh tokenで更新する
+- ID tokenの期限切れ時は、保存したRefresh tokenでトークンを更新する
 - `/admin/*`の書き込みはAPI GatewayのCognito User Pools authorizerで保護する
 
 # デプロイ

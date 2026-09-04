@@ -68,8 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Restore an existing session on mount, transparently refreshing an expired
-    // access token via the stored refresh token before falling back to "logged out".
+    // Restore an existing session on mount, transparently refreshing expired
+    // ID/access tokens via the stored refresh token before falling back to "logged out".
     (async () => {
       const tokens = loadTokens();
       if (!tokens) {
