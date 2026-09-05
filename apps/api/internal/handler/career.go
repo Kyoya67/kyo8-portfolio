@@ -1,19 +1,25 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
-	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 	"github.com/gorilla/mux"
 )
 
-type CareerHandler struct {
-	service *service.CareerService
+type careerService interface {
+	ListCareers(context.Context) ([]model.Career, error)
+	SaveCareer(context.Context, model.Career) error
+	DeleteCareer(context.Context, string) error
 }
 
-func NewCareerHandler(careerService *service.CareerService) *CareerHandler {
+type CareerHandler struct {
+	service careerService
+}
+
+func NewCareerHandler(careerService careerService) *CareerHandler {
 	return &CareerHandler{service: careerService}
 }
 
@@ -64,7 +70,13 @@ func (h *CareerHandler) UpdateCareer(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *CareerHandler) DeleteCareer(w http.ResponseWriter, r *http.Request) {
-	if err := h.service.DeleteCareer(r.Context(), mux.Vars(r)["id"]); err != nil {
+	id := mux.Vars(r)["id"]
+	if id == "" {
+		err := apperrors.BadParam.Wrap(nil, "career id is required")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+	if err := h.service.DeleteCareer(r.Context(), id); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

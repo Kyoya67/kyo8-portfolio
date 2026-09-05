@@ -67,6 +67,18 @@ h.ListArticles(w, req)
 | `project.go` | `CreateProject` | 100.0% |
 | `project.go` | `UpdateProject` | 100.0% |
 | `project.go` | `DeleteProject` | 100.0% |
+| `article.go` | `NewArticleHandler` | 100.0% |
+| `article.go` | `ListArticles` | 100.0% |
+| `article.go` | `GetArticle` | 100.0% |
+| `article.go` | `CreateArticle` | 100.0% |
+| `article.go` | `UpdateArticle` | 100.0% |
+| `article.go` | `DeleteArticle` | 100.0% |
+| `article.go` | `SyncZennArticles` | 100.0% |
+| `career.go` | `NewCareerHandler` | 100.0% |
+| `career.go` | `ListCareers` | 100.0% |
+| `career.go` | `CreateCareer` | 100.0% |
+| `career.go` | `UpdateCareer` | 100.0% |
+| `career.go` | `DeleteCareer` | 100.0% |
 
 Profileテストの実行例：
 
@@ -87,4 +99,18 @@ Projectテストの実行例：
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestProjectHandler' -coverprofile=/private/tmp/project-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/project-cover.out | grep 'project.go'
+`````
+
+Articleテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestArticleHandler' -coverprofile=/private/tmp/article-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/article-cover.out | grep 'article.go'
+`````
+
+Careerテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestCareerHandler' -coverprofile=/private/tmp/career-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/career-cover.out | grep 'career.go'
 `````
