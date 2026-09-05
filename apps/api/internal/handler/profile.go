@@ -1,20 +1,25 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
-	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 )
 
-type ProfileHandler struct {
-	service *service.ProfileService
+type profileService interface {
+	GetProfile(context.Context) (model.Profile, error)
+	UpdateProfile(context.Context, model.Profile) error
 }
 
-func NewProfileHandler(profileService *service.ProfileService) *ProfileHandler {
+type ProfileHandler struct {
+	service profileService
+}
+
+func NewProfileHandler(profileService profileService) *ProfileHandler {
 	return &ProfileHandler{service: profileService}
 }
 
