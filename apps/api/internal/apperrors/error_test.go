@@ -11,14 +11,14 @@ import (
 
 func TestErrorWrap(t *testing.T) {
 	cause := errors.New("database unavailable")
-	err := Timeout.Wrap(cause, "request timed out")
+	err := BadParam.Wrap(cause, "request timed out")
 
 	var appErr *Error
 	if !errors.As(err, &appErr) {
 		t.Fatal("errors.As() did not find *Error")
 	}
-	if appErr.ErrCode != string(Timeout) {
-		t.Errorf("ErrCode = %q, want %q", appErr.ErrCode, Timeout)
+	if appErr.ErrCode != string(BadParam) {
+		t.Errorf("ErrCode = %q, want %q", appErr.ErrCode, BadParam)
 	}
 	if appErr.Message != "request timed out" {
 		t.Errorf("Message = %q, want %q", appErr.Message, "request timed out")
@@ -30,7 +30,7 @@ func TestErrorWrap(t *testing.T) {
 
 func TestErrorJSONDoesNotExposeCause(t *testing.T) {
 	err := &Error{
-		ErrCode: "D001",
+		ErrCode: string(BadParam),
 		Message: "temporarily unavailable",
 		Err:     errors.New("internal database details"),
 	}
@@ -41,7 +41,7 @@ func TestErrorJSONDoesNotExposeCause(t *testing.T) {
 	}
 
 	got := string(body)
-	if got != `{"errCode":"D001","message":"temporarily unavailable"}` {
+	if got != `{"errCode":"R001","message":"temporarily unavailable"}` {
 		t.Errorf("JSON = %s", got)
 	}
 	if bytes.Contains(body, []byte("internal database details")) {
@@ -56,12 +56,16 @@ func TestErrorHandlerStatusAndResponse(t *testing.T) {
 		status int
 	}{
 		{name: "bad request", code: BadParam, status: http.StatusBadRequest},
+		{name: "request body decode failed", code: ReqBodyDecodeFailed, status: http.StatusBadRequest},
+		{name: "response encode failed", code: ResponseEncodeFailed, status: http.StatusInternalServerError},
 		{name: "not found", code: NotFound, status: http.StatusNotFound},
+		{name: "request body too large", code: RequestBodyTooLarge, status: http.StatusBadRequest},
 		{name: "dependency unavailable", code: DependencyUnavailable, status: http.StatusServiceUnavailable},
 		{name: "dependency auth failed", code: DependencyAuthFailed, status: http.StatusInternalServerError},
 		{name: "dependency config error", code: DependencyConfigError, status: http.StatusInternalServerError},
 		{name: "throttled", code: DependencyThrottled, status: http.StatusServiceUnavailable},
 		{name: "timeout", code: Timeout, status: http.StatusGatewayTimeout},
+		{name: "data mapping failed", code: DataMappingFailed, status: http.StatusInternalServerError},
 		{name: "external service", code: ExternalServiceFailed, status: http.StatusBadGateway},
 		{name: "unknown", code: Unknown, status: http.StatusInternalServerError},
 	}
@@ -109,8 +113,5 @@ func TestErrorHandlerConvertsUnknownError(t *testing.T) {
 	}
 	if response.ErrCode != string(Unknown) || response.Message != "internal process failed" {
 		t.Errorf("response = %+v", response)
-	}
-	if string(recorder.Body.Bytes()) == "" {
-		t.Error("response body is empty")
 	}
 }
