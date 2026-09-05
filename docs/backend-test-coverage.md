@@ -51,8 +51,6 @@ h.ListArticles(w, req)
 
 ## カバレッジ結果
 
-2026-09-05時点。Profileのテストだけを実行し、`profile.go`の関数単位で確認した結果。
-
 | 対象ファイル | 関数 | カバレッジ |
 |---|---|---:|
 | `profile.go` | `NewProfileHandler` | 100.0% |
@@ -79,6 +77,11 @@ h.ListArticles(w, req)
 | `career.go` | `CreateCareer` | 100.0% |
 | `career.go` | `UpdateCareer` | 100.0% |
 | `career.go` | `DeleteCareer` | 100.0% |
+| `health.go` | `Health` | 100.0% |
+| `decode.go` | `decodeJSONBody` | 100.0% |
+| `response.go` | `writeJSON` | 100.0% |
+
+Handlerパッケージ全体のカバレッジは`100.0%`だった。
 
 Profileテストの実行例：
 
@@ -113,4 +116,32 @@ Careerテストの実行例：
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestCareerHandler' -coverprofile=/private/tmp/career-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/career-cover.out | grep 'career.go'
+`````
+
+Healthテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestHealth$' -coverprofile=/private/tmp/health-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/health-cover.out | grep 'health.go'
+`````
+
+JSONデコードテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestDecodeJSONBody$' -coverprofile=/private/tmp/decode-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/decode-cover.out | grep 'decode.go'
+`````
+
+Responseテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestWriteJSON' -coverprofile=/private/tmp/response-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/response-cover.out | grep 'response.go'
+`````
+
+Handler全体の実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -coverprofile=/private/tmp/handler-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/handler-cover.out
 `````
