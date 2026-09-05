@@ -58,10 +58,20 @@ h.ListArticles(w, req)
 | `profile.go` | `NewProfileHandler` | 100.0% |
 | `profile.go` | `GetProfile` | 100.0% |
 | `profile.go` | `UpdateProfile` | 100.0% |
+| `skill.go` | `NewSkillHandler` | 100.0% |
+| `skill.go` | `GetSkills` | 100.0% |
+| `skill.go` | `UpdateSkills` | 100.0% |
 
 Profileテストの実行例：
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestProfileHandler' -coverprofile=/private/tmp/profile-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/profile-cover.out | grep 'profile.go'
+`````
+
+Skillテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestSkillHandler' -coverprofile=/private/tmp/skill-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/skill-cover.out | grep 'skill.go'
 `````
