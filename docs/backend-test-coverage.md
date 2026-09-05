@@ -61,6 +61,12 @@ h.ListArticles(w, req)
 | `skill.go` | `NewSkillHandler` | 100.0% |
 | `skill.go` | `GetSkills` | 100.0% |
 | `skill.go` | `UpdateSkills` | 100.0% |
+| `project.go` | `NewProjectHandler` | 100.0% |
+| `project.go` | `ListProjects` | 100.0% |
+| `project.go` | `GetProject` | 100.0% |
+| `project.go` | `CreateProject` | 100.0% |
+| `project.go` | `UpdateProject` | 100.0% |
+| `project.go` | `DeleteProject` | 100.0% |
 
 Profileテストの実行例：
 
@@ -74,4 +80,11 @@ Skillテストの実行例：
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestSkillHandler' -coverprofile=/private/tmp/skill-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/skill-cover.out | grep 'skill.go'
+`````
+
+Projectテストの実行例：
+
+`````bash
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestProjectHandler' -coverprofile=/private/tmp/project-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/project-cover.out | grep 'project.go'
 `````
