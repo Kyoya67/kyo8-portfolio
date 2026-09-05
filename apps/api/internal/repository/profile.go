@@ -43,7 +43,7 @@ func (r *ProfileRepository) GetProfile(ctx context.Context) (model.Profile, erro
 	}
 
 	if len(output.Item) == 0 {
-		return model.Profile{}, apperrors.NotFound.Wrap(nil, "profile not found")
+		return model.Profile{}, apperrors.NotFound.Wrap(errDynamoDataNotFound, "profile not found")
 	}
 
 	var profile model.Profile

@@ -115,3 +115,22 @@ func TestErrorHandlerConvertsUnknownError(t *testing.T) {
 		t.Errorf("response = %+v", response)
 	}
 }
+
+func TestErrorHandlerWithoutCause(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodGet, "/profile", nil)
+
+	ErrorHandler(recorder, req, NotFound.Wrap(nil, "profile not found"))
+
+	if recorder.Code != http.StatusNotFound {
+		t.Errorf("status = %d, want %d", recorder.Code, http.StatusNotFound)
+	}
+
+	var response Error
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatalf("response is not valid JSON: %v", err)
+	}
+	if response.ErrCode != string(NotFound) || response.Message != "profile not found" {
+		t.Errorf("response = %+v", response)
+	}
+}

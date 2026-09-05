@@ -51,7 +51,7 @@ func (r *CareerRepository) GetCareer(ctx context.Context, id string) (model.Care
 		return model.Career{}, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return model.Career{}, apperrors.NotFound.Wrap(nil, "career not found")
+		return model.Career{}, apperrors.NotFound.Wrap(errDynamoDataNotFound, "career not found")
 	}
 
 	var career model.Career

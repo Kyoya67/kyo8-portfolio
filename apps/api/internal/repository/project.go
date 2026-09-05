@@ -53,7 +53,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id string) (model.Pr
 		return model.Project{}, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return model.Project{}, apperrors.NotFound.Wrap(nil, "project not found")
+		return model.Project{}, apperrors.NotFound.Wrap(errDynamoDataNotFound, "project not found")
 	}
 
 	var project model.Project

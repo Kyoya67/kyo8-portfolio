@@ -38,7 +38,7 @@ func (r *ArticleRepository) GetArticle(ctx context.Context, id string) (model.Ar
 		return model.Article{}, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return model.Article{}, apperrors.NotFound.Wrap(nil, "article not found")
+		return model.Article{}, apperrors.NotFound.Wrap(errDynamoDataNotFound, "article not found")
 	}
 
 	var article model.Article
