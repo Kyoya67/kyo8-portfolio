@@ -92,7 +92,14 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
-	if err := h.service.DeleteArticle(r.Context(), mux.Vars(r)["id"]); err != nil {
+	id := mux.Vars(r)["id"]
+	if id == "" {
+		err := apperrors.BadParam.Wrap(nil, "article id is required")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	if err := h.service.DeleteArticle(r.Context(), id); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

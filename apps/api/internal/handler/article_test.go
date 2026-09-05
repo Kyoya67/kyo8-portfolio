@@ -36,8 +36,8 @@ func (f zennServiceFake) SyncArticles(context.Context) (int, error) { return f.c
 /*
  ******************************************************************************
  * ListArticles
- * - 成功時に記事一覧をJSONで返すこと
- * - Serviceエラー時にエラーレスポンスを返すこと
+ * - 正常に記事一覧を取得した場合に、記事一覧をJSONで返し、200を返すこと
+ * - Serviceエラーが発生した場合に、DependencyUnavailable / 503を返すこと
  ******************************************************************************
  */
 func TestArticleHandlerListArticles(t *testing.T) {
@@ -62,9 +62,9 @@ func TestArticleHandlerListArticles(t *testing.T) {
 /*
  ******************************************************************************
  * GetArticle
- * - URLパラメータidを使って記事を取得すること
- * - idが空の場合にBadParam / 400を返すこと
- * - Serviceエラー時にエラーレスポンスを返すこと
+ * - URLパラメータのidが指定された場合に、idを使って記事を取得し、200を返すこと
+ * - URLパラメータのidが空の場合に、BadParam / 400を返すこと
+ * - Serviceエラーが発生した場合に、DependencyUnavailable / 503を返すこと
  ******************************************************************************
  */
 func TestArticleHandlerGetArticle(t *testing.T) {
@@ -96,9 +96,10 @@ func TestArticleHandlerGetArticle(t *testing.T) {
 /*
  ******************************************************************************
  * CreateArticle
- * - 正常なJSONを受け取った場合に記事を保存し、204を返すこと
- * - JSON形式が不正な場合にReqBodyDecodeFailed / 400を返すこと
- * - RequestBodyのidがない場合にBadParam / 400を返すこと
+ * - 正常なJSONを受け取った場合に、記事を保存し、204を返すこと
+ * - JSON形式が不正な場合に、ReqBodyDecodeFailed / 400を返すこと
+ * - リクエストボディのidがない場合に、BadParam / 400を返すこと
+ * - Serviceでエラーが発生した場合に、DependencyUnavailable / 503を返すこと
  ******************************************************************************
  */
 func TestArticleHandlerCreateArticle(t *testing.T) {
@@ -118,6 +119,13 @@ func TestArticleHandlerCreateArticle(t *testing.T) {
 		h.CreateArticle(w, req)
 		assertArticleError(t, w, http.StatusBadRequest, apperrors.ReqBodyDecodeFailed, "Failed to decode request body")
 	})
+	t.Run("service error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		req := httptest.NewRequest(http.MethodPost, "/admin/articles", strings.NewReader(`{"id":"a1"}`))
+		h.CreateArticle(w, req)
+		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+	})
 	t.Run("missing id", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
@@ -132,7 +140,8 @@ func TestArticleHandlerCreateArticle(t *testing.T) {
  * UpdateArticle
  * - 正常なJSONを受け取った場合に記事を保存し、204を返すこと
  * - JSON形式が不正な場合にReqBodyDecodeFailed / 400を返すこと
- * - RequestBodyのidがない場合にBadParam / 400を返すこと
+ * - URLパラメータのidがない場合にBadParam / 400を返すこと
+ * - Serviceエラー時にDependencyUnavailable / 503を返すこと
  ******************************************************************************
  */
 func TestArticleHandlerUpdateArticle(t *testing.T) {
@@ -159,13 +168,21 @@ func TestArticleHandlerUpdateArticle(t *testing.T) {
 		h.UpdateArticle(w, req)
 		assertArticleError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
 	})
+	t.Run("service error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		req := articleRequest(http.MethodPut, "/admin/articles/a1", "a1", strings.NewReader(`{"title":{}}`))
+		h.UpdateArticle(w, req)
+		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+	})
 }
 
 /*
  ******************************************************************************
  * DeleteArticle
- * - 成功時にURLパラメータidを使って記事を削除すること
- * - Serviceエラー時にエラーレスポンスを返すこと
+ * - 正常なidパラメータが指定された場合に、記事を削除し、204を返すこと
+ * - idが空の場合にBadParam / 400を返すこと
+ * - Serviceでエラーが発生した場合に、DependencyUnavailable / 503を返すこと
  ******************************************************************************
  */
 func TestArticleHandlerDeleteArticle(t *testing.T) {
@@ -185,13 +202,20 @@ func TestArticleHandlerDeleteArticle(t *testing.T) {
 		h.DeleteArticle(w, req)
 		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
+	t.Run("missing id", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
+		req := articleRequest(http.MethodDelete, "/admin/articles/", "", nil)
+		h.DeleteArticle(w, req)
+		assertArticleError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
+	})
 }
 
 /*
  ******************************************************************************
  * SyncZennArticles
- * - 同期件数をJSONで返すこと
- * - Serviceエラー時にエラーレスポンスを返すこと
+ * - Zenn記事の同期に成功した場合に、同期件数をJSONで返し、200を返すこと
+ * - Serviceでエラーが発生した場合に、DependencyUnavailable / 503を返すこと
  ******************************************************************************
  */
 func TestArticleHandlerSyncZennArticles(t *testing.T) {
@@ -213,6 +237,14 @@ func TestArticleHandlerSyncZennArticles(t *testing.T) {
 	})
 }
 
+/*
+ ******************************************************************************
+ * Test Helpers
+ * - articleRequest: テスト用Requestを作成し、URLパラメータのidを設定すること
+ * - dependencyError: Serviceエラーを再現するためのエラーを作成すること
+ * - assertArticleError: HTTPステータス、エラーコード、メッセージを検証すること
+ ******************************************************************************
+ */
 func articleRequest(method, target, id string, body io.Reader) *http.Request {
 	return mux.SetURLVars(httptest.NewRequest(method, target, body), map[string]string{"id": id})
 }
