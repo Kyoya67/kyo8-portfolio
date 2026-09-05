@@ -2,10 +2,52 @@
 
 ## テストの書き方
 
-- 本番コードの関数ごとにテスト関数を分ける
-- 成功・入力エラー・Serviceエラーをサブテストに分ける
-- Handlerの依存先はFakeに差し替える
-- HTTPステータス、エラーコード、メッセージを検証する
+- 本番コードのHandler関数ごとにテスト関数を分ける
+- テスト関数名は`Test{Handler名}{関数名}`とする
+- 各テスト関数の前に、対象関数・引数・URLパラメータ・リクエストボディ・検証内容をコメントで記載する
+- サブテストは原則として、`success`、入力エラー、Serviceエラーの順番で記述する
+- 成功ケースでは、処理結果と期待するHTTPステータスを検証する
+- 入力エラーでは、不正なJSONや必須パラメータ不足を実際のリクエストで再現する
+- Serviceエラーでは、Fakeにエラーを設定してHandlerのエラーレスポンスを検証する
+- Handlerの依存先はFakeに差し替え、DynamoDBなどの外部サービスへ接続しない
+- エラーの検証には共通ヘルパーを使い、HTTPステータス・エラーコード・メッセージをまとめて確認する
+- 複数のテストファイルで使うヘルパーは`test_helpers_test.go`にまとめる
+- 特定のHandlerだけで使うヘルパーは、そのHandlerの`_test.go`に定義する
+
+コメントの例：
+
+`````go
+/*
+ ******************************************************************************
+ * CreateArticle
+ * - 正常なJSONを受け取った場合に、記事を保存し、204を返すこと
+ * - JSON形式が不正な場合に、ReqBodyDecodeFailed / 400を返すこと
+ * - Serviceでエラーが発生した場合に、DependencyUnavailable / 503を返すこと
+ ******************************************************************************
+ */
+`````
+
+エラーケースの例：
+
+`````go
+assertSharedError(
+    t,
+    w,
+    http.StatusBadRequest,
+    apperrors.ReqBodyDecodeFailed,
+    "Failed to decode request body",
+)
+`````
+
+テスト用のHandler呼び出しでは、`w`をレスポンス、`req`をリクエストとして変数名を分ける。
+
+`````go
+w := httptest.NewRecorder()
+h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
+req := httptest.NewRequest(http.MethodGet, "/articles", nil)
+
+h.ListArticles(w, req)
+`````
 
 ## カバレッジ結果
 
