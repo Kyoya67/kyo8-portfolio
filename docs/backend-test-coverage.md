@@ -2,144 +2,109 @@
 
 ## テストの書き方
 
-- 本番コードのHandler関数ごとにテスト関数を分ける
-- テスト関数名は`Test{Handler名}{関数名}`とする
+- 本番コードのHandler関数ごとに`Test{Handler名}{関数名}`としてテストを分ける
 - 各テスト関数の前に、対象関数・引数・URLパラメータ・リクエストボディ・検証内容をコメントで記載する
-- サブテストは原則として、`success`、入力エラー、Serviceエラーの順番で記述する
-- 成功ケースでは、処理結果と期待するHTTPステータスを検証する
-- 入力エラーでは、不正なJSONや必須パラメータ不足を実際のリクエストで再現する
-- Serviceエラーでは、Fakeにエラーを設定してHandlerのエラーレスポンスを検証する
-- Handlerの依存先はFakeに差し替え、DynamoDBなどの外部サービスへ接続しない
-- エラーの検証には共通ヘルパーを使い、HTTPステータス・エラーコード・メッセージをまとめて確認する
-- 複数のテストファイルで使うヘルパーは`test_helpers_test.go`にまとめる
-- 特定のHandlerだけで使うヘルパーは、そのHandlerの`_test.go`に定義する
-
-コメントの例：
-
-`````go
-/*
- ******************************************************************************
- * CreateArticle
- * - 正常なJSONを受け取った場合に、記事を保存し、204を返すこと
- * - JSON形式が不正な場合に、ReqBodyDecodeFailed / 400を返すこと
- * - Serviceでエラーが発生した場合に、DependencyUnavailable / 503を返すこと
- ******************************************************************************
- */
-`````
-
-エラーケースの例：
-
-`````go
-assertSharedError(
-    t,
-    w,
-    http.StatusBadRequest,
-    apperrors.ReqBodyDecodeFailed,
-    "Failed to decode request body",
-)
-`````
-
-テスト用のHandler呼び出しでは、`w`をレスポンス、`req`をリクエストとして変数名を分ける。
-
-`````go
-w := httptest.NewRecorder()
-h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
-req := httptest.NewRequest(http.MethodGet, "/articles", nil)
-
-h.ListArticles(w, req)
-`````
+- サブテストは`success`、入力エラー、Serviceエラーの順番で記述する
+- 成功時は処理結果とHTTPステータスを検証する
+- 入力エラーは不正なJSONや必須パラメータ不足を実際のRequestで再現する
+- ServiceエラーはFakeにエラーを設定し、HTTPステータス・エラーコード・メッセージを共通ヘルパーで検証する
+- Handlerの依存先はFakeに差し替え、外部サービスへ接続しない
+- 複数のテストで使うヘルパーは`test_helpers_test.go`にまとめる
+- Handler固有のヘルパーは対象の`_test.go`に定義する
 
 ## カバレッジ結果
 
-| 対象ファイル | 関数 | カバレッジ |
-|---|---|---:|
-| `profile.go` | `NewProfileHandler` | 100.0% |
-| `profile.go` | `GetProfile` | 100.0% |
-| `profile.go` | `UpdateProfile` | 100.0% |
-| `skill.go` | `NewSkillHandler` | 100.0% |
-| `skill.go` | `GetSkills` | 100.0% |
-| `skill.go` | `UpdateSkills` | 100.0% |
-| `project.go` | `NewProjectHandler` | 100.0% |
-| `project.go` | `ListProjects` | 100.0% |
-| `project.go` | `GetProject` | 100.0% |
-| `project.go` | `CreateProject` | 100.0% |
-| `project.go` | `UpdateProject` | 100.0% |
-| `project.go` | `DeleteProject` | 100.0% |
-| `article.go` | `NewArticleHandler` | 100.0% |
-| `article.go` | `ListArticles` | 100.0% |
-| `article.go` | `GetArticle` | 100.0% |
-| `article.go` | `CreateArticle` | 100.0% |
-| `article.go` | `UpdateArticle` | 100.0% |
-| `article.go` | `DeleteArticle` | 100.0% |
-| `article.go` | `SyncZennArticles` | 100.0% |
-| `career.go` | `NewCareerHandler` | 100.0% |
-| `career.go` | `ListCareers` | 100.0% |
-| `career.go` | `CreateCareer` | 100.0% |
-| `career.go` | `UpdateCareer` | 100.0% |
-| `career.go` | `DeleteCareer` | 100.0% |
-| `health.go` | `Health` | 100.0% |
-| `decode.go` | `decodeJSONBody` | 100.0% |
-| `response.go` | `writeJSON` | 100.0% |
+### Profile
 
-Handlerパッケージ全体のカバレッジは`100.0%`だった。
-
-Profileテストの実行例：
+| 関数 | カバレッジ |
+|---|---:|
+| `NewProfileHandler` | 100.0% |
+| `GetProfile` | 100.0% |
+| `UpdateProfile` | 100.0% |
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestProfileHandler' -coverprofile=/private/tmp/profile-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/profile-cover.out | grep 'profile.go'
 `````
 
-Skillテストの実行例：
+### Skill
+
+| 関数 | カバレッジ |
+|---|---:|
+| `NewSkillHandler` | 100.0% |
+| `GetSkills` | 100.0% |
+| `UpdateSkills` | 100.0% |
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestSkillHandler' -coverprofile=/private/tmp/skill-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/skill-cover.out | grep 'skill.go'
 `````
 
-Projectテストの実行例：
+### Project
+
+| 関数 | カバレッジ |
+|---|---:|
+| `NewProjectHandler` | 100.0% |
+| `ListProjects` | 100.0% |
+| `GetProject` | 100.0% |
+| `CreateProject` | 100.0% |
+| `UpdateProject` | 100.0% |
+| `DeleteProject` | 100.0% |
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestProjectHandler' -coverprofile=/private/tmp/project-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/project-cover.out | grep 'project.go'
 `````
 
-Articleテストの実行例：
+### Article
+
+| 関数 | カバレッジ |
+|---|---:|
+| `NewArticleHandler` | 100.0% |
+| `ListArticles` | 100.0% |
+| `GetArticle` | 100.0% |
+| `CreateArticle` | 100.0% |
+| `UpdateArticle` | 100.0% |
+| `DeleteArticle` | 100.0% |
+| `SyncZennArticles` | 100.0% |
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestArticleHandler' -coverprofile=/private/tmp/article-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/article-cover.out | grep 'article.go'
 `````
 
-Careerテストの実行例：
+### Career
+
+| 関数 | カバレッジ |
+|---|---:|
+| `NewCareerHandler` | 100.0% |
+| `ListCareers` | 100.0% |
+| `CreateCareer` | 100.0% |
+| `UpdateCareer` | 100.0% |
+| `DeleteCareer` | 100.0% |
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestCareerHandler' -coverprofile=/private/tmp/career-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/career-cover.out | grep 'career.go'
 `````
 
-Healthテストの実行例：
+### 共通処理
+
+| 関数 | カバレッジ |
+|---|---:|
+| `Health` | 100.0% |
+| `decodeJSONBody` | 100.0% |
+| `writeJSON` | 100.0% |
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestHealth$' -coverprofile=/private/tmp/health-cover.out
-GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/health-cover.out | grep 'health.go'
-`````
-
-JSONデコードテストの実行例：
-
-`````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestDecodeJSONBody$' -coverprofile=/private/tmp/decode-cover.out
-GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/decode-cover.out | grep 'decode.go'
-`````
-
-Responseテストの実行例：
-
-`````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -run '^TestWriteJSON' -coverprofile=/private/tmp/response-cover.out
-GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/response-cover.out | grep 'response.go'
 `````
 
-Handler全体の実行例：
+### Handler全体
+
+Handlerパッケージ全体のカバレッジは`100.0%`。
 
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -coverprofile=/private/tmp/handler-cover.out
