@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -52,10 +50,10 @@ func TestArticleHandlerListArticles(t *testing.T) {
 	})
 	t.Run("service error", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		h := NewArticleHandler(articleServiceFake{err: sharedDependencyError()}, zennServiceFake{})
 		req := httptest.NewRequest(http.MethodGet, "/articles", nil)
 		h.ListArticles(w, req)
-		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+		assertSharedError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
 }
 
@@ -82,14 +80,14 @@ func TestArticleHandlerGetArticle(t *testing.T) {
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
 		req := articleRequest(http.MethodGet, "/articles/", "", nil)
 		h.GetArticle(w, req)
-		assertArticleError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
+		assertSharedError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
 	})
 	t.Run("service error", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		h := NewArticleHandler(articleServiceFake{err: sharedDependencyError()}, zennServiceFake{})
 		req := articleRequest(http.MethodGet, "/articles/a1", "a1", nil)
 		h.GetArticle(w, req)
-		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+		assertSharedError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
 }
 
@@ -117,21 +115,21 @@ func TestArticleHandlerCreateArticle(t *testing.T) {
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
 		req := httptest.NewRequest(http.MethodPost, "/admin/articles", strings.NewReader("invalid"))
 		h.CreateArticle(w, req)
-		assertArticleError(t, w, http.StatusBadRequest, apperrors.ReqBodyDecodeFailed, "Failed to decode request body")
+		assertSharedError(t, w, http.StatusBadRequest, apperrors.ReqBodyDecodeFailed, "Failed to decode request body")
 	})
 	t.Run("service error", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		h := NewArticleHandler(articleServiceFake{err: sharedDependencyError()}, zennServiceFake{})
 		req := httptest.NewRequest(http.MethodPost, "/admin/articles", strings.NewReader(`{"id":"a1"}`))
 		h.CreateArticle(w, req)
-		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+		assertSharedError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
 	t.Run("missing id", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
 		req := httptest.NewRequest(http.MethodPost, "/admin/articles", strings.NewReader(`{"title":{}}`))
 		h.CreateArticle(w, req)
-		assertArticleError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
+		assertSharedError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
 	})
 }
 
@@ -159,21 +157,21 @@ func TestArticleHandlerUpdateArticle(t *testing.T) {
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
 		req := articleRequest(http.MethodPut, "/admin/articles/a1", "a1", strings.NewReader("invalid"))
 		h.UpdateArticle(w, req)
-		assertArticleError(t, w, http.StatusBadRequest, apperrors.ReqBodyDecodeFailed, "Failed to decode request body")
+		assertSharedError(t, w, http.StatusBadRequest, apperrors.ReqBodyDecodeFailed, "Failed to decode request body")
 	})
 	t.Run("missing id", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
 		req := articleRequest(http.MethodPut, "/admin/articles/", "", strings.NewReader(`{"title":{}}`))
 		h.UpdateArticle(w, req)
-		assertArticleError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
+		assertSharedError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
 	})
 	t.Run("service error", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		h := NewArticleHandler(articleServiceFake{err: sharedDependencyError()}, zennServiceFake{})
 		req := articleRequest(http.MethodPut, "/admin/articles/a1", "a1", strings.NewReader(`{"title":{}}`))
 		h.UpdateArticle(w, req)
-		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+		assertSharedError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
 }
 
@@ -197,17 +195,17 @@ func TestArticleHandlerDeleteArticle(t *testing.T) {
 	})
 	t.Run("service error", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		h := NewArticleHandler(articleServiceFake{err: dependencyError()}, zennServiceFake{})
+		h := NewArticleHandler(articleServiceFake{err: sharedDependencyError()}, zennServiceFake{})
 		req := articleRequest(http.MethodDelete, "/admin/articles/a1", "a1", nil)
 		h.DeleteArticle(w, req)
-		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+		assertSharedError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
 	t.Run("missing id", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{})
 		req := articleRequest(http.MethodDelete, "/admin/articles/", "", nil)
 		h.DeleteArticle(w, req)
-		assertArticleError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
+		assertSharedError(t, w, http.StatusBadRequest, apperrors.BadParam, "article id is required")
 	})
 }
 
@@ -230,37 +228,19 @@ func TestArticleHandlerSyncZennArticles(t *testing.T) {
 	})
 	t.Run("service error", func(t *testing.T) {
 		w := httptest.NewRecorder()
-		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{err: dependencyError()})
+		h := NewArticleHandler(articleServiceFake{}, zennServiceFake{err: sharedDependencyError()})
 		req := httptest.NewRequest(http.MethodPost, "/admin/articles/sync-zenn", nil)
 		h.SyncZennArticles(w, req)
-		assertArticleError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
+		assertSharedError(t, w, http.StatusServiceUnavailable, apperrors.DependencyUnavailable, "temporarily unavailable")
 	})
 }
 
 /*
  ******************************************************************************
- * Test Helpers
- * - articleRequest: テスト用Requestを作成し、URLパラメータのidを設定すること
- * - dependencyError: Serviceエラーを再現するためのエラーを作成すること
- * - assertArticleError: HTTPステータス、エラーコード、メッセージを検証すること
+ * articleRequest
+ * - テスト用Requestを作成し、URLパラメータのidを設定すること
  ******************************************************************************
  */
 func articleRequest(method, target, id string, body io.Reader) *http.Request {
 	return mux.SetURLVars(httptest.NewRequest(method, target, body), map[string]string{"id": id})
-}
-func dependencyError() error {
-	return apperrors.DependencyUnavailable.Wrap(errors.New("dependency down"), "temporarily unavailable")
-}
-func assertArticleError(t *testing.T, w *httptest.ResponseRecorder, status int, code apperrors.ErrCode, message string) {
-	t.Helper()
-	if w.Code != status {
-		t.Errorf("status = %d, want %d", w.Code, status)
-	}
-	var response apperrors.Error
-	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
-		t.Fatal(err)
-	}
-	if response.ErrCode != string(code) || response.Message != message {
-		t.Errorf("response = %+v", response)
-	}
 }
