@@ -29,7 +29,6 @@
 
 | 関数 | カバレッジ |
 |---|---:|
-| `NewProfileHandler` | 100.0% |
 | `GetProfile` | 100.0% |
 | `UpdateProfile` | 100.0% |
 
@@ -42,7 +41,6 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/profile-cove
 
 | 関数 | カバレッジ |
 |---|---:|
-| `NewSkillHandler` | 100.0% |
 | `GetSkills` | 100.0% |
 | `UpdateSkills` | 100.0% |
 
@@ -55,7 +53,6 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/skill-cover.
 
 | 関数 | カバレッジ |
 |---|---:|
-| `NewProjectHandler` | 100.0% |
 | `ListProjects` | 100.0% |
 | `GetProject` | 100.0% |
 | `CreateProject` | 100.0% |
@@ -71,7 +68,6 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/project-cove
 
 | 関数 | カバレッジ |
 |---|---:|
-| `NewArticleHandler` | 100.0% |
 | `ListArticles` | 100.0% |
 | `GetArticle` | 100.0% |
 | `CreateArticle` | 100.0% |
@@ -88,7 +84,6 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/article-cove
 
 | 関数 | カバレッジ |
 |---|---:|
-| `NewCareerHandler` | 100.0% |
 | `ListCareers` | 100.0% |
 | `CreateCareer` | 100.0% |
 | `UpdateCareer` | 100.0% |
@@ -126,7 +121,17 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/handler-cove
 
 ### Repositoryテストの書き方
 
-Repositoryも本番コードのメソッドごとにテスト関数を分ける。各テスト関数の中では、成功、データ未存在・変換エラー、DynamoDBエラーの順で`t.Run`を記述する。DynamoDBクライアントは`fakeDynamo`へ差し替え、実際のAWSには接続しない。テストの冒頭には、対象メソッドと検証する観点をコメントで残している。
+- 本番コードのメソッドごとにテスト関数を分ける
+- 成功・データ未存在・データ変換エラー・DynamoDBエラーを個別の`t.Run`で検証する
+- 成功テストでは、DynamoDBデータをモデルへ変換した結果を全フィールド比較する
+- 保存・更新テストでは、Fakeが受け取った保存データをモデルへ戻し、期待値と全フィールド比較する
+- DynamoDBクライアントは`fakeDynamo`へ差し替え、実際のAWSには接続しない
+- テストの冒頭には、対象メソッドと検証する観点をコメントで残す
+- テストメッセージは英語で記述する
+
+保存・更新処理では、引数の型が`model.Profile`や`model.Skill`などのモデル型に決まっている。各モデルのフィールドもDynamoDBが扱える型だけで構成されているため、`attributevalue.MarshalMap`による変換は基本的に失敗しない。
+
+そのため、変換失敗のテストは実施していない。一方、変換後のデータをDynamoDBへ保存する処理については、成功・失敗の両方をテストしている。
 
 ### Repositoryテストのカバレッジ結果
 
@@ -134,11 +139,8 @@ Repositoryも本番コードのメソッドごとにテスト関数を分ける�
 
 | 関数 | カバレッジ |
 |---|---:|
-| `NewProfileRepository` | 100.0% |
 | `GetProfile` | 100.0% |
 | `UpdateProfile` | 87.5% |
-
-`UpdateProfile`の引数は`model.Profile`型で、各フィールドもDynamoDBへ変換できる型のため、`attributevalue.MarshalMap`は基本的に失敗しない。そのため変換失敗は未実行だが、DynamoDBへの保存成功・失敗は検証している。
 
 `````bash
 cd apps/api
@@ -147,6 +149,19 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/profile-repo
 `````
 
 Repository全体のカバレッジは`96.9%`。
+
+#### SkillRepository
+
+| 関数 | カバレッジ |
+|---|---:|
+| `GetSkills` | 100.0% |
+| `UpdateSkills` | 85.7% |
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestSkillRepository' -coverprofile=/private/tmp/skill-repository-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/skill-repository-cover.out | grep 'skill.go'
+`````
 
 #### Repository全体
 
