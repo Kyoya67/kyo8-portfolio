@@ -36,7 +36,7 @@ kyo8-portfolio/
 
 # AWSアーキテクチャ
 
-<img src="docs/aws-architecture.png" alt="AWS architecture" width="100%">
+<img src="assets/diagrams/aws-architecture.png" alt="AWS architecture" width="100%">
 
 # Terraform
 
@@ -156,7 +156,7 @@ sequenceDiagram
 
 GitHub Actionsが`apps/api`をDocker buildし、ARM64用のLambdaコンテナイメージとしてECRへpushします。その後、API用とBatch用のLambda関数を同じイメージから更新します。
 
-<img src="docs/workflow.png" alt="GitHub Actions workflow" width="100%">
+<img src="assets/diagrams/workflow.png" alt="GitHub Actions workflow" width="100%">
 
 `apps/api/Dockerfile`では、APIとBatchの2つのGoバイナリを1つのコンテナイメージへ配置します。Lambdaごとに起動するコマンドを切り替えます。
 
@@ -252,4 +252,4 @@ Content-Type: application/json; charset=utf-8
 3. Handler：エラーを`ErrCode`・`Message`・HTTPステータスへ変換できることを検証
 4. `ErrorHandler`：`Error.Err`をログへ出力し、HTTPレスポンスには含めないことを検証
 
-テストの書き方、テスト対象、カバレッジ結果は[バックエンドテストの記録](docs/backend-test-coverage.md)を参照してください。
+テストの書き方、テスト対象、カバレッジ結果は[APIテストの詳細](docs/api-testing.md)を参照してください。
