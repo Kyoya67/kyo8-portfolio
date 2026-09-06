@@ -15,21 +15,30 @@ import (
 
 /*
 ******************************************************************************
- * Test Model
+ * Test Models
 ******************************************************************************
 */
 func testProjects() []model.Project {
 	websiteURL := "https://example.com"
 	imageURL := "https://example.com/project.png"
 	return []model.Project{{
-		ID: "p1", Slug: "portfolio", Title: model.LocalizedText{EN: "Portfolio", JA: "ポートフォリオ"},
-		Summary: model.LocalizedText{EN: "Summary", JA: "概要"}, Description: model.LocalizedText{EN: "Description", JA: "説明"},
-		Graphic: "graphic", RepositoryURL: "https://github.com/Kyoya/project", WebsiteURL: &websiteURL, ImageURL: &imageURL,
+		ID:            "p1",
+		Slug:          "portfolio",
+		Title:         model.LocalizedText{EN: "Portfolio", JA: "ポートフォリオ"},
+		Summary:       model.LocalizedText{EN: "Summary", JA: "概要"},
+		Description:   model.LocalizedText{EN: "Description", JA: "説明"},
+		Graphic:       "graphic",
+		RepositoryURL: "https://github.com/Kyoya/project",
+		WebsiteURL:    &websiteURL, ImageURL: &imageURL,
 		Technologies: []string{"Go", "AWS"}, Featured: true, Published: true, Order: 1, Year: "2026",
 	}, {
-		ID: "p2", Slug: "blog", Title: model.LocalizedText{EN: "Blog", JA: "ブログ"},
-		Summary: model.LocalizedText{EN: "Blog summary", JA: "ブログ概要"}, Description: model.LocalizedText{EN: "Blog description", JA: "ブログ説明"},
-		Graphic: "blog-graphic", RepositoryURL: "https://github.com/Kyoya/blog", WebsiteURL: &websiteURL, ImageURL: &imageURL,
+		ID:            "p2",
+		Slug:          "blog",
+		Title:         model.LocalizedText{EN: "Blog", JA: "ブログ"},
+		Summary:       model.LocalizedText{EN: "Blog summary", JA: "ブログ概要"},
+		Description:   model.LocalizedText{EN: "Blog description", JA: "ブログ説明"},
+		Graphic:       "blog-graphic",
+		RepositoryURL: "https://github.com/Kyoya/blog", WebsiteURL: &websiteURL, ImageURL: &imageURL,
 		Technologies: []string{"Next.js", "TypeScript"}, Featured: false, Published: true, Order: 2, Year: "2025",
 	}}
 }

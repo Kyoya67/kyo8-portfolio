@@ -18,7 +18,6 @@ import (
  * Test Model
 ******************************************************************************
 */
-
 func testSkills() []model.Skill {
 	return []model.Skill{{
 		ID:           "go",

@@ -18,7 +18,6 @@ import (
  * Test Model
 ******************************************************************************
 */
-
 func testProfile() model.Profile {
 	linkedinURL := "https://linkedin.com/in/kyoya"
 	return model.Profile{
