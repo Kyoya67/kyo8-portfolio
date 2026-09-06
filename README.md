@@ -6,6 +6,7 @@
 - [リポジトリ構成](#リポジトリ構成)
 - [AWSアーキテクチャ](#aws-アーキテクチャ)
 - [Terraform](#terraform)
+- [DynamoDB構成](#dynamodb構成)
 - [APIルーティング](#apiルーティング)
 - [Cognito認証フロー](#cognito-認証フロー)
 - [デプロイ](#デプロイ)
@@ -50,6 +51,32 @@ kyo8-portfolio/
 - EventBridge Scheduler
 - ACM certificates
 - Route53
+
+# DynamoDB構成
+
+環境ごとに`profile`、`skill`、`article`、`project`、`career`の5テーブルを作成します。すべてのテーブルで`id`をパーティションキーにしています。
+
+`````mermaid
+flowchart TB
+    DB[DynamoDB]
+
+    DB --> P[profile-${env}]
+    P --> P1[アイテム 1件\nid = "profile"\nプロフィール全体]
+
+    DB --> S[skill-${env}]
+    S --> S1[アイテム 1件\nid = "skills"\nスキル一覧全体]
+
+    DB --> A[article-${env}]
+    A --> A1[複数アイテム\nid = "a1", "a2", ...\n記事ごとに1件]
+
+    DB --> PR[project-${env}]
+    PR --> PR1[複数アイテム\nid = "p1", "p2", ...\nプロジェクトごとに1件]
+
+    DB --> C[career-${env}]
+    C --> C1[複数アイテム\nid = "c1", "c2", ...\n経歴ごとに1件]
+`````
+
+ProfileとSkillは固定の`id`を使って1件のアイテムに全データを保存します。Article、Project、Careerはデータごとに異なる`id`を持つアイテムを複数保存します。一覧取得では`Scan`、個別取得では`GetItem`を使用します。
 
 # APIルーティング
 ## Public API
