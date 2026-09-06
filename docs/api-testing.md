@@ -148,7 +148,7 @@ GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestProf
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/profile-repository-cover.out | grep 'profile.go'
 `````
 
-Repository全体のカバレッジは`96.9%`。
+Repository全体のカバレッジは`96.7%`。
 
 #### SkillRepository
 
@@ -210,6 +210,20 @@ Get・List・Saveでは、Careerの全フィールドを比較している。Lis
 cd apps/api
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestCareerRepository' -coverprofile=/private/tmp/career-repository-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/career-repository-cover.out | grep 'career.go'
+`````
+
+#### DynamoDBエラー分類
+
+| 関数 | カバレッジ |
+|---|---:|
+| `classifyDynamoError` | 100.0% |
+
+DynamoDBのタイムアウト、スロットリング、権限エラー、テーブル不存在などが、適切なアプリケーションエラーへ分類されることを検証している。
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestClassifyDynamoError$' -coverprofile=/private/tmp/dynamo-error-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/dynamo-error-cover.out | grep 'dynamo_error.go'
 `````
 
 #### Repository全体
