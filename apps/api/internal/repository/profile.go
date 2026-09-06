@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
@@ -12,19 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-const defaultProfileTable = "profile-stg"
-
 type ProfileRepository struct {
-	db        *dynamodb.Client
+	db        dynamoAPI
 	tableName string
 }
 
-func NewProfileRepository(db *dynamodb.Client) *ProfileRepository {
-	tableName := os.Getenv("PROFILE_TABLE_NAME")
-	if tableName == "" {
-		tableName = defaultProfileTable
-	}
-
+func NewProfileRepository(db dynamoAPI, tableName string) *ProfileRepository {
 	return &ProfileRepository{
 		db:        db,
 		tableName: tableName,

@@ -138,7 +138,7 @@ Repositoryも本番コードのメソッドごとにテスト関数を分ける�
 | `GetProfile` | 100.0% |
 | `UpdateProfile` | 87.5% |
 
-`UpdateProfile`の`attributevalue.MarshalMap`失敗分岐は、現在のProfileモデルでは再現できないため未実行となっている。DynamoDBへの書き込みエラーは検証している。
+`UpdateProfile`の引数は`model.Profile`型で、各フィールドもDynamoDBへ変換できる型のため、`attributevalue.MarshalMap`は基本的に失敗しない。そのため変換失敗は未実行だが、DynamoDBへの保存成功・失敗は検証している。
 
 `````bash
 cd apps/api
