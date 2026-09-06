@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
@@ -12,18 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-const defaultCareerTable = "career-stg"
-
 type CareerRepository struct {
-	db        *dynamodb.Client
+	db        dynamoAPI
 	tableName string
 }
 
-func NewCareerRepository(db *dynamodb.Client) *CareerRepository {
-	tableName := os.Getenv("CAREER_TABLE_NAME")
-	if tableName == "" {
-		tableName = defaultCareerTable
-	}
+func NewCareerRepository(db dynamoAPI, tableName string) *CareerRepository {
 	return &CareerRepository{db: db, tableName: tableName}
 }
 
@@ -31,6 +24,9 @@ func (r *CareerRepository) ListCareers(ctx context.Context) ([]model.Career, err
 	output, err := r.db.Scan(ctx, &dynamodb.ScanInput{TableName: aws.String(r.tableName)})
 	if err != nil {
 		return nil, classifyDynamoError(err)
+	}
+	if len(output.Items) == 0 {
+		return nil, apperrors.NotFound.Wrap(errDynamoDataNotFound, "careers not found")
 	}
 
 	careers := make([]model.Career, 0, len(output.Items))

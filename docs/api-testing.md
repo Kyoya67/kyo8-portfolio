@@ -195,6 +195,23 @@ GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestArti
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/article-repository-cover.out | grep 'article.go'
 `````
 
+#### CareerRepository
+
+| 関数 | カバレッジ |
+|---|---:|
+| `ListCareers` | 100.0% |
+| `GetCareer` | 100.0% |
+| `SaveCareer` | 85.7% |
+| `DeleteCareer` | 100.0% |
+
+Get・List・Saveでは、Careerの全フィールドを比較している。Listでは複数のCareerを使い、0件の場合は`NotFound`を返すことも検証している。
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestCareerRepository' -coverprofile=/private/tmp/career-repository-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/career-repository-cover.out | grep 'career.go'
+`````
+
 #### Repository全体
 
 `````bash
