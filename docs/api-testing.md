@@ -110,3 +110,33 @@ Handlerパッケージ全体のカバレッジは`100.0%`。
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -coverprofile=/private/tmp/handler-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/handler-cover.out
 `````
+
+## Repositoryテスト
+
+### エラー処理のテスト責務
+
+エラー情報は層ごとに検証する範囲を分けている。
+
+| 対象 | 検証する責務 |
+|---|---|
+| `apperrors`テスト | `Error.Err`が元エラーとして保持されること、JSONレスポンスへ公開されないこと |
+| Repositoryテスト | 元のDynamoDBエラーが適切なアプリケーションエラーコードへ分類されること |
+| Handlerテスト | エラーが`ErrCode`・`Message`・HTTPステータスへ変換されること |
+| `ErrorHandler` | `Error.Err`をサーバーログへ出力し、HTTPレスポンスには含めないこと |
+
+この分担により、HandlerテストでRepository内部のエラー詳細まで検証する必要はなく、各層の責務に集中できる。
+
+Repositoryも本番コードのメソッドごとにテスト関数を分け、各テスト内では成功、データ未存在・変換エラー、DynamoDBエラーの順にサブテストを定義している。DynamoDBクライアントは`fakeDynamo`へ差し替え、実際のAWSには接続しない。テストの冒頭には、対象メソッドと検証する観点をコメントで残している。
+
+| 対象 | 結果 |
+|---|---:|
+| Profile / Skill / Project / Article / Career | 各Repositoryの全メソッドをテスト |
+| Repository全体 | 96.9% |
+
+`Save`・`Update`系メソッドの`attributevalue.MarshalMap`失敗分岐は、現在のモデルがMarshal対象として常に有効な型で構成されているため、未実行となっている。DynamoDBへの書き込みエラーは検証している。
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -coverprofile=/private/tmp/repository-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/repository-cover.out
+`````
