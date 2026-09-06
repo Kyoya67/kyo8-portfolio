@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/repository"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
@@ -31,7 +32,11 @@ func main() {
 	}
 
 	db := dynamodb.NewFromConfig(awsConfig)
-	articleRepository := repository.NewArticleRepository(db)
+	tableName := os.Getenv("ARTICLE_TABLE_NAME")
+	if tableName == "" {
+		tableName = "article-stg"
+	}
+	articleRepository := repository.NewArticleRepository(db, tableName)
 	zennService := service.NewZennService(articleRepository)
 
 	lambda.Start(newHandler(zennService))
