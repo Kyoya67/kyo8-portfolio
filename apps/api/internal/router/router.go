@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"net/http"
 	"os"
 
@@ -12,7 +13,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func New(db *dynamodb.Client) http.Handler {
+type dynamoAPI interface {
+	GetItem(context.Context, *dynamodb.GetItemInput, ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error)
+	Scan(context.Context, *dynamodb.ScanInput, ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error)
+	PutItem(context.Context, *dynamodb.PutItemInput, ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
+	DeleteItem(context.Context, *dynamodb.DeleteItemInput, ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error)
+}
+
+func New(db dynamoAPI) http.Handler {
 	profileRepository := repository.NewProfileRepository(db, envOrDefault("PROFILE_TABLE_NAME", "profile-stg"))
 	profileService := service.NewProfileService(profileRepository)
 	profileHandler := handler.NewProfileHandler(profileService)

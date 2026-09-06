@@ -5,6 +5,9 @@
 - [Handlerテスト](#handlerテスト)
   - [書き方](#handlerテストの書き方)
   - [カバレッジ結果](#handlerテストのカバレッジ結果)
+- [Routerテスト](#routerテスト)
+  - [書き方](#routerテストの書き方)
+  - [カバレッジ結果](#routerテストのカバレッジ結果)
 - [Repositoryテスト](#repositoryテスト)
   - [書き方](#repositoryテストの書き方)
   - [カバレッジ結果](#repositoryテストのカバレッジ結果)
@@ -115,6 +118,25 @@ Handlerパッケージ全体のカバレッジは`100.0%`。
 `````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/handler -coverprofile=/private/tmp/handler-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/handler-cover.out
+`````
+
+## Routerテスト
+
+### Routerテストの書き方
+
+- 実際のAWSへ接続しないFakeのDynamoDBクライアントをRouterへ注入する
+- ルートごとではなく、Routerの責務であるルート登録とHTTPメソッドの振り分けを検証する
+- 正常なルート、未登録パス、未対応HTTPメソッドを個別の`t.Run`で検証する
+
+### Routerテストのカバレッジ結果
+
+| 関数 | カバレッジ |
+|---|---:|
+| `New` | 97.8% |
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/router -cover
 `````
 
 ## Repositoryテスト
