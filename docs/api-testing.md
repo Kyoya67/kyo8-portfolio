@@ -163,6 +163,21 @@ GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestSkil
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/skill-repository-cover.out | grep 'skill.go'
 `````
 
+#### ProjectRepository
+
+| 関数 | カバレッジ |
+|---|---:|
+| `ListProjects` | 100.0% |
+| `GetProject` | 100.0% |
+| `SaveProject` | 85.7% |
+| `DeleteProject` | 100.0% |
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestProjectRepository' -coverprofile=/private/tmp/project-repository-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/project-repository-cover.out | grep 'project.go'
+`````
+
 #### Repository全体
 
 `````bash
