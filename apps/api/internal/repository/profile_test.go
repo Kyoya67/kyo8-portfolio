@@ -14,6 +14,23 @@ import (
 )
 
 /*
+******************************************************************************
+ * Test Model
+******************************************************************************
+*/
+
+func testProfile() model.Profile {
+	linkedinURL := "https://linkedin.com/in/kyoya"
+	return model.Profile{
+		Name: "Kyoya", Handle: "kyoya",
+		Headline: model.LocalizedText{EN: "Engineer", JA: "エンジニア"},
+		Bio:      model.LocalizedText{EN: "Backend developer", JA: "バックエンド開発者"},
+		Location: model.LocalizedText{EN: "Tokyo", JA: "東京"},
+		Focus:    []string{"Go", "AWS"}, GitHubURL: "https://github.com/Kyoya67", LinkedInURL: &linkedinURL,
+	}
+}
+
+/*
  ******************************************************************************
  * GetProfile
  * - 正常なプロフィールを取得してモデルへ変換すること
@@ -22,17 +39,7 @@ import (
  */
 func TestProfileRepositoryGetProfile(t *testing.T) {
 	ctx := context.Background()
-	linkedinURL := "https://linkedin.com/in/kyoya"
-	profile := model.Profile{
-		Name:        "Kyoya",
-		Handle:      "kyoya",
-		Headline:    model.LocalizedText{EN: "Engineer", JA: "エンジニア"},
-		Bio:         model.LocalizedText{EN: "Backend developer", JA: "バックエンド開発者"},
-		Location:    model.LocalizedText{EN: "Tokyo", JA: "東京"},
-		Focus:       []string{"Go", "AWS"},
-		GitHubURL:   "https://github.com/Kyoya67",
-		LinkedInURL: &linkedinURL,
-	}
+	profile := testProfile()
 	item, err := attributevalue.MarshalMap(profile)
 	if err != nil {
 		t.Fatal(err)
@@ -80,12 +87,22 @@ func TestProfileRepositoryGetProfile(t *testing.T) {
  ******************************************************************************
  */
 func TestProfileRepositoryUpdateProfile(t *testing.T) {
-	profile := model.Profile{Name: "Kyoya"}
+	profile := testProfile()
 
 	t.Run("successfully updates profile", func(t *testing.T) {
-		repo := NewProfileRepository(fakeDynamo{}, "profiles")
+		var got map[string]types.AttributeValue
+		repo := NewProfileRepository(fakeDynamo{putCheck: func(input *dynamodb.PutItemInput) {
+			got = input.Item
+		}}, "profiles")
 		if err := repo.UpdateProfile(context.Background(), profile); err != nil {
 			t.Fatal(err)
+		}
+		var gotProfile model.Profile
+		if err := attributevalue.UnmarshalMap(got, &gotProfile); err != nil {
+			t.Fatal(err)
+		}
+		if !reflect.DeepEqual(gotProfile, profile) {
+			t.Errorf("profile = %+v, want %+v", gotProfile, profile)
 		}
 	})
 
