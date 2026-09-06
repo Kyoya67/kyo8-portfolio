@@ -1,4 +1,14 @@
-# Backendテストカバレッジ
+# APIテスト
+
+## 目次
+
+- [テストの書き方](#テストの書き方)
+- [Handlerテスト](#handlerテスト)
+  - [書き方](#handlerテストの書き方)
+  - [カバレッジ結果](#handlerテストのカバレッジ結果)
+- [Repositoryテスト](#repositoryテスト)
+  - [書き方](#repositoryテストの書き方)
+  - [カバレッジ結果](#repositoryテストのカバレッジ結果)
 
 ## テストの書き方
 
@@ -12,7 +22,13 @@
 - 複数のテストで使うヘルパーは`test_helpers_test.go`にまとめる
 - Handler固有のヘルパーは対象の`_test.go`に定義する
 
-## カバレッジ結果
+## Handlerテスト
+
+### Handlerテストの書き方
+
+Handlerは、本番コードの関数ごとにテスト関数を分ける。各テスト関数の中では、成功、入力エラー、Serviceエラーの順で`t.Run`を記述する。リクエストやレスポンスを作成し、HTTPステータス・エラーコード・メッセージを検証する。
+
+### Handlerテストのカバレッジ結果
 
 ### Profile
 
@@ -113,30 +129,33 @@ GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/handler-cove
 
 ## Repositoryテスト
 
-### エラー処理のテスト責務
+### Repositoryテストの書き方
 
-エラー情報は層ごとに検証する範囲を分けている。
+Repositoryも本番コードのメソッドごとにテスト関数を分ける。各テスト関数の中では、成功、データ未存在・変換エラー、DynamoDBエラーの順で`t.Run`を記述する。DynamoDBクライアントは`fakeDynamo`へ差し替え、実際のAWSには接続しない。テストの冒頭には、対象メソッドと検証する観点をコメントで残している。
 
-| 対象 | 検証する責務 |
-|---|---|
-| `apperrors`テスト | `Error.Err`が元エラーとして保持されること、JSONレスポンスへ公開されないこと |
-| Repositoryテスト | 元のDynamoDBエラーが適切なアプリケーションエラーコードへ分類されること |
-| Handlerテスト | エラーが`ErrCode`・`Message`・HTTPステータスへ変換されること |
-| `ErrorHandler` | `Error.Err`をサーバーログへ出力し、HTTPレスポンスには含めないこと |
+### Repositoryテストのカバレッジ結果
 
-この分担により、HandlerテストでRepository内部のエラー詳細まで検証する必要はなく、各層の責務に集中できる。
+#### ProfileRepository
 
-Repositoryも本番コードのメソッドごとにテスト関数を分け、各テスト内では成功、データ未存在・変換エラー、DynamoDBエラーの順にサブテストを定義している。DynamoDBクライアントは`fakeDynamo`へ差し替え、実際のAWSには接続しない。テストの冒頭には、対象メソッドと検証する観点をコメントで残している。
-
-| 対象 | 結果 |
+| 関数 | カバレッジ |
 |---|---:|
-| Profile / Skill / Project / Article / Career | 各Repositoryの全メソッドをテスト |
-| Repository全体 | 96.9% |
+| `NewProfileRepository` | 100.0% |
+| `GetProfile` | 100.0% |
+| `UpdateProfile` | 87.5% |
 
-`Save`・`Update`系メソッドの`attributevalue.MarshalMap`失敗分岐は、現在のモデルがMarshal対象として常に有効な型で構成されているため、未実行となっている。DynamoDBへの書き込みエラーは検証している。
+`UpdateProfile`の`attributevalue.MarshalMap`失敗分岐は、現在のProfileモデルでは再現できないため未実行となっている。DynamoDBへの書き込みエラーは検証している。
 
 `````bash
 cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestProfileRepository' -coverprofile=/private/tmp/profile-repository-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/profile-repository-cover.out | grep 'profile.go'
+`````
+
+Repository全体のカバレッジは`96.9%`。
+
+#### Repository全体
+
+`````bash
 GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -coverprofile=/private/tmp/repository-cover.out
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/repository-cover.out
 `````

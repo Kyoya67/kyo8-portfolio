@@ -245,11 +245,14 @@ Content-Type: application/json; charset=utf-8
 
 # テスト
 
-テストでは層ごとに責務を分けて検証します。
+エラー情報は層ごとに検証する範囲を分けている。
 
-1. `apperrors`：`Error.Err`を保持できることを検証
-2. Repository：元のDynamoDBエラーを適切なアプリケーションエラーへ分類できることを検証
-3. Handler：エラーを`ErrCode`・`Message`・HTTPステータスへ変換できることを検証
-4. `ErrorHandler`：`Error.Err`をログへ出力し、HTTPレスポンスには含めないことを検証
+| 対象 | 検証する責務 |
+|---|---|
+| `apperrors`テスト | `Error.Err`が元エラーとして保持されること、JSONレスポンスへ公開されないこと |
+| Repositoryテスト | 元のDynamoDBエラーが適切なアプリケーションエラーコードへ分類されること |
+| Handlerテスト | エラーが`ErrCode`・`Message`・HTTPステータスへ変換されること |
+| `ErrorHandler` | `Error.Err`をサーバーログへ出力し、HTTPレスポンスには含めないこと |
 
+この分担により、HandlerテストでRepository内部のエラー詳細まで検証する必要はなく、各層の責務に集中できる。
 テストの書き方、テスト対象、カバレッジ結果は[APIテストの詳細](docs/api-testing.md)を参照してください。
