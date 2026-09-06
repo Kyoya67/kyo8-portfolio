@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
@@ -12,10 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-const defaultSkillTable = "skill-stg"
-
 type SkillRepository struct {
-	db        *dynamodb.Client
+	db        dynamoAPI
 	tableName string
 }
 
@@ -24,12 +21,7 @@ type skillItem struct {
 	Skills []model.Skill `dynamodbav:"skills"`
 }
 
-func NewSkillRepository(db *dynamodb.Client) *SkillRepository {
-	tableName := os.Getenv("SKILL_TABLE_NAME")
-	if tableName == "" {
-		tableName = defaultSkillTable
-	}
-
+func NewSkillRepository(db dynamoAPI, tableName string) *SkillRepository {
 	return &SkillRepository{db: db, tableName: tableName}
 }
 
@@ -44,7 +36,7 @@ func (r *SkillRepository) GetSkills(ctx context.Context) ([]model.Skill, error) 
 		return nil, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return []model.Skill{}, nil
+		return nil, apperrors.NotFound.Wrap(errDynamoDataNotFound, "skills not found")
 	}
 
 	var item skillItem

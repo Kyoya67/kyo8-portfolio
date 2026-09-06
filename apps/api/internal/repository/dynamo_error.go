@@ -10,6 +10,8 @@ import (
 	"github.com/aws/smithy-go"
 )
 
+var errDynamoDataNotFound = errors.New("requested data does not exist in DynamoDB")
+
 // classifyDynamoError converts DynamoDB and transport errors into application errors.
 func classifyDynamoError(err error) error {
 	if errors.Is(err, context.Canceled) {

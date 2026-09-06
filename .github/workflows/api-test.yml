@@ -1,0 +1,33 @@
+name: Test API
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/api-test.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run API tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/api/go.mod
+          cache-dependency-path: apps/api/go.sum
+
+      - name: Run API tests
+        working-directory: apps/api
+        run: go test ./...

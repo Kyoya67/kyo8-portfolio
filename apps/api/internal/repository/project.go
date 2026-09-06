@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
@@ -12,18 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-const defaultProjectTable = "project-stg"
-
 type ProjectRepository struct {
-	db        *dynamodb.Client
+	db        dynamoAPI
 	tableName string
 }
 
-func NewProjectRepository(db *dynamodb.Client) *ProjectRepository {
-	tableName := os.Getenv("PROJECT_TABLE_NAME")
-	if tableName == "" {
-		tableName = defaultProjectTable
-	}
+func NewProjectRepository(db dynamoAPI, tableName string) *ProjectRepository {
 	return &ProjectRepository{db: db, tableName: tableName}
 }
 
@@ -33,6 +26,9 @@ func (r *ProjectRepository) ListProjects(ctx context.Context) ([]model.Project, 
 	output, err := r.db.Scan(ctx, input)
 	if err != nil {
 		return nil, classifyDynamoError(err)
+	}
+	if len(output.Items) == 0 {
+		return nil, apperrors.NotFound.Wrap(errDynamoDataNotFound, "projects not found")
 	}
 
 	projects := make([]model.Project, 0, len(output.Items))
@@ -53,7 +49,7 @@ func (r *ProjectRepository) GetProject(ctx context.Context, id string) (model.Pr
 		return model.Project{}, classifyDynamoError(err)
 	}
 	if len(output.Item) == 0 {
-		return model.Project{}, apperrors.NotFound.Wrap(nil, "project not found")
+		return model.Project{}, apperrors.NotFound.Wrap(errDynamoDataNotFound, "project not found")
 	}
 
 	var project model.Project

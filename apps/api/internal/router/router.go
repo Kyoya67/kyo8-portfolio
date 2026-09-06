@@ -1,7 +1,9 @@
 package router
 
 import (
+	"context"
 	"net/http"
+	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/handler"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/middleware"
@@ -11,25 +13,32 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func New(db *dynamodb.Client) http.Handler {
-	profileRepository := repository.NewProfileRepository(db)
+type dynamoAPI interface {
+	GetItem(context.Context, *dynamodb.GetItemInput, ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error)
+	Scan(context.Context, *dynamodb.ScanInput, ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error)
+	PutItem(context.Context, *dynamodb.PutItemInput, ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
+	DeleteItem(context.Context, *dynamodb.DeleteItemInput, ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error)
+}
+
+func New(db dynamoAPI) http.Handler {
+	profileRepository := repository.NewProfileRepository(db, envOrDefault("PROFILE_TABLE_NAME", "profile-stg"))
 	profileService := service.NewProfileService(profileRepository)
 	profileHandler := handler.NewProfileHandler(profileService)
 
-	skillRepository := repository.NewSkillRepository(db)
+	skillRepository := repository.NewSkillRepository(db, envOrDefault("SKILL_TABLE_NAME", "skill-stg"))
 	skillService := service.NewSkillService(skillRepository)
 	skillHandler := handler.NewSkillHandler(skillService)
 
-	projectRepository := repository.NewProjectRepository(db)
+	projectRepository := repository.NewProjectRepository(db, envOrDefault("PROJECT_TABLE_NAME", "project-stg"))
 	projectService := service.NewProjectService(projectRepository)
 	projectHandler := handler.NewProjectHandler(projectService)
 
-	articleRepository := repository.NewArticleRepository(db)
+	articleRepository := repository.NewArticleRepository(db, envOrDefault("ARTICLE_TABLE_NAME", "article-stg"))
 	articleService := service.NewArticleService(articleRepository)
 	zennService := service.NewZennService(articleRepository)
 	articleHandler := handler.NewArticleHandler(articleService, zennService)
 
-	careerRepository := repository.NewCareerRepository(db)
+	careerRepository := repository.NewCareerRepository(db, envOrDefault("CAREER_TABLE_NAME", "career-stg"))
 	careerService := service.NewCareerService(careerRepository)
 	careerHandler := handler.NewCareerHandler(careerService)
 
@@ -73,4 +82,11 @@ func New(db *dynamodb.Client) http.Handler {
 	r.HandleFunc("/admin/careers/{id}", careerHandler.DeleteCareer).Methods("DELETE")
 
 	return r
+}
+
+func envOrDefault(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
 }

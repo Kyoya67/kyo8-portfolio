@@ -1,19 +1,26 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
-	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 	"github.com/gorilla/mux"
 )
 
-type ProjectHandler struct {
-	service *service.ProjectService
+type projectService interface {
+	ListProjects(context.Context) ([]model.Project, error)
+	GetProject(context.Context, string) (model.Project, error)
+	SaveProject(context.Context, model.Project) error
+	DeleteProject(context.Context, string) error
 }
 
-func NewProjectHandler(projectService *service.ProjectService) *ProjectHandler {
+type ProjectHandler struct {
+	service projectService
+}
+
+func NewProjectHandler(projectService projectService) *ProjectHandler {
 	return &ProjectHandler{service: projectService}
 }
 
@@ -27,7 +34,13 @@ func (h *ProjectHandler) ListProjects(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
-	project, err := h.service.GetProject(r.Context(), mux.Vars(r)["id"])
+	id := mux.Vars(r)["id"]
+	if id == "" {
+		err := apperrors.BadParam.Wrap(nil, "project id is required")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+	project, err := h.service.GetProject(r.Context(), id)
 	if err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
@@ -73,7 +86,13 @@ func (h *ProjectHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProjectHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
-	if err := h.service.DeleteProject(r.Context(), mux.Vars(r)["id"]); err != nil {
+	id := mux.Vars(r)["id"]
+	if id == "" {
+		err := apperrors.BadParam.Wrap(nil, "project id is required")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+	if err := h.service.DeleteProject(r.Context(), id); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

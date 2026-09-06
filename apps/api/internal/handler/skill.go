@@ -1,20 +1,25 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
-	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 )
 
-type SkillHandler struct {
-	service *service.SkillService
+type skillService interface {
+	GetSkills(context.Context) ([]model.Skill, error)
+	UpdateSkills(context.Context, []model.Skill) error
 }
 
-func NewSkillHandler(skillService *service.SkillService) *SkillHandler {
+type SkillHandler struct {
+	service skillService
+}
+
+func NewSkillHandler(skillService skillService) *SkillHandler {
 	return &SkillHandler{service: skillService}
 }
 

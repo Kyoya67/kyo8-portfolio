@@ -1,20 +1,31 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
-	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/service"
 	"github.com/gorilla/mux"
 )
 
-type ArticleHandler struct {
-	service     *service.ArticleService
-	zennService *service.ZennService
+type articleService interface {
+	ListArticles(context.Context) ([]model.Article, error)
+	GetArticle(context.Context, string) (model.Article, error)
+	SaveArticle(context.Context, model.Article) error
+	DeleteArticle(context.Context, string) error
 }
 
-func NewArticleHandler(articleService *service.ArticleService, zennService *service.ZennService) *ArticleHandler {
+type zennService interface {
+	SyncArticles(context.Context) (int, error)
+}
+
+type ArticleHandler struct {
+	service     articleService
+	zennService zennService
+}
+
+func NewArticleHandler(articleService articleService, zennService zennService) *ArticleHandler {
 	return &ArticleHandler{service: articleService, zennService: zennService}
 }
 
@@ -28,7 +39,14 @@ func (h *ArticleHandler) ListArticles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) GetArticle(w http.ResponseWriter, r *http.Request) {
-	article, err := h.service.GetArticle(r.Context(), mux.Vars(r)["id"])
+	id := mux.Vars(r)["id"]
+	if id == "" {
+		err := apperrors.BadParam.Wrap(nil, "article id is required")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	article, err := h.service.GetArticle(r.Context(), id)
 	if err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
@@ -74,7 +92,14 @@ func (h *ArticleHandler) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ArticleHandler) DeleteArticle(w http.ResponseWriter, r *http.Request) {
-	if err := h.service.DeleteArticle(r.Context(), mux.Vars(r)["id"]); err != nil {
+	id := mux.Vars(r)["id"]
+	if id == "" {
+		err := apperrors.BadParam.Wrap(nil, "article id is required")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	if err := h.service.DeleteArticle(r.Context(), id); err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return
 	}

@@ -6,11 +6,13 @@
 - [リポジトリ構成](#リポジトリ構成)
 - [AWSアーキテクチャ](#aws-アーキテクチャ)
 - [Terraform](#terraform)
+- [DynamoDB構成](#dynamodb構成)
 - [APIルーティング](#apiルーティング)
 - [Cognito認証フロー](#cognito-認証フロー)
 - [デプロイ](#デプロイ)
 - [バッチ同期](#バッチ同期)
 - [エラーハンドリング](#エラーハンドリング)
+- [テスト](#テスト)
 
 # リポジトリ構成
 
@@ -34,7 +36,7 @@ kyo8-portfolio/
 
 # AWSアーキテクチャ
 
-<img src="docs/aws-architecture.png" alt="AWS architecture" width="100%">
+<img src="assets/diagrams/aws-architecture.png" alt="AWS architecture" width="100%">
 
 # Terraform
 
@@ -50,6 +52,32 @@ kyo8-portfolio/
 - EventBridge Scheduler
 - ACM certificates
 - Route53
+
+# DynamoDB構成
+
+環境ごとに`profile`、`skill`、`article`、`project`、`career`の5テーブルを作成します。すべてのテーブルで`id`をパーティションキーにしています。
+
+`````mermaid
+flowchart TB
+    DB[DynamoDB]
+
+    DB --> P["profile-${env}"]
+    P --> P1["アイテム 1件<br/>id = profile<br/>プロフィール全体"]
+
+    DB --> S["skill-${env}"]
+    S --> S1["アイテム 1件<br/>id = skills<br/>スキル一覧全体"]
+
+    DB --> A["article-${env}"]
+    A --> A1["複数アイテム<br/>id = a1, a2, ...<br/>記事ごとに1件"]
+
+    DB --> PR["project-${env}"]
+    PR --> PR1["複数アイテム<br/>id = p1, p2, ...<br/>プロジェクトごとに1件"]
+
+    DB --> C["career-${env}"]
+    C --> C1["複数アイテム<br/>id = c1, c2, ...<br/>経歴ごとに1件"]
+`````
+
+ProfileとSkillは固定の`id`を使って1件のアイテムに全データを保存します。Article、Project、Careerはデータごとに異なる`id`を持つアイテムを複数保存します。一覧取得では`Scan`、個別取得では`GetItem`を使用します。
 
 # APIルーティング
 ## Public API
@@ -128,7 +156,7 @@ sequenceDiagram
 
 GitHub Actionsが`apps/api`をDocker buildし、ARM64用のLambdaコンテナイメージとしてECRへpushします。その後、API用とBatch用のLambda関数を同じイメージから更新します。
 
-<img src="docs/workflow.png" alt="GitHub Actions workflow" width="100%">
+<img src="assets/diagrams/workflow.png" alt="GitHub Actions workflow" width="100%">
 
 `apps/api/Dockerfile`では、APIとBatchの2つのGoバイナリを1つのコンテナイメージへ配置します。Lambdaごとに起動するコマンドを切り替えます。
 
@@ -214,3 +242,17 @@ Content-Type: application/json; charset=utf-8
 `````
 
 クライアントには安全なエラーコードとメッセージだけを返し、CloudWatchには調査に必要なHTTPリクエスト情報と元エラーを記録します。
+
+# テスト
+
+エラー情報は層ごとに検証する範囲を分けている。
+
+| 対象 | 検証する責務 |
+|---|---|
+| `apperrors`テスト | `Error.Err`が元エラーとして保持されること、JSONレスポンスへ公開されないこと |
+| Repositoryテスト | 元のDynamoDBエラーが適切なアプリケーションエラーコードへ分類されること |
+| Handlerテスト | エラーが`ErrCode`・`Message`・HTTPステータスへ変換されること |
+| `ErrorHandler` | `Error.Err`をサーバーログへ出力し、HTTPレスポンスには含めないこと |
+
+この分担により、HandlerテストでRepository内部のエラー詳細まで検証する必要はなく、各層の責務に集中できる。
+テストの書き方、テスト対象、カバレッジ結果は[APIテストの詳細](docs/api-testing.md)を参照してください。
