@@ -178,6 +178,23 @@ GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestProj
 GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/project-repository-cover.out | grep 'project.go'
 `````
 
+#### ArticleRepository
+
+| 関数 | カバレッジ |
+|---|---:|
+| `GetArticle` | 100.0% |
+| `ListArticles` | 100.0% |
+| `SaveArticle` | 85.7% |
+| `DeleteArticle` | 100.0% |
+
+Get・List・Saveでは、Articleの全フィールドを比較している。Listでは複数のArticleを使い、0件の場合は`NotFound`を返すことも検証している。
+
+`````bash
+cd apps/api
+GOCACHE=/private/tmp/kyo8-go-cache go test ./internal/repository -run '^TestArticleRepository' -coverprofile=/private/tmp/article-repository-cover.out
+GOCACHE=/private/tmp/kyo8-go-cache go tool cover -func=/private/tmp/article-repository-cover.out | grep 'article.go'
+`````
+
 #### Repository全体
 
 `````bash

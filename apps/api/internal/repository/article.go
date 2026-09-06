@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"os"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/apperrors"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/model"
@@ -12,18 +11,12 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-const defaultArticleTable = "article-stg"
-
 type ArticleRepository struct {
-	db        *dynamodb.Client
+	db        dynamoAPI
 	tableName string
 }
 
-func NewArticleRepository(db *dynamodb.Client) *ArticleRepository {
-	tableName := os.Getenv("ARTICLE_TABLE_NAME")
-	if tableName == "" {
-		tableName = defaultArticleTable
-	}
+func NewArticleRepository(db dynamoAPI, tableName string) *ArticleRepository {
 	return &ArticleRepository{db: db, tableName: tableName}
 }
 
@@ -54,6 +47,9 @@ func (r *ArticleRepository) ListArticles(ctx context.Context) ([]model.Article, 
 	output, err := r.db.Scan(ctx, input)
 	if err != nil {
 		return nil, classifyDynamoError(err)
+	}
+	if len(output.Items) == 0 {
+		return nil, apperrors.NotFound.Wrap(errDynamoDataNotFound, "articles not found")
 	}
 
 	articles := make([]model.Article, 0, len(output.Items))
