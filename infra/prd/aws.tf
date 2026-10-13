@@ -76,6 +76,17 @@ module "route53" {
       ]
     },
     {
+      name = "ca-techlounge-todo.kyo8.dev"
+      type = "NS"
+      ttl  = 300
+      values = [
+        "ns-1633.awsdns-12.co.uk.",
+        "ns-1356.awsdns-41.org.",
+        "ns-633.awsdns-15.net.",
+        "ns-199.awsdns-24.com.",
+      ]
+    },
+    {
       name = "api-v1.kyo8.dev"
       type = "A"
       alias = {
