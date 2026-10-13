@@ -87,6 +87,28 @@ module "route53" {
       ]
     },
     {
+      name = "x-clone.kyo8.dev"
+      type = "NS"
+      ttl  = 300
+      values = [
+        "ns-919.awsdns-50.net.",
+        "ns-1179.awsdns-19.org.",
+        "ns-500.awsdns-62.com.",
+        "ns-2045.awsdns-63.co.uk.",
+      ]
+    },
+    {
+      name = "stg.x-clone.kyo8.dev"
+      type = "NS"
+      ttl  = 300
+      values = [
+        "ns-1834.awsdns-37.co.uk.",
+        "ns-538.awsdns-03.net.",
+        "ns-390.awsdns-48.com.",
+        "ns-1459.awsdns-54.org.",
+      ]
+    },
+    {
       name = "api-v1.kyo8.dev"
       type = "A"
       alias = {
