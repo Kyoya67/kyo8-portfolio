@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/handler"
 	"github.com/Kyoya67/kyo8-portfolio/apps/api/internal/middleware"
@@ -41,6 +42,10 @@ func New(db dynamoAPI) http.Handler {
 	careerRepository := repository.NewCareerRepository(db, envOrDefault("CAREER_TABLE_NAME", "career-stg"))
 	careerService := service.NewCareerService(careerRepository)
 	careerHandler := handler.NewCareerHandler(careerService)
+
+	certificationRepository := repository.NewCertificationRepository(db, certificationTableName())
+	certificationService := service.NewCertificationService(certificationRepository)
+	certificationHandler := handler.NewCertificationHandler(certificationService)
 
 	r := mux.NewRouter()
 	r.Use(middleware.CORS)
@@ -81,6 +86,11 @@ func New(db dynamoAPI) http.Handler {
 	r.HandleFunc("/admin/careers/{id}", careerHandler.UpdateCareer).Methods("PUT")
 	r.HandleFunc("/admin/careers/{id}", careerHandler.DeleteCareer).Methods("DELETE")
 
+	r.HandleFunc("/certifications", certificationHandler.ListCertifications).Methods("GET")
+	r.HandleFunc("/admin/certifications", certificationHandler.CreateCertification).Methods("POST")
+	r.HandleFunc("/admin/certifications/{id}", certificationHandler.UpdateCertification).Methods("PUT")
+	r.HandleFunc("/admin/certifications/{id}", certificationHandler.DeleteCertification).Methods("DELETE")
+
 	return r
 }
 
@@ -89,4 +99,11 @@ func envOrDefault(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func certificationTableName() string {
+	if value := os.Getenv("CERTIFICATION_TABLE_NAME"); value != "" {
+		return value
+	}
+	return "certification-" + strings.TrimPrefix(envOrDefault("CAREER_TABLE_NAME", "career-stg"), "career-")
 }

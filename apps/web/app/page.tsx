@@ -10,19 +10,22 @@ import { getProjectsOrFallback } from "@/lib/api/projects";
 import { getArticlesOrFallback } from "@/lib/api/articles";
 import { getCareersOrFallback } from "@/lib/api/careers";
 
+import { getCertificationsOrEmpty } from "@/lib/api/certifications";
+
 export default async function Home() {
-  const [profile, skills, projects, articles, careers] = await Promise.all([
+  const [profile, skills, projects, articles, careers, certifications] = await Promise.all([
     getProfileOrFallback(),
     getSkillsOrFallback(),
     getProjectsOrFallback(),
     getArticlesOrFallback(),
     getCareersOrFallback(),
+    getCertificationsOrEmpty(),
   ]);
 
   return (
     <>
       <Hero profile={profile} />
-      <AboutPreview profile={profile} />
+      <AboutPreview profile={profile} certifications={certifications} />
       <SkillsPreview skills={skills} />
       <ProjectsPreview projects={projects} />
       <ArticlesPreview articles={articles} />

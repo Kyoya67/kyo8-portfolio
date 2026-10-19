@@ -77,7 +77,8 @@ resource "aws_iam_policy" "execution_dynamo" {
       Resource = [
         "arn:aws:dynamodb:${var.region}:${var.account_id}:table/article-${var.env}",
         "arn:aws:dynamodb:${var.region}:${var.account_id}:table/project-${var.env}",
-        "arn:aws:dynamodb:${var.region}:${var.account_id}:table/career-${var.env}"
+        "arn:aws:dynamodb:${var.region}:${var.account_id}:table/career-${var.env}",
+        "arn:aws:dynamodb:${var.region}:${var.account_id}:table/certification-${var.env}"
       ]
     }]
     Version = "2012-10-17"
