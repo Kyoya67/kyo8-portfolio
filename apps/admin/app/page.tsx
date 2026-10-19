@@ -22,6 +22,9 @@ export default function Home() {
             <BracketButton href="/articles" solid>
               Articles
             </BracketButton>
+            <BracketButton href="/certifications" solid>
+              Certifications / 保有資格
+            </BracketButton>
             <BracketButton href="/careers" solid>
               Career
             </BracketButton>

@@ -54,7 +54,7 @@ kyo8-portfolio/
 
 # DynamoDB構成
 
-環境ごとに`profile`、`skill`、`article`、`project`、`career`の5テーブルを作成します。すべてのテーブルで`id`をパーティションキーにしています。
+環境ごとに`profile`、`skill`、`article`、`project`、`career`、`certification`の6テーブルを作成します。すべてのテーブルで`id`をパーティションキーにしています。
 
 `````mermaid
 flowchart TB
@@ -255,3 +255,7 @@ Content-Type: application/json; charset=utf-8
 
 この分担により、HandlerテストでRepository内部のエラー詳細まで検証する必要はなく、各層の責務に集中できる。
 テストの書き方、テスト対象、カバレッジ結果は[APIテストの詳細](docs/api-testing.md)を参照してください。
+
+# 保有資格
+
+DynamoDB・API・管理画面で保有資格を管理します。[適用順序・初期SAAデータ登録・API仕様](docs/certifications.md)を参照してください。
