@@ -34,6 +34,17 @@ export default function AboutPreview({ profile }: { profile: Profile }) {
                   {paragraph}
                 </p>
               ))}
+              <section className="border-t border-border pt-4" aria-labelledby="certifications-title">
+                <h3 id="certifications-title" className="font-mono text-xs uppercase tracking-widest text-fg-muted">
+                  {locale === "ja" ? "保有資格" : "Certifications"}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed sm:text-base">
+                  AWS Certified Solutions Architect – Associate (SAA)
+                </p>
+                <p className="mt-1 text-xs text-fg-muted">
+                  {locale === "ja" ? "2026年10月取得" : "Earned October 2026"}
+                </p>
+              </section>
             </div>
           </div>
 
