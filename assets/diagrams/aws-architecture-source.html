@@ -1,0 +1,184 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>kyo8-portfolio AWS architecture</title><style>
+/* engineered-paper theme (cool near-white, one accent, mono labels)
+ * All colors/fonts flow through the :root tokens — tweak tokens, not scattered values. */
+:root {
+  color-scheme: light;
+  --color-paper:   oklch(98.5% 0.004 250);
+  --color-paper-2: oklch(96.5% 0.005 252);
+  --color-rule:    oklch(93% 0.007 255);    /* graph-paper grid */
+  --color-rule-2:  oklch(83% 0.011 255);    /* hairline borders */
+  --color-muted:   oklch(56% 0.013 255);
+  --color-neutral: oklch(46% 0.015 255);    /* neutral edges */
+  --color-ink-2:   oklch(34% 0.018 257);
+  --color-ink:     oklch(24% 0.020 258);
+  --color-accent:  oklch(58% 0.20 256);     /* primary-flow edges, one signal color */
+  --color-graphite:oklch(24% 0.018 260);    /* dark tile for white/light logos */
+  /* group palette A — warm vendor (e.g. Cloudflare/AWS orange). Retune hue per vendor. */
+  --color-g1:      oklch(68% 0.15 55);
+  --color-g1-soft: oklch(78% 0.12 55);
+  --color-g1-ink:  oklch(52% 0.14 50);
+  --color-g1-tint: oklch(96.5% 0.015 60 / .5);
+  /* group palette B — accent-family (repo/tooling groups) */
+  --color-accent-soft: oklch(58% 0.20 256 / .45);
+  --color-accent-tint: oklch(97% 0.012 256 / .5);
+  /* JP glyphs: name JP faces explicitly — bare sans-serif fallback on Linux picks Chinese-variant CJK */
+  --font-display: "Geist", "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Hiragino Sans", "Yu Gothic UI", "Noto Sans CJK JP", "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px;
+  --radius-card: 10px; --radius-tile: 12px;
+  /* translucent veil behind node label text: matches paper on plain canvas, blends into
+     group tints instead of punching an off-color rectangle through them */
+  --color-veil: oklch(98.5% 0.004 250 / .78);
+}
+/* Dark variant: set data-theme="dark" on <html>. Tiles stay white — brand logos are drawn
+   for light grounds. Everything (arrowheads via context-stroke, legend via border-color)
+   follows the tokens, so toggling the attribute is all it takes. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-paper:   oklch(18% 0.012 255);
+  --color-paper-2: oklch(22% 0.014 255);
+  --color-rule:    oklch(24% 0.013 255);
+  --color-rule-2:  oklch(38% 0.018 255);
+  --color-muted:   oklch(65% 0.014 255);
+  --color-neutral: oklch(72% 0.012 255);
+  --color-ink-2:   oklch(85% 0.010 255);
+  --color-ink:     oklch(94% 0.008 255);
+  --color-accent:  oklch(70% 0.16 256);
+  --color-graphite:oklch(31% 0.020 260);
+  --color-g1:      oklch(70% 0.14 55);
+  --color-g1-soft: oklch(58% 0.11 55);
+  --color-g1-ink:  oklch(78% 0.12 55);
+  --color-g1-tint: oklch(26% 0.030 60 / .40);
+  --color-accent-soft: oklch(70% 0.16 256 / .5);
+  --color-accent-tint: oklch(28% 0.045 256 / .35);
+  --color-veil: oklch(18% 0.012 255 / .78);
+}
+@font-face { font-family:"Geist"; font-style:normal; font-weight:100 900; font-display:swap;
+  src:url(data:font/woff2;base64,%%FONT_DISPLAY%%) format("woff2"); }
+@font-face { font-family:"JetBrains Mono"; font-style:normal; font-weight:100 800; font-display:swap;
+  src:url(data:font/woff2;base64,%%FONT_JBM%%) format("woff2"); }
+/* JetBrains Mono reads cramped at 9.5–11px; open every mono label slightly */
+.kicker, .node .role, .el, .legend, .foot { letter-spacing: 0.04em; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { overflow-x: clip; }
+body { background: var(--color-paper); color: var(--color-ink); font-family: var(--font-body); padding: var(--space-xl) var(--space-lg) var(--space-2xl); }
+.page { width: fit-content; max-width: 100%; margin: 0 auto; }
+
+.head { display:grid; grid-template-columns: 1fr auto; gap: var(--space-lg); align-items:end;
+  padding-bottom: var(--space-md); border-bottom: 1px solid var(--color-rule-2); margin-bottom: var(--space-lg); }
+.kicker { font-family: var(--font-mono); font-size: 11px;
+  color: var(--color-accent); margin-bottom: var(--space-sm); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(22px, 4vw, 30px);
+  letter-spacing: -0.005em; line-height: 1.2; }
+.lede { max-width: 300px; font-size: 12px; line-height: 1.7; color: var(--color-neutral); padding-bottom: 2px; }
+@media (max-width: 680px) { .head { grid-template-columns: 1fr; align-items:start; } .lede { max-width:none; } }
+
+.scroller { overflow-x: auto; border: 1px solid var(--color-rule-2); border-radius: var(--radius-card); }
+/* CANVAS SIZE: set width/height here AND on svg.edges AND its viewBox — keep the three in sync */
+.canvas { position: relative; width: 1000px; height: 540px; background: var(--color-paper);
+  background-image:
+    linear-gradient(var(--color-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
+  background-size: 24px 24px; background-position: -1px -1px; }
+
+.group { position:absolute; border-radius: var(--radius-tile); }
+/* group labels are names like node names (display font), written in the brand's own case.
+   They sit inside the top-left corner, so the border stays unbroken and needs no mask */
+.g-label { position:absolute; top:12px; left:12px; display:flex; align-items:center; gap:6px;
+  font-family: var(--font-display); font-size: 12px; font-weight: 600;
+  color: var(--color-neutral); white-space: nowrap; }
+.g-label img { width: 14px; height: 14px; }
+/* group labels sit on the group's tint, not on a white tile: in the dark theme swap in the brand's own
+   dark-theme logo (lt/dk pair), or give a mark with black parts a white plate */
+.g-label img.dk, .tile img.dk { display:none; }
+[data-theme="dark"] .g-label img.lt, [data-theme="dark"] .tile img.lt { display:none; }
+[data-theme="dark"] .g-label img.dk, [data-theme="dark"] .tile img.dk { display:block; }
+[data-theme="dark"] .g-label img.plate { background:#fff; border-radius:3px; padding:2px; width:18px; height:18px; }
+.group.ga { border:1.5px solid var(--color-g1); background: var(--color-g1-tint); }
+.group.ga-nested { border:1.5px dashed var(--color-g1-soft); }
+.group.gb { border:1.5px solid var(--color-accent-soft); background: var(--color-accent-tint); }
+.group.ga > .g-label, .group.ga-nested > .g-label { color: var(--color-g1-ink); }
+.group.gb > .g-label { color: var(--color-accent); }
+.group.aws { border:1.5px solid var(--color-ink); border-radius:0; }
+.group.aws > .g-label { top:-1.5px; left:-1.5px; gap:8px; color: var(--color-ink); }
+.group.aws > .g-label img { width:30px; height:30px; }
+.group.aws.az > .g-label { top:8px; left:12px; }
+.group.aws.region, .group.aws.az { border-color:#00A4A6; border-style:dashed; }
+.group.aws.vpc { border-color:#8C4FFF; }
+.group.aws.private { border-color:#00A4A6; }
+.group.aws.public { border-color:#7AA116; }
+.group.gcp { border:1.5px solid #4285F4; border-radius:6px; }
+.group.azure { border:1.5px solid #0078D4; border-radius:6px; }
+.group.gcp > .g-label, .group.azure > .g-label { gap:8px; color: var(--color-ink); }
+.group.gcp > .g-label img, .group.azure > .g-label img { width:20px; height:20px; }
+.group.gcp.region, .group.azure.region { border-color: var(--color-rule-2); background: var(--color-paper-2); }
+.group.gcp.vpc { border:1.5px dashed var(--color-ink-2); }
+.group.gcp.subnet { border:1px dashed var(--color-neutral); }
+.group.gcp.zone { border-color:#34A853; }
+.group.azure.rg { border:1.5px dashed #0096D7; }
+.group.azure.vnet { border:1.5px solid #A4CBFB; }
+.group.azure.subnet { border:1px solid #A4CBFB; }
+.group.azure.zone { border-color:#FFD965; }
+
+.node { position:absolute; width:132px; text-align:center; }
+.tile { width:60px; height:60px; margin:0 auto; border-radius: var(--radius-tile);
+  background:#fff; border:1px solid var(--color-rule-2); display:grid; place-items:center;
+  box-shadow: 0 1px 2px oklch(24% 0.02 258 / 0.05); transition: border-color .15s cubic-bezier(0.16,1,0.3,1); }
+.node:hover .tile { border-color: var(--color-accent); }
+.tile img { width:34px; height:34px; object-fit:contain; }
+.tile.wide img { width:44px; }                       /* wide-aspect logos */
+.tile.dark { background: var(--color-graphite); border-color: var(--color-graphite); }  /* white/light logos */
+.tile.bare { background:none; border:none; box-shadow:none; }
+.tile.bare img { width:60px; height:60px; }
+.tile.bare.res img { width:44px; height:44px; }
+.node .name { font-family: var(--font-display); font-weight:600; font-size:13px; margin-top: var(--space-sm); letter-spacing:0; }
+.node .role { font-family: var(--font-mono); font-size:9.5px; color: var(--color-muted); margin-top:2px; }
+/* veil behind label spans: crossing edges/grid fade behind text; translucent so it
+   blends into group tints (a solid paper rectangle looks pasted-on inside tinted groups) */
+.node .name span, .node .role span { background: var(--color-veil); backdrop-filter: blur(1.5px);
+  padding: 0 var(--space-xs); border-radius: 3px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+svg.edges { position:absolute; inset:0; width:1000px; height:540px; pointer-events:none; }
+.e  { stroke: var(--color-accent); stroke-width:1.6; fill:none; }   /* primary flow */
+.n  { stroke: var(--color-neutral); stroke-width:1.4; fill:none; }  /* internal */
+path.aws { stroke: var(--color-ink); stroke-width:1.6; fill:none; }
+.dash { stroke-dasharray:4 5; }                                     /* dev / deploy */
+.el { font-family: var(--font-mono); font-size:10.5px; fill: var(--color-neutral);
+  paint-order: stroke; stroke: var(--color-paper); stroke-width:4px; stroke-linejoin:round; }  /* halo */
+.el.a { fill: var(--color-accent); }
+
+.legend { display:flex; gap: var(--space-lg); align-items:center; margin-top: var(--space-md);
+  font-family: var(--font-mono); font-size:10px; color: var(--color-muted); flex-wrap:wrap; }
+.legend .sw { display:inline-block; width:30px; vertical-align:middle; margin-right:6px;
+  border-top:1.6px solid var(--color-accent); }
+.legend .sw.n { border-color: var(--color-neutral); border-top-width:1.4px; }
+.legend .sw.dash { border-top-style: dashed; }
+
+.foot { margin-top: var(--space-xl); padding-top: var(--space-md); border-top: 1px solid var(--color-rule-2);
+  display:flex; justify-content:space-between; gap: var(--space-md); flex-wrap:wrap;
+  font-family: var(--font-mono); font-size:10px; color: var(--color-muted); }
+.foot a { color: inherit; text-decoration-color: var(--color-rule-2); text-underline-offset: 2px; }
+.foot a:hover { color: var(--color-accent); }
+
+.canvas {width:1400px;height:970px}
+svg.edges {width:100%;height:100%}
+.node {width:190px}
+.node .name {font-size:15px;line-height:20px}
+.node .role {font-size:11px;line-height:17px}
+.group.aws.region {border-color:var(--color-neutral)}
+.group.aws.region>.g-label {top:12px;left:16px}
+.caption {position:absolute;font-size:12px;line-height:21px;color:var(--color-neutral)}
+.canvas-title {position:absolute;left:30px;top:22px;font-size:23px;font-weight:700}
+.el {font-size:12px}
+.api-actions {position:absolute;left:540px;top:450px;width:260px;font-size:12px;line-height:22px;color:var(--color-ink-2);background:var(--color-paper);padding:5px 8px}
+.permissions {position:absolute;left:520px;top:820px;width:820px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.access {border:1px solid var(--color-rule-2);background:var(--color-paper);padding:16px}
+.access h2 {font-size:15px;line-height:24px;margin-bottom:6px}
+.access p {font-size:12px;line-height:20px;color:var(--color-neutral);margin-bottom:10px}
+.access ul {list-style:none;font-family:var(--font-mono);font-size:11px;line-height:22px}
+.preflight {grid-column:1 / -1;font-size:11px;color:var(--color-neutral)}
+</style></head><body><div class="page"><div class="scroller"><div class="canvas">
+<div class="group aws" style="left:260px;top:72px;width:1110px;height:728px"><div class="g-label"><img class="lt" src="%%ICON_aws%%" alt=""><img class="dk" src="%%ICON_aws_dark%%" alt="">AWS Cloud · stg / prd は別アカウント</div></div>
+<div class="group aws region" style="left:520px;top:130px;width:820px;height:646px"><div class="g-label">ap-northeast-1 · リージョナルサービス</div></div>
+<svg class="edges" viewBox="0 0 1400 970"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="context-stroke"/></marker><marker id="open" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs><path class="e" d="M156 380 H334" marker-end="url(#ar)"/><text class="el" x="280" y="370" text-anchor="middle">公開サイト取得</text><path class="e" d="M120 478 V515 H510 V380 H614" marker-end="url(#ar)"/><text class="el" x="345" y="505" text-anchor="middle">閲覧 · 認証不要</text><path class="e" d="M156 630 H334" marker-end="url(#ar)"/><text class="el" x="290" y="620" text-anchor="middle">管理画面取得</text><path class="e" d="M120 728 V760 H490 V400 H614" marker-end="url(#ar)"/><text class="el" x="350" y="750" text-anchor="middle">管理操作 · 認証必須</text><path class="aws" d="M686 380 H864" marker-end="url(#open)"/><text class="el" x="775" y="370" text-anchor="middle">Lambda proxy</text><path class="aws" d="M936 380 H1134" marker-end="url(#open)"/><text class="el" x="1035" y="370" text-anchor="middle">read / write</text><path class="aws" d="M650 262 V344" marker-end="url(#open)"/><text class="el" x="710" y="305" text-anchor="middle">authorizer</text><path class="aws" d="M866 200 H790 V315 H680 V344" marker-end="url(#open)"/><text class="el" x="816" y="269" text-anchor="middle">TLS</text><path class="aws" d="M406 200 H480 V295 H615 V344" marker-end="url(#open)"/><text class="el" x="534" y="285" text-anchor="middle">DNS alias</text><path class="aws" d="M686 630 H864" marker-end="url(#open)"/><text class="el" x="775" y="620" text-anchor="middle">invoke</text><path class="n" d="M900 594 V550 H245 V850 H334" marker-end="url(#ar)"/><text class="el" x="710" y="540" text-anchor="middle">HTTPS · RSS 取得</text><path class="aws" d="M936 610 H1040 V500 H1305 V380 H1206" marker-end="url(#open)"/><text class="el" x="1200" y="490" text-anchor="middle">article 同期</text><path class="aws dash" d="M1134 630 H936" marker-end="url(#open)"/><text class="el" x="1035" y="620" text-anchor="middle">pull image</text><path class="aws dash" d="M1170 594 V565 H1010 V400 H936" marker-end="url(#open)"/><text class="el" x="1100" y="555" text-anchor="middle">pull image</text><path class="n dash" d="M1170 814 V694" marker-end="url(#ar)"/><text class="el" x="1220" y="770" text-anchor="middle">push image</text><path class="n dash" d="M1134 850 H900 V714" marker-end="url(#ar)"/><text class="el" x="1010" y="840" text-anchor="middle">update Lambda</text><path class="n dash" d="M1206 850 H1350 V330 H900 V344" marker-end="url(#ar)"/><text class="el" x="1140" y="320" text-anchor="middle">update Lambda</text><path class="n" d="M120 594 V570 H220 V120 H500 V180 H614" marker-end="url(#ar)"/><text class="el" x="370" y="112" text-anchor="middle">管理者ログイン · Code + PKCE</text></svg><div class="node" style="left:25px;top:350px"><div class="tile "><img src="%%ICON_browser%%" alt=""></div><div class="name"><span>一般利用者</span></div><div class="role"><span>公開サイトを閲覧<br>認証不要</span></div></div><div class="node" style="left:25px;top:600px"><div class="tile "><img src="%%ICON_browser%%" alt=""></div><div class="name"><span>管理者</span></div><div class="role"><span>管理画面で更新<br>Cognito でログイン</span></div></div><div class="node" style="left:275px;top:820px"><div class="tile "><img src="%%ICON_zenn%%" alt=""></div><div class="name"><span>Zenn RSS</span></div><div class="role"><span>外部フィード<br>記事を取得</span></div></div><div class="node" style="left:275px;top:170px"><div class="tile bare"><img src="%%ICON_route53%%" alt=""></div><div class="name"><span>Amazon Route 53</span></div></div><div class="node" style="left:275px;top:350px"><div class="tile bare"><img src="%%ICON_amplify%%" alt=""></div><div class="name"><span>AWS Amplify · 公開サイト</span></div></div><div class="node" style="left:275px;top:600px"><div class="tile bare"><img src="%%ICON_amplify%%" alt=""></div><div class="name"><span>AWS Amplify · 管理画面</span></div></div><div class="node" style="left:555px;top:170px"><div class="tile bare"><img src="%%ICON_cognito%%" alt=""></div><div class="name"><span>Amazon Cognito</span></div></div><div class="node" style="left:805px;top:170px"><div class="tile bare"><img src="%%ICON_acm%%" alt=""></div><div class="name"><span>AWS Certificate Manager</span></div></div><div class="node" style="left:555px;top:350px"><div class="tile bare"><img src="%%ICON_apigateway%%" alt=""></div><div class="name"><span>Amazon API Gateway</span></div></div><div class="node" style="left:805px;top:350px"><div class="tile bare"><img src="%%ICON_lambda%%" alt=""></div><div class="name"><span>AWS Lambda · API</span></div><div class="role"><span>管理 API は Cognito 認証</span></div></div><div class="node" style="left:1075px;top:350px"><div class="tile bare"><img src="%%ICON_dynamodb%%" alt=""></div><div class="name"><span>Amazon DynamoDB</span></div></div><div class="node" style="left:555px;top:600px"><div class="tile bare"><img src="%%ICON_eventbridge%%" alt=""></div><div class="name"><span>Amazon EventBridge</span></div><div class="role"><span>Scheduler<br>毎日 23:00 / Japan</span></div></div><div class="node" style="left:805px;top:600px"><div class="tile bare"><img src="%%ICON_lambda%%" alt=""></div><div class="name"><span>AWS Lambda · Batch</span></div><div class="role"><span>zennの記事をDynamoに反映</span></div></div><div class="node" style="left:1075px;top:600px"><div class="tile bare"><img src="%%ICON_ecr%%" alt=""></div><div class="name"><span>Amazon ECR</span></div></div><div class="node" style="left:1075px;top:820px"><div class="tile "><img src="%%ICON_github%%" alt=""></div><div class="name"><span>GitHub Actions</span></div><div class="role"><span>Docker build / AWS OIDC</span></div></div><div class="api-actions">一般利用者：閲覧<br>管理者：閲覧・作成・更新・削除<br>　　　　記事同期（認証必須）</div></div></div><div class="foot">made with <a href="https://github.com/caru-ini/stack-diagram">stack-diagram</a></div></div></body></html>
