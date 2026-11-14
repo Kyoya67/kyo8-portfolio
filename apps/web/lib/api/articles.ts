@@ -3,7 +3,7 @@ import { articles as fallbackArticles } from "@/lib/data/articles";
 import { apiFetch } from "./client";
 
 export async function getArticles(): Promise<Article[]> {
-  const res = await apiFetch("/articles", { cache: "no-store" });
+  const res = await apiFetch("/articles");
   return res.json();
 }
 

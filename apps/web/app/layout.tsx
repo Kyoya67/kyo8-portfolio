@@ -15,6 +15,9 @@ const TITLE = "KYO8 — Backend / Infrastructure Engineer";
 const DESCRIPTION =
   "Kyoya's portfolio — backend and infrastructure engineering. Go, AWS, Terraform, and low-level systems.";
 
+// Regenerate public pages at most once a day.
+export const revalidate = 86400;
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://kyo8.dev"),
   title: TITLE,
