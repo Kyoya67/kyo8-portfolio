@@ -11,18 +11,12 @@ This repository is a monorepo.
 
 Terraform code is organized as:
 
-- `infra/stg`: Staging environment
 - `infra/prd`: Production environment
 - `infra/modules/aws`: Reusable AWS modules
 
 ## AWS Environments
 
-Staging and production use separate AWS accounts.
-
-Terraform state is stored in separate S3 buckets:
-
-- Staging: `kyo8-portfolio-terraform-stg`
-- Production: `kyo8-portfolio-terraform-prd`
+Terraform state for production is stored in the `kyo8-portfolio-terraform-prd` S3 bucket.
 
 The AWS region is:
 
@@ -30,7 +24,7 @@ The AWS region is:
 ap-northeast-1
 ```
 
-Never apply staging resources using production credentials, or production resources using staging credentials.
+Use production credentials only for production resources.
 
 ## Managed AWS Services
 
@@ -57,11 +51,8 @@ Environment suffixes must be included in resource names.
 
 Examples:
 
-- `kyo8-portfolio-api-stg`
 - `kyo8-portfolio-api-prd`
-- `kyo8-portfolio-batch-stg`
 - `kyo8-portfolio-batch-prd`
-- `profile-stg`
 - `profile-prd`
 
 Use lowercase kebab-case for AWS resource names where possible.
@@ -248,7 +239,6 @@ terraform destroy
 
 without explicit approval.
 
-Never modify production infrastructure based only on assumptions from staging.
 
 ## Working Style
 

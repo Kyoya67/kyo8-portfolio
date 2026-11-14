@@ -34,7 +34,7 @@ func main() {
 	db := dynamodb.NewFromConfig(awsConfig)
 	tableName := os.Getenv("ARTICLE_TABLE_NAME")
 	if tableName == "" {
-		tableName = "article-stg"
+		tableName = "article-prd"
 	}
 	articleRepository := repository.NewArticleRepository(db, tableName)
 	zennService := service.NewZennService(articleRepository)

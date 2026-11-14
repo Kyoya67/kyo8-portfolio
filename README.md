@@ -22,7 +22,6 @@ kyo8-portfolio/
 │   ├── admin/     # 管理用 Next.js
 │   └── api/       # Go API / Lambda
 ├── infra/
-│   ├── stg/       # ステージング環境
 │   ├── prd/       # 本番環境
 │   └── modules/   # Terraformモジュール
 └── .github/
@@ -39,7 +38,7 @@ kyo8-portfolio/
 
 # Terraform
 
-環境ごとに`stg`と`prd`を分離し、TerraformのstateをS3バケットで環境別に管理します。
+本番環境をTerraformで管理し、TerraformのstateをS3バケットに保存します。
 
 ## 主な管理対象：
 

@@ -88,8 +88,8 @@ export const projects: Project[] = [
       ja: "このサイト自体 — Next.js + Go + AWSで構築した、管理画面付きポートフォリオ。",
     },
     description: {
-      en: "The site you're looking at. A portfolio built as a full-stack reference project: a Next.js front end, a Go API running on Lambda, DynamoDB for storage, Cognito for admin authentication, and a Terraform-defined AWS environment split across staging and production accounts via AWS Organizations.",
-      ja: "今ご覧いただいているこのサイトです。Next.jsのフロントエンド、Lambda上で動くGo API、ストレージにDynamoDB、管理者認証にCognitoを使い、AWS OrganizationsでstagingとproductionのAWSアカウントを分離した、Terraform定義のインフラを持つフルスタックのリファレンスプロジェクトとして構築しています。",
+      en: "The site you're looking at. A portfolio built as a full-stack reference project: a Next.js front end, a Go API running on Lambda, DynamoDB for storage, Cognito for admin authentication, and a Terraform-defined AWS production environment.",
+      ja: "今ご覧いただいているこのサイトです。Next.jsのフロントエンド、Lambda上で動くGo API、ストレージにDynamoDB、管理者認証にCognitoを使い、Terraformで定義したAWS本番環境を持つフルスタックのリファレンスプロジェクトとして構築しています。",
     },
     graphic: "grid",
     repositoryUrl: "https://github.com/",
