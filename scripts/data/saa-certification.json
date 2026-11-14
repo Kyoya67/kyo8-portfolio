@@ -1,0 +1,10 @@
+{
+  "id": { "S": "aws-saa" },
+  "name": { "M": {
+    "en": { "S": "AWS Certified Solutions Architect – Associate (SAA)" },
+    "ja": { "S": "AWS Certified Solutions Architect – Associate (SAA)" }
+  } },
+  "issuer": { "S": "Amazon Web Services" },
+  "acquiredDate": { "S": "2026-10" },
+  "order": { "N": "1" }
+}

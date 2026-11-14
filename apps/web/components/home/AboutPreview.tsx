@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import type { Profile } from "@/types";
+import type { Profile, Certification } from "@/types";
 import { useLocale } from "@/lib/i18n/LocaleProvider";
 import { PanelFrame } from "@kyo8/ui";
 import { PanelHeading } from "@kyo8/ui";
 import TerminalPanel from "@/components/ui/TerminalPanel";
 
-export default function AboutPreview({ profile }: { profile: Profile }) {
+export default function AboutPreview({ profile, certifications }: { profile: Profile; certifications: Certification[] }) {
   const { locale, t } = useLocale();
   const paragraphs = profile.bio[locale].split("\n\n");
 
@@ -34,17 +34,25 @@ export default function AboutPreview({ profile }: { profile: Profile }) {
                   {paragraph}
                 </p>
               ))}
-              <section className="border-t border-border pt-4" aria-labelledby="certifications-title">
-                <h3 id="certifications-title" className="font-mono text-xs uppercase tracking-widest text-fg-muted">
-                  {locale === "ja" ? "保有資格" : "Certifications"}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed sm:text-base">
-                  AWS Certified Solutions Architect – Associate (SAA)
-                </p>
-                <p className="mt-1 text-xs text-fg-muted">
-                  {locale === "ja" ? "2026年10月取得" : "Earned October 2026"}
-                </p>
-              </section>
+              {certifications.length > 0 && (
+                <section className="border-t border-border pt-4" aria-labelledby="certifications-title">
+                  <h3 id="certifications-title" className="font-mono text-xs uppercase tracking-widest text-fg-muted">
+                    {locale === "ja" ? "保有資格" : "Certifications"}
+                  </h3>
+                  <ul className="mt-2 space-y-3">
+                    {certifications.map((certification) => (
+                      <li key={certification.id}>
+                        <p className="text-sm leading-relaxed sm:text-base">{certification.name[locale]}</p>
+                        <p className="mt-1 text-xs text-fg-muted">
+                          {certification.issuer} · {locale === "ja"
+                            ? `${certification.acquiredDate.slice(0, 4)}年${Number(certification.acquiredDate.slice(5))}月取得`
+                            : `Earned ${certification.acquiredDate}`}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
             </div>
           </div>
 

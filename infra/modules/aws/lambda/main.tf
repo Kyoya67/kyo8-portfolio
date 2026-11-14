@@ -9,11 +9,12 @@ resource "aws_lambda_function" "kyo8_portfolio_api" {
   timeout                        = 3
   environment {
     variables = {
-      PROFILE_TABLE_NAME = "profile-${var.env}"
-      SKILL_TABLE_NAME   = "skill-${var.env}"
-      ARTICLE_TABLE_NAME = "article-${var.env}"
-      PROJECT_TABLE_NAME = "project-${var.env}"
-      CAREER_TABLE_NAME  = "career-${var.env}"
+      PROFILE_TABLE_NAME       = "profile-${var.env}"
+      SKILL_TABLE_NAME         = "skill-${var.env}"
+      ARTICLE_TABLE_NAME       = "article-${var.env}"
+      PROJECT_TABLE_NAME       = "project-${var.env}"
+      CAREER_TABLE_NAME        = "career-${var.env}"
+      CERTIFICATION_TABLE_NAME = "certification-${var.env}"
     }
   }
   lifecycle {

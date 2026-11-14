@@ -85,3 +85,11 @@ export interface Article {
   published: boolean;
   order: number;
 }
+
+export interface Certification {
+  id: string;
+  name: LocalizedText;
+  issuer: string;
+  acquiredDate: string;
+  order: number;
+}
