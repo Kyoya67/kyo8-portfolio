@@ -65,17 +65,6 @@ module "route53" {
       values = ["_730c0559e2742dd414af9c864574bc45.jkddzztszm.acm-validations.aws."]
     },
     {
-      name = "stg.kyo8.dev"
-      type = "NS"
-      ttl  = 300
-      values = [
-        "ns-527.awsdns-01.net.",
-        "ns-1432.awsdns-51.org.",
-        "ns-429.awsdns-53.com.",
-        "ns-1835.awsdns-37.co.uk.",
-      ]
-    },
-    {
       name = "ca-techlounge-todo.kyo8.dev"
       type = "NS"
       ttl  = 300

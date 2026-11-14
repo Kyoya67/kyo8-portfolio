@@ -14,7 +14,7 @@ func TestCORSAllowedOrigin(t *testing.T) {
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/profile", nil)
-	req.Header.Set("Origin", "https://admin.stg.kyo8.dev")
+	req.Header.Set("Origin", "https://admin.kyo8.dev")
 	recorder := httptest.NewRecorder()
 
 	CORS(next).ServeHTTP(recorder, req)
@@ -22,8 +22,8 @@ func TestCORSAllowedOrigin(t *testing.T) {
 	if recorder.Code != http.StatusTeapot {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusTeapot)
 	}
-	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.stg.kyo8.dev" {
-		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.stg.kyo8.dev")
+	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.kyo8.dev" {
+		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.kyo8.dev")
 	}
 }
 
@@ -54,7 +54,7 @@ func TestCORSOptionsStopsNextHandler(t *testing.T) {
 	})
 
 	req := httptest.NewRequest(http.MethodOptions, "/admin/projects/p01", nil)
-	req.Header.Set("Origin", "https://admin.stg.kyo8.dev")
+	req.Header.Set("Origin", "https://admin.kyo8.dev")
 	req.Header.Set("Access-Control-Request-Method", http.MethodDelete)
 	recorder := httptest.NewRecorder()
 
@@ -66,8 +66,8 @@ func TestCORSOptionsStopsNextHandler(t *testing.T) {
 	if nextCalled {
 		t.Fatal("next handler was called for OPTIONS request")
 	}
-	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.stg.kyo8.dev" {
-		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.stg.kyo8.dev")
+	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.kyo8.dev" {
+		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.kyo8.dev")
 	}
 }
 
@@ -78,7 +78,7 @@ func TestCORSNotFoundHandler(t *testing.T) {
 	r.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {}).Methods(http.MethodGet)
 
 	req := httptest.NewRequest(http.MethodGet, "/not-found", nil)
-	req.Header.Set("Origin", "https://admin.stg.kyo8.dev")
+	req.Header.Set("Origin", "https://admin.kyo8.dev")
 	recorder := httptest.NewRecorder()
 
 	r.ServeHTTP(recorder, req)
@@ -86,8 +86,8 @@ func TestCORSNotFoundHandler(t *testing.T) {
 	if recorder.Code != http.StatusNotFound {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusNotFound)
 	}
-	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.stg.kyo8.dev" {
-		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.stg.kyo8.dev")
+	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.kyo8.dev" {
+		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.kyo8.dev")
 	}
 }
 
@@ -100,7 +100,7 @@ func TestCORSMethodNotAllowedHandler(t *testing.T) {
 	r.HandleFunc("/profile", func(w http.ResponseWriter, r *http.Request) {}).Methods(http.MethodGet)
 
 	req := httptest.NewRequest(http.MethodPost, "/profile", nil)
-	req.Header.Set("Origin", "https://admin.stg.kyo8.dev")
+	req.Header.Set("Origin", "https://admin.kyo8.dev")
 	recorder := httptest.NewRecorder()
 
 	r.ServeHTTP(recorder, req)
@@ -108,7 +108,7 @@ func TestCORSMethodNotAllowedHandler(t *testing.T) {
 	if recorder.Code != http.StatusMethodNotAllowed {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusMethodNotAllowed)
 	}
-	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.stg.kyo8.dev" {
-		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.stg.kyo8.dev")
+	if got := recorder.Header().Get("Access-Control-Allow-Origin"); got != "https://admin.kyo8.dev" {
+		t.Fatalf("allow-origin = %q, want %q", got, "https://admin.kyo8.dev")
 	}
 }

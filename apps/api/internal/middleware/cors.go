@@ -3,12 +3,10 @@ package middleware
 import "net/http"
 
 var allowedOrigins = map[string]bool{
-	"https://kyo8.dev":           true,
-	"https://admin.kyo8.dev":     true,
-	"https://stg.kyo8.dev":       true,
-	"https://admin.stg.kyo8.dev": true,
-	"http://localhost:3000":      true,
-	"http://localhost:3001":      true,
+	"https://kyo8.dev":       true,
+	"https://admin.kyo8.dev": true,
+	"http://localhost:3000":  true,
+	"http://localhost:3001":  true,
 }
 
 func CORS(next http.Handler) http.Handler {

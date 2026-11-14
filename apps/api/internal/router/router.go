@@ -21,24 +21,24 @@ type dynamoAPI interface {
 }
 
 func New(db dynamoAPI) http.Handler {
-	profileRepository := repository.NewProfileRepository(db, envOrDefault("PROFILE_TABLE_NAME", "profile-stg"))
+	profileRepository := repository.NewProfileRepository(db, envOrDefault("PROFILE_TABLE_NAME", "profile-prd"))
 	profileService := service.NewProfileService(profileRepository)
 	profileHandler := handler.NewProfileHandler(profileService)
 
-	skillRepository := repository.NewSkillRepository(db, envOrDefault("SKILL_TABLE_NAME", "skill-stg"))
+	skillRepository := repository.NewSkillRepository(db, envOrDefault("SKILL_TABLE_NAME", "skill-prd"))
 	skillService := service.NewSkillService(skillRepository)
 	skillHandler := handler.NewSkillHandler(skillService)
 
-	projectRepository := repository.NewProjectRepository(db, envOrDefault("PROJECT_TABLE_NAME", "project-stg"))
+	projectRepository := repository.NewProjectRepository(db, envOrDefault("PROJECT_TABLE_NAME", "project-prd"))
 	projectService := service.NewProjectService(projectRepository)
 	projectHandler := handler.NewProjectHandler(projectService)
 
-	articleRepository := repository.NewArticleRepository(db, envOrDefault("ARTICLE_TABLE_NAME", "article-stg"))
+	articleRepository := repository.NewArticleRepository(db, envOrDefault("ARTICLE_TABLE_NAME", "article-prd"))
 	articleService := service.NewArticleService(articleRepository)
 	zennService := service.NewZennService(articleRepository)
 	articleHandler := handler.NewArticleHandler(articleService, zennService)
 
-	careerRepository := repository.NewCareerRepository(db, envOrDefault("CAREER_TABLE_NAME", "career-stg"))
+	careerRepository := repository.NewCareerRepository(db, envOrDefault("CAREER_TABLE_NAME", "career-prd"))
 	careerService := service.NewCareerService(careerRepository)
 	careerHandler := handler.NewCareerHandler(careerService)
 
