@@ -1,17 +1,17 @@
 module "iam_role" {
-  source     = "../modules/aws/iam_role"
+  source     = "./modules/aws/iam_role"
   env        = local.env
   account_id = local.account_id
   region     = local.region
 }
 
 module "ecr" {
-  source = "../modules/aws/ecr"
+  source = "./modules/aws/ecr"
   env    = local.env
 }
 
 module "lambda" {
-  source         = "../modules/aws/lambda"
+  source         = "./modules/aws/lambda"
   env            = local.env
   account_id     = local.account_id
   api_gateway_id = module.api_gateway.api_gateway_id
@@ -22,14 +22,14 @@ module "lambda" {
 }
 
 module "event_bridge_scheduler" {
-  source                   = "../modules/aws/event_bridge_scheduler"
+  source                   = "./modules/aws/event_bridge_scheduler"
   env                      = local.env
   batch_lambda_arn         = module.lambda.lambda_batch_arn
   batch_scheduler_role_arn = module.iam_role.batch_scheduler_arn
 }
 
 module "api_gateway" {
-  source             = "../modules/aws/api_gateway"
+  source             = "./modules/aws/api_gateway"
   env                = local.env
   deploy_version     = "1"
   api_lambda_arn     = module.lambda.lambda_api_arn
@@ -38,24 +38,24 @@ module "api_gateway" {
   certificate_arn    = module.acm_cloud_pratica_com_ap_northeast_1.certificate_arn
 }
 module "cognito" {
-  source = "../modules/aws/cognito"
+  source = "./modules/aws/cognito"
   env    = local.env
   urls   = ["https://admin.kyo8.dev"]
 }
 
 module "dynamoDB" {
-  source = "../modules/aws/dynamoDB"
+  source = "./modules/aws/dynamoDB"
   env    = local.env
 }
 
 module "acm_cloud_pratica_com_ap_northeast_1" {
-  source      = "../modules/aws/acm_unit"
+  source      = "./modules/aws/acm_unit"
   domain_name = "*.${local.base_host}"
   region      = local.region
 }
 
 module "route53" {
-  source    = "../modules/aws/route53"
+  source    = "./modules/aws/route53"
   zone_name = local.base_host
   records = [
     {

@@ -23,7 +23,7 @@ kyo8-portfolio/
 │   ├── admin/     # 管理用 Next.js
 │   └── api/       # Go API / Lambda
 ├── infra/
-│   ├── prd/       # 本番環境
+│   ├── *.tf       # 本番環境
 │   └── modules/   # Terraformモジュール
 └── .github/
     └── workflows/ # CI/CD
