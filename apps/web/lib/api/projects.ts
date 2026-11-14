@@ -3,7 +3,7 @@ import { projects as fallbackProjects } from "@/lib/data/projects";
 import { apiFetch } from "./client";
 
 export async function getProjects(): Promise<Project[]> {
-  const res = await apiFetch("/projects", { cache: "no-store" });
+  const res = await apiFetch("/projects");
   return res.json();
 }
 

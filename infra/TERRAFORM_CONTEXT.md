@@ -11,12 +11,12 @@ This repository is a monorepo.
 
 Terraform code is organized as:
 
-- `infra/prd`: Production environment
+- `infra/*.tf`: Production environment
 - `infra/modules/aws`: Reusable AWS modules
 
 ## AWS Environments
 
-Terraform state for production is stored in the `kyo8-portfolio-terraform-prd` S3 bucket.
+Terraform state for production is stored in the `k8-terraform-prd` S3 bucket.
 
 The AWS region is:
 

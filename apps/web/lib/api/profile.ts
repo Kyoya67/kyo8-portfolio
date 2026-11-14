@@ -3,7 +3,7 @@ import { profile as fallbackProfile } from "@/lib/data/profile";
 import { apiFetch } from "./client";
 
 export async function getProfile(): Promise<Profile> {
-  const res = await apiFetch("/profile", { cache: "no-store" });
+  const res = await apiFetch("/profile");
   return res.json();
 }
 

@@ -3,7 +3,7 @@ import { careers as fallbackCareers } from "@/lib/data/careers";
 import { apiFetch } from "./client";
 
 export async function getCareers(): Promise<Career[]> {
-  const res = await apiFetch("/careers", { cache: "no-store" });
+  const res = await apiFetch("/careers");
   return res.json();
 }
 

@@ -3,7 +3,7 @@ import { skills as fallbackSkills } from "@/lib/data/skills";
 import { apiFetch } from "./client";
 
 export async function getSkills(): Promise<Skill[]> {
-  const res = await apiFetch("/skills", { cache: "no-store" });
+  const res = await apiFetch("/skills");
   return res.json();
 }
 
