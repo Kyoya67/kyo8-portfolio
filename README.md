@@ -35,7 +35,10 @@ kyo8-portfolio/
 
 # AWSアーキテクチャ
 
-<img src="assets/diagrams/aws-architecture.png" alt="AWS architecture" width="100%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/diagrams/aws-architecture-dark.png">
+  <img src="assets/diagrams/aws-architecture.png" alt="AWS architecture" width="100%">
+</picture>
 
 # Terraform
 
